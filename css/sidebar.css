@@ -1,0 +1,26 @@
+/* =========================================
+   UNIVERSAL VIP SIDEBAR DESIGN
+   ========================================= */
+.sidebar { width: 260px; height: 100vh; position: fixed; left: 0; top: 0; z-index: 1001; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow-y: auto; background: rgba(15, 10, 35, 0.95); backdrop-filter: blur(20px); border-right: 1px solid rgba(138, 43, 226, 0.3); box-shadow: 5px 0 30px rgba(0,0,0,0.5); transform: translateZ(0); }
+.sidebar-header { padding: 30px 20px; font-size: 26px; font-weight: 800; color: #ffffff; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+.sidebar-header span { background: linear-gradient(45deg, #00f2fe, #8a2be2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.nav-links { list-style: none; padding: 20px 0; margin: 0; }
+.nav-links li { margin-bottom: 8px; padding: 0 15px; }
+.nav-links li a { display: flex; align-items: center; gap: 15px; font-size: 15px; color: #b3b3cc; padding: 15px 20px; border-radius: 15px; transition: 0.3s; font-weight: 600; text-decoration: none;}
+.nav-links li a:hover { background: rgba(255,255,255,0.05); color: #fff; transform: translateX(5px);}
+.nav-links li.active a { background: linear-gradient(45deg, #8a2be2, #00f2fe); color: #fff; box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4); transform: translateX(5px); }
+.nav-links i { font-size: 20px; width: 25px; text-align: center; }
+.nav-links li:not(.active) i { color: #00f2fe; }
+.nav-links li.active i { color: #fff; }
+
+/* Mobile View Settings */
+.close-btn { display: none; font-size: 24px; color: #b3b3cc; cursor: pointer; }
+.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; display: none; opacity: 0; transition: 0.3s; }
+.overlay.active { display: block; opacity: 1; }
+
+@media screen and (max-width: 1024px) {
+    .sidebar { transform: translateX(-100%); } 
+    .sidebar.active { transform: translateX(0); }
+    .close-btn { display: block; }
+}
