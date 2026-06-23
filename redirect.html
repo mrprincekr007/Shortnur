@@ -117,14 +117,6 @@ function setStepInURL(step) {
   url.searchParams.set('step', step);
   window.location.href = url.toString();
 }
-function getSessionId() {
-  let sid = localStorage.getItem('metalink_session');
-  if (!sid) {
-    sid = Math.random().toString(36).substring(2, 12) + Date.now().toString(36);
-    localStorage.setItem('metalink_session', sid);
-  }
-  return sid;
-}
 function saveStep(step) {
   localStorage.setItem('metalink_step', step);
 }
@@ -286,6 +278,7 @@ function generateLongContent() {
       }
     }, 1000);
 
+    // ---------- FIX: Correct Firestore Update ----------
     getLinkBtn.addEventListener('click', async function() {
       getLinkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Unlocking...';
       getLinkBtn.disabled = true;
@@ -293,27 +286,51 @@ function generateLongContent() {
 
       try {
         if (!originalUrl) throw new Error('Destination URL missing.');
+
+        // Get references
+        const linkRef = doc(db, "links", linkDoc.id);   // ✅ Correct way
+        const userRef = doc(db, "users", ownerId);
+        const systemRef = doc(db, "system", "global_stats");
+
         const userEarning = 0.01;
         const systemEarning = 0.02;
-        const linkRef = linkDoc.ref;
-        const userRef = doc(db, 'users', ownerId);
-        const systemRef = doc(db, 'system', 'global_stats');
 
-        await linkRef.update({ views: increment(1), earnings: increment(userEarning) });
-        await userRef.update({ balance: increment(userEarning), total_views: increment(1) });
+        // Update link
+        await updateDoc(linkRef, {
+          views: increment(1),
+          earnings: increment(userEarning)
+        });
 
+        // Update user
+        await updateDoc(userRef, {
+          balance: increment(userEarning),
+          total_views: increment(1)
+        });
+
+        // Update system stats
         const sysSnap = await getDoc(systemRef);
         if (sysSnap.exists()) {
-          await systemRef.update({ total_views: increment(1), total_revenue: increment(systemEarning) });
+          await updateDoc(systemRef, {
+            total_views: increment(1),
+            total_revenue: increment(systemEarning)
+          });
         } else {
-          await setDoc(systemRef, { total_views: 1, total_revenue: systemEarning, last_updated: serverTimestamp() });
+          await setDoc(systemRef, {
+            total_views: 1,
+            total_revenue: systemEarning,
+            last_updated: serverTimestamp()
+          });
         }
 
+        // Clear local storage
         localStorage.removeItem('metalink_step');
         localStorage.removeItem('metalink_session');
+
+        // ✅ Redirect to original URL
         window.location.replace(originalUrl);
+
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Redirect error:', error);
         alert('Error unlocking link. Please try again.\n' + error.message);
         getLinkBtn.innerHTML = `<i class="fas fa-external-link-alt"></i> Get Link`;
         getLinkBtn.disabled = false;
@@ -321,6 +338,7 @@ function generateLongContent() {
       }
     });
   }
+
   document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
 })();
 </script>
