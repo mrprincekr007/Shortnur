@@ -272,7 +272,7 @@ if (shortenForm) {
                 total_links: increment(1)
             });
 
-            const shortLinkUrl = window.location.origin + "/redirect.html?l=" + randomAlias;
+            const shortLinkUrl = window.location.href.split('?')[0].replace(/[^/]*$/, '') + "redirect.html?l=" + randomAlias;
             document.getElementById('newShortLink').textContent = shortLinkUrl;
             document.getElementById('shortenedResult').style.display = "block";
             document.getElementById('longUrl').value = "";
