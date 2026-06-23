@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referrals - MetaLink VIP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/referrals.css">
+    <link rel="stylesheet" href="css/links.css"> <link rel="stylesheet" href="css/sidebar.css"> </head>
+</head>
+<body>
+
+<!-- Naya Sidebar Load karne ke liye -->
+<script src="js/sidebar.js"></script>
+
+    <main class="main-content">
+        <header class="topbar">
+            <i class="fas fa-bars menu-toggle" onclick="toggleMenu()"></i>
+            <div class="user-profile">
+                <span id="userNameDisplay">Referral Program</span>
+                <div class="user-avatar"><i class="fas fa-users"></i></div>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            
+            <div class="glass-panel ref-card">
+                <h4>Total Referral Earnings</h4>
+                <h1 id="refEarnings">$0.0000</h1>
+            </div>
+
+            <div class="content-grid">
+                
+                <div class="glass-panel" style="padding: 25px; height: fit-content;">
+                    <h3 style="font-size: 16px; color: #fff;"><i class="fas fa-share-alt" style="color:#00f2fe;"></i> YOUR REFERRAL LINK</h3>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-top: 5px;">Share this link with your friends and earn <strong style="color:#2ed573;">5% commission</strong> of their total earnings for life!</p>
+                    
+                    <div class="ref-link-box">
+                        <input type="text" id="refLinkUrl" class="ref-input" readonly value="Generating link...">
+                        <button class="btn-submit" id="copyRefBtn" onclick="copyReferralLinkSystem()">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-panel" style="padding: 25px;">
+                    <h3 style="font-size: 16px; color: #fff; margin-bottom: 15px;"><i class="fas fa-info-circle" style="color:#8a2be2;"></i> HOW IT WORKS</h3>
+                    
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-text"><strong>Copy</strong> and send your referral URL to friends.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-text">Friends <strong>register</strong> and start shortening links.</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-text">You get <strong>5% cash bonus</strong> on everything they earn!</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="stats-grid">
+                <div class="glass-panel stat-card">
+                    <div>
+                        <h4>Total Referred Users</h4>
+                        <h2 id="refCount">0</h2>
+                    </div>
+                    <div class="icon-box" style="color: #00f2fe;"><i class="fas fa-user-friends"></i></div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+        <script>
+        // Responsive Mobile Left-Drawer Toggle Function
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        /* VIP 1-CLICK INSTANT KEYBOARD COPY SYSTEM (BULLETPROOF FIX)
+           Ye trick HopWeb aur mobile browsers me 100% work karti hai.
+        */
+        function copyReferralLinkSystem() {
+            var copyInput = document.getElementById("refLinkUrl");
+            var copyButton = document.getElementById("copyRefBtn");
+            var textToCopy = copyInput.value;
+            
+            // Text validation check
+            if (textToCopy === "Generating link..." || textToCopy === "") {
+                return;
+            }
+
+            // 1. Ek nakli (temporary) textarea banayenge
+            var tempTextArea = document.createElement("textarea");
+            tempTextArea.value = textToCopy;
+            
+            // 2. Us textarea ko screen ke bahar chupa denge taaki user ko na dikhe
+            tempTextArea.style.position = "absolute";
+            tempTextArea.style.left = "-9999px";
+            document.body.appendChild(tempTextArea);
+            
+            // 3. Textarea ko select karke copy karenge (Mobile Friendly)
+            tempTextArea.select();
+            tempTextArea.setSelectionRange(0, 99999); 
+            
+            try {
+                // Copy command run karna
+                document.execCommand("copy");
+                
+                // Visual feedback: Button ka color instantly change hoga
+                copyButton.style.background = "#2ed573";
+                copyButton.style.color = "#000000";
+                copyButton.innerHTML = '<i class="fas fa-check"></i> Copied';
+                
+                // 2 second baad button wapas normal ho jayega
+                setTimeout(function() {
+                    copyButton.style.background = "var(--purple-main)";
+                    copyButton.style.color = "#ffffff";
+                    copyButton.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                }, 2000);
+            } catch (err) {
+                alert("Please copy manually. Your browser blocked the action.");
+            }
+            
+            // 4. Kaam hone ke baad nakli textarea mita denge
+            document.body.removeChild(tempTextArea);
+        }
+    </script>    
+
+    <script type="module" src="js/referrals.js"></script>
+
+</body>
+</html>

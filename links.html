@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Links - MetaLink VIP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/links.css">
+    <link rel="stylesheet" href="css/links.css"> <link rel="stylesheet" href="css/sidebar.css"> </head>
+</head>
+<body>
+
+<!-- Naya Sidebar Load karne ke liye -->
+<script src="js/sidebar.js"></script>
+
+    <main class="main-content">
+        <header class="topbar">
+            <i class="fas fa-bars menu-toggle" onclick="toggleMenu()"></i>
+            <div class="user-profile">
+                <span id="userNameDisplay">Manage Links</span>
+                <div class="user-avatar"><i class="fas fa-link"></i></div>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            
+            <div class="glass-panel" style="padding: 25px; min-height: 80vh;">
+                
+                <div class="link-header">
+                    <h3 style="font-size: 18px; color: #fff;"><i class="fas fa-list" style="color:#00f2fe;"></i> All Shortened Links</h3>
+                    <input type="text" id="searchLink" class="search-box" placeholder="Search your links...">
+                </div>
+
+                <div id="linksContainer">
+                    <div class="loading-text">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #00f2fe; margin-bottom: 10px;"></i><br>
+                        Fetching your premium links...
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        // Global Copy Function (Used by dynamically generated buttons)
+        window.copyShortLink = function(url) {
+            navigator.clipboard.writeText(url);
+            alert("VIP Link Copied Successfully!");
+        }
+    </script>
+    
+    <script type="module" src="js/links.js"></script>
+
+</body>
+</html>

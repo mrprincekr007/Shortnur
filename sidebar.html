@@ -1,0 +1,32 @@
+<!-- Ye aapka Universal Menu (Sidebar) hai. Isko bas ek baar yahan change karenge, toh sabhi pages pe automatically change ho jayega! -->
+<aside class="sidebar" id="sidebar">
+    <!-- Menu Ka Header (Logo aur Name) -->
+    <div class="sidebar-header">
+        <span><i class="fas fa-layer-group"></i> MetaLink</span>
+        <!-- Mobile me menu close karne ka X button -->
+        <i class="fas fa-times close-btn" onclick="toggleMenu()"></i>
+    </div>
+    
+    <!-- Menu Ke Buttons List -->
+    <ul class="nav-links">
+        <!-- Har <li> tag ko ek 'id' di hai taaki JS samajh sake ki kaunsa page active hai -->
+        <li id="nav-dashboard"><a href="dashboard.html"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+        <li id="nav-links"><a href="links.html"><i class="fas fa-link"></i> Manage Links</a></li>
+        <li id="nav-withdraw"><a href="withdraw.html"><i class="fas fa-wallet"></i> Withdraw</a></li>
+        <li id="nav-tools"><a href="tools.html"><i class="fas fa-magic"></i> Tools</a></li>
+        <li id="nav-referrals"><a href="referrals.html"><i class="fas fa-users"></i> Referrals</a></li>
+        <li id="nav-settings"><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+        
+        <!-- Logout Button thoda niche space dekar rakha hai -->
+        <li style="margin-top: 30px;"><a href="#" id="logoutBtn" style="color: #ff4757;"><i class="fas fa-power-off"></i> Logout</a></li>
+    </ul>
+</aside>
+
+<!-- Menu ka mobile script jo click karne pe dark background lata hai -->
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<script>
+    function toggleMenu() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+    }
+</script>

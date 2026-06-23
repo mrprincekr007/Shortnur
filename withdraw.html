@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw - MetaLink VIP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/withdraw.css">
+    <link rel="stylesheet" href="css/links.css"> <link rel="stylesheet" href="css/sidebar.css"> </head>
+    <style>
+        /* Table ko mobile ke liye fix kiya hai */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; }
+        .history-table { width: 100%; border-collapse: collapse; min-width: 500px; color: #fff; text-align: left; }
+        .history-table th { padding: 12px 15px; color: var(--text-muted); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .history-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        
+        .status-badge { padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .badge-pending { background: rgba(255, 165, 2, 0.15); color: #ffa502; }
+        .badge-approved { background: rgba(46, 213, 115, 0.15); color: #2ed573; }
+        .badge-rejected { background: rgba(255, 71, 87, 0.15); color: #ff4757; }
+    </style>
+</head>
+<body>
+
+    <!-- Naya Sidebar Load karne ke liye -->
+<script src="js/sidebar.js"></script>
+
+    <main class="main-content">
+        <header class="topbar">
+            <i class="fas fa-bars menu-toggle" onclick="toggleMenu()"></i>
+            <div class="user-profile">
+                <span id="userNameDisplay">Wallet</span>
+                <div class="user-avatar"><i class="fas fa-wallet"></i></div>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            <div id="alertBox" class="alert-msg"></div>
+            
+            <div class="stats-grid">
+                <div class="glass-panel stat-card">
+                    <div>
+                        <h4>Available</h4>
+                        <h2 id="availBal" style="color: #2ed573;">$0.00</h2>
+                    </div>
+                    <div class="icon-box" style="color: #2ed573;"><i class="fas fa-check-circle"></i></div>
+                </div>
+                <div class="glass-panel stat-card">
+                    <div>
+                        <h4>Pending</h4>
+                        <h2 id="pendBal" style="color: #ffa502;">$0.00</h2>
+                    </div>
+                    <div class="icon-box" style="color: #ffa502;"><i class="fas fa-hourglass-half"></i></div>
+                </div>
+                <div class="glass-panel stat-card">
+                    <div>
+                        <h4>Total Paid</h4>
+                        <h2 id="totalPaidBal" style="color: #00f2fe;">$0.00</h2>
+                    </div>
+                    <div class="icon-box" style="color: #00f2fe;"><i class="fas fa-money-bill-wave"></i></div>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="glass-panel" style="padding: 25px; height: fit-content;">
+                    <h3 style="margin-bottom: 20px; font-size: 16px; color: var(--text-muted);">REQUEST PAYOUT</h3>
+                    
+                    <form id="withdrawForm">
+                        <div class="form-group">
+                            <select id="wMethod" class="form-control" required>
+                                <option value="">Select Method</option>
+                                <option value="UPI">UPI (Min $5)</option>
+                                <option value="Paytm">Paytm (Min $5)</option>
+                                <option value="PayPal">PayPal (Min $10)</option>
+                                <option value="Bank">Bank Transfer (Min $20)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="wAccount" class="form-control" placeholder="Account Info (UPI/Email/No.)" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="wAmount" class="form-control" step="0.01" min="1" placeholder="Amount (e.g. 5.00)" required>
+                        </div>
+                        <button type="submit" class="btn-submit" id="withdrawBtn" style="background: #2ed573; color: #000;">
+                            Withdraw Now
+                        </button>
+                    </form>
+                </div>
+
+                <div class="glass-panel" style="padding: 25px;">
+                    <h3 style="margin-bottom: 20px; font-size: 16px; color: var(--text-muted);">HISTORY</h3>
+                    <div class="table-responsive">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                <tr>
+                                    <td colspan="3" style="text-align:center; padding: 30px; color: #b3b3cc;">
+                                        Loading Data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+    </script>
+    
+    <script type="module" src="js/withdraw.js"></script>
+
+</body>
+</html>

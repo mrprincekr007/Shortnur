@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings - MetaLink VIP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/links.css"> <link rel="stylesheet" href="css/sidebar.css"> </head>
+</head>
+<body>
+
+<!-- Naya Sidebar Load karne ke liye -->
+<script src="js/sidebar.js"></script>
+
+    <main class="main-content">
+        <header class="topbar">
+            <i class="fas fa-bars menu-toggle" onclick="toggleMenu()"></i>
+            <div class="user-profile">
+                <span id="topbarName">Settings</span>
+                <div class="user-avatar"><i class="fas fa-user-cog"></i></div>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
+            <div id="alertBox" class="alert-msg"></div>
+
+            <div class="settings-grid">
+                
+                <div class="glass-panel" style="padding: 25px; height: fit-content;">
+                    <h3 style="margin-bottom: 20px; font-size: 16px; color: var(--text-muted);"><i class="fas fa-user-edit" style="color:#00f2fe;"></i> PERSONAL INFO</h3>
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label>Registered Email</label>
+                            <input type="email" id="setAccountEmail" class="form-control readonly-input" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Username (Cannot be changed)</label>
+                            <input type="text" id="setUsername" class="form-control readonly-input" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="setAccountName" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn-submit" id="updateProfileBtn" style="background: linear-gradient(45deg, #00f2fe, #4facfe); color: #000;">
+                            Update Name
+                        </button>
+                    </form>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <div class="glass-panel" style="padding: 25px;">
+                        <h3 style="margin-bottom: 20px; font-size: 16px; color: var(--text-muted);"><i class="fas fa-money-check-alt" style="color:#2ed573;"></i> SAVED PAYMENT INFO</h3>
+                        <form id="paymentSettingsForm">
+                            <div class="form-group">
+                                <label>Default Method</label>
+                                <select id="setDefaultMethod" class="form-control" required>
+                                    <option value="">Select Method</option>
+                                    <option value="UPI">UPI</option>
+                                    <option value="Paytm">Paytm</option>
+                                    <option value="PayPal">PayPal</option>
+                                    <option value="Bank">Bank Transfer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Default Account Details</label>
+                                <input type="text" id="setDefaultAccount" class="form-control" placeholder="UPI ID / Email / Account No.">
+                            </div>
+                            <button type="submit" class="btn-submit" id="updatePaymentBtn" style="background: #2ed573; color: #000;">
+                                Save Payment Info
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="glass-panel" style="padding: 25px;">
+                        <h3 style="margin-bottom: 10px; font-size: 16px; color: var(--text-muted);"><i class="fas fa-shield-alt" style="color:#ff4757;"></i> ACCOUNT SECURITY</h3>
+                        <p style="color: #b3b3cc; font-size: 12px; margin-bottom: 20px;">For your security, we will send a password reset link to your registered email. Click the link to securely change your password.</p>
+                        
+                        <button type="button" class="btn-submit" id="sendResetLinkBtn" style="background: transparent; border: 2px solid #ff4757; color: #ff4757;">
+                            <i class="fas fa-envelope"></i> Send Reset Link to Email
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+    </script>
+    
+    <script type="module" src="js/settings.js"></script>
+
+</body>
+</html>
