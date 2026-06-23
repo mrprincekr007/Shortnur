@@ -99,7 +99,7 @@ async function loadUserData(uid) {
 }
 
 // ==========================================
-// 5. RECENT LINKS HISTORY
+// 5. RECENT LINKS HISTORY (FIXED PATH)
 // ==========================================
 async function loadRecentHistory(uid) {
     const listEl = document.getElementById('recentLinksList');
@@ -131,7 +131,8 @@ async function loadRecentHistory(uid) {
         const top5 = linksArray.slice(0, 5);
         listEl.innerHTML = '';
         top5.forEach(data => {
-            const shortUrl = window.location.origin + "/redirect.html?l=" + data.shortAlias;
+            // ✅ FIX: Use relative path './redirect.html'
+            const shortUrl = "./redirect.html?l=" + data.shortAlias;
             listEl.innerHTML += `
                 <li class="history-item">
                     <a href="${shortUrl}" target="_blank" class="history-title">
@@ -200,7 +201,7 @@ function initGraph() {
 }
 
 // ==========================================
-// 7. GENERATE UNIQUE ALIAS (COLLISION SAFE)
+// 7. GENERATE UNIQUE ALIAS
 // ==========================================
 async function generateUniqueAlias() {
     let alias = '';
@@ -208,27 +209,21 @@ async function generateUniqueAlias() {
     const maxAttempts = 20;
 
     while (attempts < maxAttempts) {
-        // Generate 6-character random string
         alias = Math.random().toString(36).substring(2, 8);
-
-        // Check if alias already exists in Firestore
         const linksRef = collection(db, "links");
         const q = query(linksRef, where("shortAlias", "==", alias));
         const snap = await getDocs(q);
 
         if (snap.empty) {
-            // Alias is unique
             return alias;
         }
         attempts++;
     }
-
-    // If we couldn't find a unique alias, use timestamp-based
     return Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
 }
 
 // ==========================================
-// 8. SHORTEN FORM (FIXED — UNIQUE LINKS)
+// 8. SHORTEN FORM (FIXED PATH)
 // ==========================================
 const shortenForm = document.getElementById('shortenForm');
 if (shortenForm) {
@@ -250,13 +245,9 @@ if (shortenForm) {
             shortenBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
             shortenBtn.disabled = true;
 
-            // Ensure user document exists
             await ensureUserDocument(currentUser.uid);
-
-            // Generate unique alias
             const randomAlias = await generateUniqueAlias();
 
-            // Add link to Firestore
             await addDoc(collection(db, "links"), {
                 originalUrl: longUrl,
                 shortAlias: randomAlias,
@@ -267,17 +258,16 @@ if (shortenForm) {
                 createdAt: serverTimestamp()
             });
 
-            // Update user total_links
             await updateDoc(doc(db, "users", currentUser.uid), {
                 total_links: increment(1)
             });
 
-            const shortLinkUrl = window.location.href.split('?')[0].replace(/[^/]*$/, '') + "redirect.html?l=" + randomAlias;
+            // ✅ FIX: Use relative path './redirect.html'
+            const shortLinkUrl = "./redirect.html?l=" + randomAlias;
             document.getElementById('newShortLink').textContent = shortLinkUrl;
             document.getElementById('shortenedResult').style.display = "block";
             document.getElementById('longUrl').value = "";
 
-            // Refresh data
             await loadUserData(currentUser.uid);
             await loadRecentHistory(currentUser.uid);
 
@@ -299,7 +289,6 @@ if (shortenForm) {
     });
 }
 
-// Helper to show error on screen
 function showError(msg) {
     const container = document.querySelector('.dashboard-container');
     if (container) {
