@@ -106,20 +106,17 @@ function getAlias() {
   const params = new URLSearchParams(window.location.search);
   return params.get('l');
 }
-
 function getStepFromURL() {
   const params = new URLSearchParams(window.location.search);
   const step = parseInt(params.get('step'));
   if (isNaN(step) || step < 1 || step > 5) return 1;
   return step;
 }
-
 function setStepInURL(step) {
   const url = new URL(window.location.href);
   url.searchParams.set('step', step);
   window.location.href = url.toString();
 }
-
 function getSessionId() {
   let sid = localStorage.getItem('metalink_session');
   if (!sid) {
@@ -128,15 +125,12 @@ function getSessionId() {
   }
   return sid;
 }
-
 function saveStep(step) {
   localStorage.setItem('metalink_step', step);
 }
-
 function getSavedStep() {
   return parseInt(localStorage.getItem('metalink_step')) || 1;
 }
-
 function generateLongContent() {
   const container = document.getElementById('dynamicLongContent');
   let html = '';
@@ -198,7 +192,6 @@ function generateLongContent() {
     setStepInURL(currentStep);
     return;
   }
-
   if (savedStep < urlStep) {
     saveStep(urlStep);
   }
@@ -300,7 +293,6 @@ function generateLongContent() {
 
       try {
         if (!originalUrl) throw new Error('Destination URL missing.');
-
         const userEarning = 0.01;
         const systemEarning = 0.02;
         const linkRef = linkDoc.ref;
@@ -329,7 +321,6 @@ function generateLongContent() {
       }
     });
   }
-
   document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
 })();
 </script>
