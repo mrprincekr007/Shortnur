@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Shortnur</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+    <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- Loading screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="logo-icon">🔗</div>
+    <div class="spinner"></div>
+  </div>
+
+  <div class="dash-layout hidden" id="appRoot">
+    <!-- ======= SIDEBAR ======= -->
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">🔗</div>
+        <span>Short<b>nur</b></span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item active" data-page="overview"><span class="nav-icon" data-icon="dashboard"></span><span>Overview</span></a>
+        <a href="dashboard.html#links" class="nav-item" data-page="links"><span class="nav-icon" data-icon="link"></span><span>My Links</span><span class="badge" id="linksBadge">0</span></a>
+        <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon" data-icon="chart"></span><span>Analytics</span></a>
+        <a href="earnings.html" class="nav-item" data-page="earnings"><span class="nav-icon" data-icon="wallet"></span><span>Earnings</span></a>
+        <a href="referrals.html" class="nav-item" data-page="referrals"><span class="nav-icon" data-icon="users"></span><span>Referrals</span></a>
+        <a href="tools.html" class="nav-item" data-page="tools"><span class="nav-icon" data-icon="tools"></span><span>Tools</span></a>
+        <a href="settings.html" class="nav-item" data-page="settings"><span class="nav-icon" data-icon="settings"></span><span>Settings</span></a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user" id="sidebarUser">
+          <div class="avatar" id="userAvatar">?</div>
+          <div class="user-meta">
+            <b id="userName">Loading...</b>
+            <span id="userPlan">Free plan</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-block" id="logoutBtn"><span data-icon="log-out"></span> Logout</button>
+      </div>
+    </aside>
+
+    <!-- ======= MAIN CONTENT ======= -->
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <div class="flex">
+          <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
+          <span class="page-icon c-cyan" data-icon="dashboard"></span>
+          <div>
+            <h1 id="pageTitle">Overview</h1>
+            <div class="sub" id="pageSub">Welcome back!</div>
+          </div>
+        </div>
+        <div class="flex">
+          <div class="search-bar">
+            <span data-icon="search"></span>
+            <input type="text" id="globalSearch" placeholder="Search links...">
+          </div>
+          <button class="btn btn-primary" id="createLinkBtn">+ New Link</button>
+        </div>
+      </div>
+
+      <!-- ====== OVERVIEW VIEW ====== -->
+      <section id="view-overview">
+        <div class="welcome-banner">
+          <div class="flex">
+            <span class="wb-emoji" id="welcomeEmoji">🚀</span>
+            <div>
+              <h2 id="welcomeTitle">Welcome back!</h2>
+              <p class="text-muted" id="welcomeText">Create a link, share it anywhere, and earn from every click.</p>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="welcomeCreateBtn">+ New Link</button>
+        </div>
+
+        <div class="stat-grid" id="overviewStats">
+          <div class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">Total Links</span>
+              <span class="stat-icon"><span data-icon="link"></span></span>
+            </div>
+            <div class="stat-value" id="statTotalLinks">0</div>
+            <div class="stat-change up">All your links</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">Total Clicks</span>
+              <span class="stat-icon"><span data-icon="pointer"></span></span>
+            </div>
+            <div class="stat-value" id="statTotalClicks">0</div>
+            <div class="stat-change up">Lifetime clicks</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">Total Earnings</span>
+              <span class="stat-icon"><span data-icon="money"></span></span>
+            </div>
+            <div class="stat-value" id="statEarnings">$0.00</div>
+            <div class="stat-change up" style="color:var(--success);">Keep sharing!</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">Avg. Clicks/Link</span>
+              <span class="stat-icon"><span data-icon="chart"></span></span>
+            </div>
+            <div class="stat-value" id="statAvgClicks">0</div>
+            <div class="stat-change up">Per link average</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Recent Links</h3>
+            <a href="dashboard.html#links" class="btn btn-ghost btn-sm">View All</a>
+          </div>
+          <div class="table-responsive">
+            <table class="links-table" id="recentLinksTable">
+              <thead>
+                <tr>
+                  <th>Link</th>
+                  <th>Short URL</th>
+                  <th>Clicks</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th style="text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="recentLinksBody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state hidden" id="recentEmpty">
+            <div class="empty-icon"><span data-icon="link"></span></div>
+            <h3>No links yet</h3>
+            <p>Create your first short link to get started!</p>
+            <button class="btn btn-primary" id="emptyCreateBtn">+ Create your first link</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== LINKS VIEW ====== -->
+      <section id="view-links" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <h3>My Links</h3>
+            <div class="flex">
+              <select class="form-control" id="statusFilter" style="width:auto;padding:10px 14px;border-radius:12px;">
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="links-table" id="linksTable">
+              <thead>
+                <tr>
+                  <th>Link</th>
+                  <th>Short URL</th>
+                  <th>Clicks</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th style="text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="linksBody"></tbody>
+            </table>
+          </div>
+
+          <div class="empty-state hidden" id="linksEmpty">
+            <div class="empty-icon"><span data-icon="link"></span></div>
+            <h3>No links found</h3>
+            <p>Create your first short link to see it here.</p>
+            <button class="btn btn-primary" id="linksEmptyCreateBtn">+ Create a link</button>
+          </div>
+
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </section>
+
+      <!-- ====== CREATE LINK MODAL ====== -->
+      <div class="modal-overlay" id="createModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3>Create New Link</h3>
+            <button class="modal-close" data-close="createModal"><span data-icon="close"></span></button>
+          </div>
+
+          <div class="alert alert-error" id="createError"></div>
+
+          <form id="createLinkForm">
+            <div class="form-group">
+              <label for="cLongUrl">Destination URL *</label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="link"></span></span>
+                <input type="url" id="cLongUrl" class="form-control" placeholder="https://your-long-link.com/..." required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="cTitle">Title <span class="text-muted">(optional)</span></label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="tag"></span></span>
+                <input type="text" id="cTitle" class="form-control" placeholder="My awesome link" maxlength="60">
+              </div>
+            </div>
+
+            <label class="option-toggle mb-2">
+              <span class="switch">
+                <input type="checkbox" id="cCustomToggle">
+                <span class="slider"></span>
+              </span>
+              Use custom alias
+            </label>
+
+            <div class="form-group hidden" id="cAliasGroup">
+              <label for="cAlias">Custom alias</label>
+              <div class="flex">
+                <span class="text-muted" style="white-space:nowrap;font-weight:600;">shortnur.to/</span>
+                <input type="text" id="cAlias" class="form-control form-control-plain" placeholder="my-custom-name" maxlength="30" pattern="[A-Za-z0-9_-]+">
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <button type="button" class="btn btn-ghost" data-close="createModal">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="createSubmitBtn">
+                <span id="createSubmitText">Create Link</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ====== EDIT LINK MODAL ====== -->
+      <div class="modal-overlay" id="editModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3>Edit Link</h3>
+            <button class="modal-close" data-close="editModal"><span data-icon="close"></span></button>
+          </div>
+
+          <div class="alert alert-error" id="editError"></div>
+
+          <form id="editLinkForm">
+            <input type="hidden" id="eCode">
+            <div class="form-group">
+              <label for="eLongUrl">Destination URL *</label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="link"></span></span>
+                <input type="url" id="eLongUrl" class="form-control" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="eTitle">Title <span class="text-muted">(optional)</span></label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="tag"></span></span>
+                <input type="text" id="eTitle" class="form-control" maxlength="60">
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <button type="button" class="btn btn-ghost" data-close="editModal">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="editSubmitBtn">
+                <span id="editSubmitText">Save Changes</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ====== DELETE CONFIRM MODAL ====== -->
+      <div class="modal-overlay" id="deleteModal">
+        <div class="modal" style="max-width:420px;text-align:center;">
+          <div class="modal-header" style="justify-content:center;">
+            <h3>Delete Link?</h3>
+          </div>
+          <p class="text-muted mb-3" id="deleteConfirmText">Are you sure you want to delete this link? This action cannot be undone.</p>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" data-close="deleteModal">Cancel</button>
+            <button class="btn btn-danger" id="confirmDeleteBtn"><span data-icon="trash"></span> Yes, Delete</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="assets/js/dashboard.js"></script>
+</body>
+</html>

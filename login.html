@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login or Sign Up — Shortnur</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/auth.css">
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="auth-container">
+    <!-- Left brand side -->
+    <div class="auth-left">
+      <div class="content">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">🔗</div>
+          <span>Short<b>nur</b></span>
+        </a>
+        <h2>The fastest URL shortener where you earn from every click.</h2>
+        <p>Manage your links, track analytics and keep earning — all in one place.</p>
+        <div class="auth-features">
+          <div class="auth-feature"><span class="tick" data-icon="check"></span> Manage all your links in one place</div>
+          <div class="auth-feature"><span class="tick" data-icon="check"></span> Real-time click analytics &amp; earnings</div>
+          <div class="auth-feature"><span class="tick" data-icon="check"></span> Custom branded short links</div>
+          <div class="auth-feature"><span class="tick" data-icon="check"></span> 100% free to get started</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right form side -->
+    <div class="auth-right">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" data-tab="login">Login</button>
+          <button type="button" class="auth-tab" data-tab="signup">Sign Up</button>
+        </div>
+
+        <div class="alert alert-error" id="errorAlert"></div>
+
+        <!-- ======= LOGIN PANEL ======= -->
+        <div class="auth-panel active" id="panel-login">
+          <h3>Welcome back!</h3>
+          <p class="subtitle">Please enter your details to continue.</p>
+
+          <form id="loginForm">
+            <div class="form-group">
+              <label for="email">Email</label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="mail"></span></span>
+                <input type="email" id="email" class="form-control" placeholder="you@example.com" required autocomplete="email">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="lock"></span></span>
+                <input type="password" id="password" class="form-control" placeholder="Enter your password" required autocomplete="current-password">
+                <button type="button" class="password-toggle" id="togglePass" aria-label="Toggle password"><span data-icon="eye"></span></button>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="checkbox-label">
+                <input type="checkbox" id="rememberMe"> Remember me
+              </label>
+              <a href="#" class="forgot-link" id="goForgot">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="loginBtn">
+              <span id="loginBtnText">Login</span>
+            </button>
+          </form>
+
+          <div class="auth-switch">
+            New here? <a href="#" id="goSignup">Create a free account</a>
+          </div>
+        </div>
+
+        <!-- ======= SIGNUP PANEL ======= -->
+        <div class="auth-panel" id="panel-signup">
+          <h3>Create account</h3>
+          <p class="subtitle">Start shortening &amp; earning today.</p>
+
+          <form id="signupForm">
+            <div class="form-group">
+              <label for="name">Full name</label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="user"></span></span>
+                <input type="text" id="name" class="form-control" placeholder="John Doe" required autocomplete="name">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="sEmail">Email</label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="mail"></span></span>
+                <input type="email" id="sEmail" class="form-control" placeholder="you@example.com" required autocomplete="email">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="sPassword">Password</label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="lock"></span></span>
+                <input type="password" id="sPassword" class="form-control" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password">
+                <button type="button" class="password-toggle" id="togglePass2" aria-label="Toggle password"><span data-icon="eye"></span></button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword">Confirm password</label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="lock"></span></span>
+                <input type="password" id="confirmPassword" class="form-control" placeholder="Re-enter password" required minlength="6" autocomplete="new-password">
+              </div>
+            </div>
+
+            <label class="checkbox-label mb-2">
+              <input type="checkbox" id="terms" required> I agree to the <a href="#" style="color:var(--primary-light);">Terms &amp; Privacy Policy</a>
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="signupBtn">
+              <span id="signupBtnText">Create Account</span>
+            </button>
+          </form>
+
+          <div class="auth-switch">
+            Already have an account? <a href="#" id="goLogin">Login</a>
+          </div>
+        </div>
+
+        <!-- ======= FORGOT PASSWORD PANEL ======= -->
+        <div class="auth-panel" id="panel-forgot">
+          <h3>Reset password</h3>
+          <p class="subtitle">We'll email you a secure reset link.</p>
+
+          <div class="alert alert-error" id="forgotError"></div>
+          <div class="alert alert-success" id="forgotSuccess"></div>
+
+          <form id="forgotForm">
+            <div class="form-group">
+              <label for="fEmail">Email</label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="mail"></span></span>
+                <input type="email" id="fEmail" class="form-control" placeholder="you@example.com" required autocomplete="email">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="resetBtn">
+              <span id="resetBtnText">Send Reset Link</span>
+            </button>
+          </form>
+
+          <div class="auth-switch">
+            <a href="#" id="goBackLogin"><span data-icon="arrow-left"></span> Back to login</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="assets/js/auth.js"></script>
+</body>
+</html>

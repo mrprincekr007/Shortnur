@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Earnings — Shortnur</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+    <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="loading-screen" id="loadingScreen">
+    <div class="logo-icon">🔗</div>
+    <div class="spinner"></div>
+  </div>
+
+  <div class="dash-layout hidden" id="appRoot">
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">🔗</div>
+        <span>Short<b>nur</b></span>
+      </a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item" data-page="overview"><span class="nav-icon" data-icon="dashboard"></span><span>Overview</span></a>
+        <a href="dashboard.html#links" class="nav-item" data-page="links"><span class="nav-icon" data-icon="link"></span><span>My Links</span></a>
+        <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon" data-icon="chart"></span><span>Analytics</span></a>
+        <a href="earnings.html" class="nav-item active" data-page="earnings"><span class="nav-icon" data-icon="wallet"></span><span>Earnings</span></a>
+        <a href="referrals.html" class="nav-item" data-page="referrals"><span class="nav-icon" data-icon="users"></span><span>Referrals</span></a>
+        <a href="tools.html" class="nav-item" data-page="tools"><span class="nav-icon" data-icon="tools"></span><span>Tools</span></a>
+        <a href="settings.html" class="nav-item" data-page="settings"><span class="nav-icon" data-icon="settings"></span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user" id="sidebarUser">
+          <div class="avatar" id="userAvatar">?</div>
+          <div class="user-meta"><b id="userName">Loading...</b><span id="userPlan">Free plan</span></div>
+        </div>
+        <button class="btn btn-ghost btn-block" id="logoutBtn"><span data-icon="log-out"></span> Logout</button>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <div class="flex">
+          <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
+          <span class="page-icon c-green" data-icon="wallet"></span>
+          <div>
+            <h1>Earnings</h1>
+            <div class="sub">Track your click earnings</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Total Earnings</span><span class="stat-icon"><span data-icon="money"></span></span></div>
+          <div class="stat-value" id="totalEarnings">$0.00</div>
+          <div class="stat-change up">All time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">This Month</span><span class="stat-icon"><span data-icon="calendar"></span></span></div>
+          <div class="stat-value" id="monthEarnings">$0.00</div>
+          <div class="stat-change up" style="color:var(--success);">Keep sharing!</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Total Clicks</span><span class="stat-icon"><span data-icon="pointer"></span></span></div>
+          <div class="stat-value" id="totalClicks">0</div>
+          <div class="stat-change up">Earning clicks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Rate</span><span class="stat-icon"><span data-icon="cash"></span></span></div>
+          <div class="stat-value" id="rate">$0.50</div>
+          <div class="stat-change up">Per 1000 clicks</div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h3>Withdraw Balance</h3>
+          <span class="text-muted">Minimum withdrawal: $10</span>
+        </div>
+        <div class="flex-between mb-2">
+          <div>
+            <div style="font-size:2.2rem;font-weight:800;" id="withdrawBalance">$0.00</div>
+            <div class="text-muted">Available to withdraw</div>
+          </div>
+          <div style="width:220px;">
+            <div class="flex-between mb-1"><span class="text-muted">To minimum</span><b id="progressText">0%</b></div>
+            <div class="progress-track"><div class="progress-fill" id="withdrawProgress" style="width:0%"></div></div>
+          </div>
+        </div>
+        <button class="btn btn-success" id="withdrawBtn"><span data-icon="cash"></span> Request Withdrawal</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Earnings by Link</h3>
+          <span class="text-muted">Top earning links</span>
+        </div>
+        <div class="table-responsive">
+          <table class="links-table">
+            <thead>
+              <tr>
+                <th>Link</th>
+                <th>Clicks</th>
+                <th>Earned</th>
+              </tr>
+            </thead>
+            <tbody id="earningsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="withdrawModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Request Withdrawal</h3>
+        <button class="modal-close" data-close="withdrawModal"><span data-icon="close"></span></button>
+      </div>
+      <div class="alert alert-info" id="withdrawInfo">You have <b id="wBalance">$0.00</b> available.</div>
+      <form id="withdrawForm">
+        <div class="form-group">
+          <label for="wMethod">Payment method</label>
+          <select id="wMethod" class="form-control form-control-plain">
+            <option value="paypal">PayPal</option>
+            <option value="upi">UPI</option>
+            <option value="bank">Bank Transfer</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="wAccount">Account / Email</label>
+          <input type="text" id="wAccount" class="form-control form-control-plain" placeholder="Enter your payment details" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close="withdrawModal">Cancel</button>
+          <button type="submit" class="btn btn-success" id="withdrawSubmitBtn">Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="assets/js/earnings.js"></script>
+</body>
+</html>

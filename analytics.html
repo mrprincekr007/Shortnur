@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics — Shortnur</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+    <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="loading-screen" id="loadingScreen">
+    <div class="logo-icon">🔗</div>
+    <div class="spinner"></div>
+  </div>
+
+  <div class="dash-layout hidden" id="appRoot">
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">🔗</div>
+        <span>Short<b>nur</b></span>
+      </a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item" data-page="overview"><span class="nav-icon" data-icon="dashboard"></span><span>Overview</span></a>
+        <a href="dashboard.html#links" class="nav-item" data-page="links"><span class="nav-icon" data-icon="link"></span><span>My Links</span></a>
+        <a href="analytics.html" class="nav-item active" data-page="analytics"><span class="nav-icon" data-icon="chart"></span><span>Analytics</span></a>
+        <a href="earnings.html" class="nav-item" data-page="earnings"><span class="nav-icon" data-icon="wallet"></span><span>Earnings</span></a>
+        <a href="referrals.html" class="nav-item" data-page="referrals"><span class="nav-icon" data-icon="users"></span><span>Referrals</span></a>
+        <a href="tools.html" class="nav-item" data-page="tools"><span class="nav-icon" data-icon="tools"></span><span>Tools</span></a>
+        <a href="settings.html" class="nav-item" data-page="settings"><span class="nav-icon" data-icon="settings"></span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user" id="sidebarUser">
+          <div class="avatar" id="userAvatar">?</div>
+          <div class="user-meta"><b id="userName">Loading...</b><span id="userPlan">Free plan</span></div>
+        </div>
+        <button class="btn btn-ghost btn-block" id="logoutBtn"><span data-icon="log-out"></span> Logout</button>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <div class="flex">
+          <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
+          <span class="page-icon c-violet" data-icon="chart"></span>
+          <div>
+            <h1>Analytics</h1>
+            <div class="sub">Track every click in real time</div>
+          </div>
+        </div>
+        <div class="flex">
+          <select class="form-control" id="rangeSelect" style="width:auto;padding:10px 14px;border-radius:12px;">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="365">Last 12 months</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Total Clicks</span><span class="stat-icon"><span data-icon="pointer"></span></span></div>
+          <div class="stat-value" id="statClicks">0</div>
+          <div class="stat-change up" id="statClicksDelta">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Unique Visitors</span><span class="stat-icon"><span data-icon="users"></span></span></div>
+          <div class="stat-value" id="statVisitors">0</div>
+          <div class="stat-change up">Estimated</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Countries</span><span class="stat-icon"><span data-icon="globe"></span></span></div>
+          <div class="stat-value" id="statCountries">0</div>
+          <div class="stat-change up">Geo coverage</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Top Link</span><span class="stat-icon"><span data-icon="trophy"></span></span></div>
+          <div class="stat-value" id="statTopLink" style="font-size:1rem;word-break:break-all;">—</div>
+          <div class="stat-change up" id="statTopLinkClicks">—</div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header"><h3>Click Trend</h3></div>
+        <div style="height:300px;position:relative;"><canvas id="clicksChart"></canvas></div>
+      </div>
+
+      <div class="flex-between mb-3" style="align-items:stretch;">
+        <div class="card" style="flex:1;">
+          <div class="card-header"><h3>By Country</h3></div>
+          <div style="height:260px;position:relative;"><canvas id="countryChart"></canvas></div>
+        </div>
+        <div class="card" style="flex:1;">
+          <div class="card-header"><h3>By Device</h3></div>
+          <div style="height:260px;position:relative;"><canvas id="deviceChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Link Performance</h3>
+          <span class="text-muted">Sorted by clicks</span>
+        </div>
+        <div class="table-responsive">
+          <table class="links-table">
+            <thead>
+              <tr>
+                <th>Link</th>
+                <th>Clicks</th>
+                <th>Unique</th>
+                <th>CTR</th>
+                <th>Performance</th>
+              </tr>
+            </thead>
+            <tbody id="performanceBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="assets/js/analytics.js"></script>
+</body>
+</html>

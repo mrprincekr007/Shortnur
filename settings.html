@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — Shortnur</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+    <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="loading-screen" id="loadingScreen">
+    <div class="logo-icon">🔗</div>
+    <div class="spinner"></div>
+  </div>
+
+  <div class="dash-layout hidden" id="appRoot">
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">🔗</div>
+        <span>Short<b>nur</b></span>
+      </a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item" data-page="overview"><span class="nav-icon" data-icon="dashboard"></span><span>Overview</span></a>
+        <a href="dashboard.html#links" class="nav-item" data-page="links"><span class="nav-icon" data-icon="link"></span><span>My Links</span></a>
+        <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon" data-icon="chart"></span><span>Analytics</span></a>
+        <a href="earnings.html" class="nav-item" data-page="earnings"><span class="nav-icon" data-icon="wallet"></span><span>Earnings</span></a>
+        <a href="referrals.html" class="nav-item" data-page="referrals"><span class="nav-icon" data-icon="users"></span><span>Referrals</span></a>
+        <a href="tools.html" class="nav-item" data-page="tools"><span class="nav-icon" data-icon="tools"></span><span>Tools</span></a>
+        <a href="settings.html" class="nav-item active" data-page="settings"><span class="nav-icon" data-icon="settings"></span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user" id="sidebarUser">
+          <div class="avatar" id="userAvatar">?</div>
+          <div class="user-meta"><b id="userName">Loading...</b><span id="userPlan">Free plan</span></div>
+        </div>
+        <button class="btn btn-ghost btn-block" id="logoutBtn"><span data-icon="log-out"></span> Logout</button>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <div class="flex">
+          <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
+          <span class="page-icon c-gray" data-icon="settings"></span>
+          <div>
+            <h1>Settings</h1>
+            <div class="sub">Manage your profile &amp; account</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile -->
+      <div class="card mb-3">
+        <div class="card-header"><h3>Profile</h3></div>
+        <div class="flex mb-3">
+          <div class="avatar" id="profileAvatar" style="width:72px;height:72px;font-size:1.8rem;border-radius:20px;">?</div>
+          <div>
+            <div class="text-muted">Account: <b id="profileEmail">—</b></div>
+            <div class="text-muted">Member since: <b id="profileJoined">—</b></div>
+          </div>
+        </div>
+
+        <div class="alert alert-error" id="profileError"></div>
+        <div class="alert alert-success" id="profileSuccess"></div>
+
+        <form id="profileForm">
+          <div class="form-group">
+            <label for="pName">Full name</label>
+            <input type="text" id="pName" class="form-control form-control-plain" required>
+          </div>
+          <div class="form-group">
+            <label for="pBio">Bio <span class="text-muted">(optional)</span></label>
+            <textarea id="pBio" class="form-control form-control-plain" rows="3" placeholder="Tell us a little about yourself" maxlength="200"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary"><span data-icon="save"></span> Save Profile</button>
+        </form>
+      </div>
+
+        <!-- Avatar -->
+        <div class="card mb-3">
+          <div class="card-header"><h3>Your Avatar</h3></div>
+          <p class="text-muted mb-2">Pick a custom emoji + color, or add your own photo URL. Photo overrides the emoji.</p>
+
+          <div class="avatar-preview-row">
+            <div class="avatar avatar-lg" id="avatarPreview">?</div>
+            <button type="button" class="btn btn-ghost btn-sm" id="avatarResetBtn"><span data-icon="refresh"></span> Reset</button>
+          </div>
+
+          <div class="emoji-grid" id="emojiGrid"></div>
+          <div class="color-row" id="colorRow"></div>
+
+          <div class="form-group">
+            <label for="avatarUrl">Photo URL <span class="text-muted">(optional)</span></label>
+            <input type="url" id="avatarUrl" class="form-control form-control-plain" placeholder="https://your-photo.com/me.jpg">
+          </div>
+
+          <button type="button" class="btn btn-primary" id="saveAvatarBtn"><span data-icon="save"></span> Save Avatar</button>
+        </div>
+
+        <!-- Security -->
+        <div class="card mb-3">
+        <div class="card-header"><h3>Security</h3></div>
+        <div class="alert alert-error" id="passError"></div>
+        <div class="alert alert-success" id="passSuccess"></div>
+
+        <form id="passForm">
+          <div class="form-group">
+            <label for="currentPass">Current password</label>
+            <input type="password" id="currentPass" class="form-control form-control-plain" required autocomplete="current-password">
+          </div>
+          <div class="form-group">
+            <label for="newPass">New password</label>
+            <input type="password" id="newPass" class="form-control form-control-plain" required minlength="6" autocomplete="new-password">
+          </div>
+          <div class="form-group">
+            <label for="confirmNewPass">Confirm new password</label>
+            <input type="password" id="confirmNewPass" class="form-control form-control-plain" required minlength="6" autocomplete="new-password">
+          </div>
+          <button type="submit" class="btn btn-primary"><span data-icon="lock"></span> Change Password</button>
+        </form>
+      </div>
+
+      <!-- Preferences -->
+      <div class="card mb-3">
+        <div class="card-header"><h3>Notifications</h3></div>
+        <label class="option-toggle" style="justify-content:space-between;width:100%;padding:14px 0;border-bottom:1px solid rgba(38,48,79,0.5);">
+          <span>Email me when I earn a new withdrawal</span>
+          <span class="switch">
+            <input type="checkbox" id="notifEarnings" checked>
+            <span class="slider"></span>
+          </span>
+        </label>
+        <label class="option-toggle" style="justify-content:space-between;width:100%;padding:14px 0;border-bottom:1px solid rgba(38,48,79,0.5);">
+          <span>Email me weekly link performance summary</span>
+          <span class="switch">
+            <input type="checkbox" id="notifWeekly" checked>
+            <span class="slider"></span>
+          </span>
+        </label>
+        <label class="option-toggle" style="justify-content:space-between;width:100%;padding:14px 0;">
+          <span>Product updates &amp; new features</span>
+          <span class="switch">
+            <input type="checkbox" id="notifUpdates">
+            <span class="slider"></span>
+          </span>
+        </label>
+        <button class="btn btn-ghost mt-2" id="savePrefsBtn">Save Preferences</button>
+      </div>
+
+      <!-- Danger zone -->
+      <div class="card" style="border-color:rgba(255,107,107,0.4);">
+        <div class="card-header"><h3 style="color:var(--danger);">Danger Zone</h3></div>
+        <p class="text-muted mb-2">Deleting your account permanently removes all your links and data. This cannot be undone.</p>
+        <button class="btn btn-danger" id="deleteAccountBtn"><span data-icon="trash"></span> Delete Account</button>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="deleteAccountModal">
+    <div class="modal" style="max-width:420px;text-align:center;">
+      <div class="modal-header" style="justify-content:center;"><h3>Delete Account?</h3></div>
+      <p class="text-muted mb-2">This will permanently delete your account and all your links.</p>
+      <div class="form-group">
+        <input type="password" id="delPass" class="form-control form-control-plain" placeholder="Enter your password to confirm" required>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" data-close="deleteAccountModal">Cancel</button>
+        <button class="btn btn-danger" id="confirmDeleteAccount"><span data-icon="trash"></span> Delete Forever</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="assets/js/settings.js"></script>
+</body>
+</html>
