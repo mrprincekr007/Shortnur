@@ -3,7 +3,7 @@
 // Self-contained — no shared dependencies
 // ============================================================
 
-import { auth, db, ref, push, set, update, remove, get, onValue, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence, SITE_CONFIG } from "../../firebase/firebase-config.js";
+import { auth, db, ref, push, set, update, remove, get, onValue, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence, SITE_CONFIG, getShortBaseUrl } from "../../firebase/firebase-config.js";
 
 // ============ SVG ICONS ============
 const ICONS = {
@@ -197,6 +197,12 @@ let searchTerm = '';
 let deleteTarget = null;
 let linksListener = null;
 const PER_PAGE = 10;
+let SHORT_BASE = SITE_CONFIG.shortBaseUrl;
+getShortBaseUrl().then((v) => {
+  SHORT_BASE = v;
+  const el = document.getElementById('cAliasPrefix');
+  if (el) el.textContent = v + '/';
+});
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) { window.location.href = 'login.html'; return; }
@@ -232,7 +238,7 @@ function startLinksListener() {
       const link = child.val();
       if (link.uid === currentUser.uid) {
         link.key = child.key;
-        link.shortUrl = SITE_CONFIG.shortBaseUrl + '/' + link.code;
+        link.shortUrl = SHORT_BASE + '/' + link.code;
         allLinks.push(link);
       }
     });
