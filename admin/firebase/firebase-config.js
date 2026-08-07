@@ -50,7 +50,7 @@ function isAdminUser(uid) {
   return cachedAdmins.has(uid);
 }
 
-const SHORT_BASE_FALLBACK = "https://shortnur.mrprincekr007.workers.dev";
+const SHORT_BASE_FALLBACK = "https://linkbaba.online";
 
 let cachedShortBase = null;
 
