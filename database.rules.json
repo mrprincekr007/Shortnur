@@ -1,0 +1,84 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "users": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2')",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+
+    "usernames": {
+      "$username": {
+        ".read": true,
+        ".write": "auth != null"
+      }
+    },
+
+    "links": {
+      "$code": {
+        ".read": true,
+        ".write": true
+      }
+    },
+
+    "clicks": {
+      "$code": {
+        ".read": "auth != null && (root.child('links/' + $code + '/uid').val() === auth.uid || root.child('links/' + $code + '/createdBy').val() === auth.uid || root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2')",
+        ".write": true
+      }
+    },
+
+    "adviews": {
+      "$code": {
+        ".read": "auth != null && (root.child('links/' + $code + '/uid').val() === auth.uid || root.child('links/' + $code + '/createdBy').val() === auth.uid || root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2')",
+        ".write": true
+      }
+    },
+
+    "adsessions": {
+      "$token": {
+        ".read": false,
+        ".write": true
+      }
+    },
+
+    "settings": {
+      ".read": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'",
+      ".write": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'",
+      "admins": {
+        ".read": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'",
+        ".write": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'"
+      },
+      "withdrawals": {
+        ".read": "auth != null",
+        ".write": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'"
+      },
+      "$key": {
+        ".read": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'",
+        ".write": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'"
+      }
+    },
+
+    "withdrawals": {
+      "$id": {
+        ".read": "auth != null && (auth.uid === data.child('uid').val() || root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2')",
+        ".write": "auth != null && (root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2' || (auth.uid === newData.child('uid').val() && newData.child('status').val() === 'pending'))"
+      }
+    },
+
+    "withdrawMethods": {
+      ".read": true,
+      ".write": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'"
+    },
+
+    "supportMessages": {
+      "$id": {
+        ".read": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'",
+        ".write": "auth != null"
+      }
+    }
+  }
+}
