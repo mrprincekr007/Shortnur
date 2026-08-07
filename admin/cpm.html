@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPM Rates — Shortnur Admin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/cpm.css">
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="admin-layout" id="appRoot">
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="logo"><div class="logo-icon">🔗</div><span>Short<b>nur</b></span></a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link" data-page="dashboard"><span class="nav-icon" data-icon="dashboard"></span><span>Dashboard</span></a>
+        <a href="users.html" class="nav-link" data-page="users"><span class="nav-icon" data-icon="users"></span><span>Users</span></a>
+        <a href="links.html" class="nav-link" data-page="links"><span class="nav-icon" data-icon="link"></span><span>Links</span></a>
+        <a href="reports.html" class="nav-link" data-page="reports"><span class="nav-icon" data-icon="chart"></span><span>Reports</span></a>
+        <a href="analytics.html" class="nav-link" data-page="analytics"><span class="nav-icon" data-icon="activity"></span><span>Analytics</span></a>
+        <div class="nav-group">
+          <button class="nav-link nav-dropdown-toggle" type="button"><span class="nav-icon" data-icon="wallet"></span><span>Withdrawals</span><svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <div class="nav-dropdown">
+            <a href="withdrawals.html" class="nav-link nav-sub" data-page="withdrawals">Withdrawals</a>
+            <a href="withdraw-settings.html" class="nav-link nav-sub" data-page="withdraw-settings">Withdraw Settings</a>
+          </div>
+        </div>
+        <a href="cpm.html" class="nav-link active" data-page="cpm"><span class="nav-icon" data-icon="money"></span><span>CPM Rates</span></a>
+        <a href="settings.html" class="nav-link" data-page="settings"><span class="nav-icon" data-icon="settings"></span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar admin-avatar">A</div>
+          <div class="user-meta">
+            <b id="adminEmail">Admin</b>
+            <span>Admin Panel</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-block" id="logoutBtn"><span data-icon="log-out"></span> Logout</button>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="admin-main">
+      <div class="dash-topbar">
+        <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
+        <h1>CPM Rates</h1>
+      </div>
+
+      <div class="stat-grid" id="cpmStats">
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Global CPM</span><span class="stat-icon"><span data-icon="money"></span></span></div>
+          <div class="stat-value" id="statGlobalCpm">$0.50</div>
+          <div class="stat-change up">Default earning rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Custom CPM Users</span><span class="stat-icon"><span data-icon="users"></span></span></div>
+          <div class="stat-value" id="statCustomUsers">0</div>
+          <div class="stat-change up">Users with custom rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Max Custom CPM</span><span class="stat-icon"><span data-icon="target"></span></span></div>
+          <div class="stat-value" id="statMaxCpm">$0.00</div>
+          <div class="stat-change up">Highest custom rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Per View (Global)</span><span class="stat-icon"><span data-icon="pointer"></span></span></div>
+          <div class="stat-value" id="statPerView">$0.0005</div>
+          <div class="stat-change up">Earnings per conversion</div>
+        </div>
+      </div>
+
+      <div class="flex-between mb-3" style="align-items:stretch;">
+        <div class="card" style="flex:1;">
+          <div class="card-header"><h3>Global CPM</h3></div>
+          <p class="text-muted mb-2">Applies to every user who doesn't have a custom rate.</p>
+          <form id="globalCpmForm">
+            <div class="form-group">
+              <label>CPM ($ per 1000 views)</label>
+              <input type="number" id="globalCpm" class="form-control form-control-plain" min="0" step="0.01" value="0.50" required>
+            </div>
+            <button type="submit" class="btn btn-primary"><span data-icon="check"></span> Save Global CPM</button>
+          </form>
+        </div>
+
+        <div class="card" style="flex:1;">
+          <div class="card-header"><h3>Assign Custom CPM</h3></div>
+          <p class="text-muted mb-2" id="customRateInfo">Select a user to see their current rate.</p>
+          <form id="customCpmForm">
+            <div class="form-group">
+              <label>User</label>
+              <div class="user-search-wrap">
+                <div class="search-bar cpm-search">
+                  <span data-icon="search"></span>
+                  <input type="text" id="cpmUserSearch" class="search-input" placeholder="Search users by name or email..." autocomplete="off">
+                </div>
+                <div class="user-search-results" id="cpmUserResults"></div>
+              </div>
+              <div class="selected-user hidden" id="cpmSelectedUser">
+                <div class="report-avatar" id="cpmSelectedAvatar"></div>
+                <div class="report-user-meta">
+                  <b id="cpmSelectedName"></b>
+                  <span id="cpmSelectedEmail"></span>
+                </div>
+                <button type="button" class="btn btn-ghost btn-sm" id="cpmClearUser">Change</button>
+              </div>
+              <p class="text-muted cpm-rate-info" id="customRateInfo">Type to search for a user.</p>
+            </div>
+            <div class="form-group">
+              <label>Custom CPM ($ per 1000 views)</label>
+              <input type="number" id="customCpmInput" class="form-control form-control-plain" min="0" step="0.01" placeholder="e.g. 0.75" required>
+            </div>
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary"><span data-icon="check"></span> Set Custom CPM</button>
+              <button type="button" class="btn btn-ghost" id="removeCustomCpm"><span data-icon="trash"></span> Remove</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Users with Custom CPM</h3>
+          <span class="text-muted">Overrides the global rate</span>
+        </div>
+        <div class="table-responsive">
+          <table class="links-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Custom CPM</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customCpmBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state hidden" id="customCpmEmpty">
+          <div class="empty-icon"><span data-icon="users"></span></div>
+          <h3>No custom rates yet</h3>
+          <p>Assign a custom CPM to a user using the form above.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/nav.js"></script>
+  <script type="module" src="assets/js/cpm.js"></script>
+</body>
+</html>
