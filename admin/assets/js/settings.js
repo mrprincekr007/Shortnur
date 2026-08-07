@@ -87,7 +87,7 @@ async function loadSettings() {
     if (snap.exists()) {
       const s = snap.val();
       document.getElementById('siteName').value = s.siteName || 'Shortnur';
-      document.getElementById('shortUrl').value = s.shortBaseUrl || 'https://shortnur.mrprincekr007.workers.dev';
+      document.getElementById('shortUrl').value = s.shortBaseUrl || 'https://linkbaba.online';
       document.getElementById('linksPerPage').value = s.linksPerPage || 10;
 
       // Ad system settings
