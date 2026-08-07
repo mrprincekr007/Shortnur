@@ -99,6 +99,7 @@ async function loadSettings() {
       document.getElementById('adsBannerUrl').value = ads.bannerUrl || '';
       document.getElementById('adsBannerHtml').value = ads.bannerHtml || '';
       document.getElementById('adsPopunderUrl').value = ads.popunderUrl || '';
+      document.getElementById('adsPopunderCode').value = ads.popunderCode || '';
     }
   } catch (err) {
     console.error(err);
@@ -150,6 +151,7 @@ document.getElementById('adsForm').addEventListener('submit', async (e) => {
         bannerUrl: document.getElementById('adsBannerUrl').value.trim(),
         bannerHtml: document.getElementById('adsBannerHtml').value.trim(),
         popunderUrl: document.getElementById('adsPopunderUrl').value.trim(),
+        popunderCode: document.getElementById('adsPopunderCode').value.trim(),
       },
     });
     showToast('Ad settings saved successfully.', 'success');
