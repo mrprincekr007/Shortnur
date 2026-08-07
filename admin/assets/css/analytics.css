@@ -1,0 +1,24 @@
+/* ============================================
+   Shortnur Admin - Analytics Page (extends dashboard.css)
+   ============================================ */
+
+.report-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+
+.range-select { width: auto; padding: 9px 14px; border-radius: 12px; font-size: 0.88rem; }
+
+.report-actions .btn { border-radius: 12px; }
+
+.dash-topbar { flex-wrap: wrap; }
+
+/* Stat card icon colors for the analytics stat grid */
+.stat-card:nth-child(1) .stat-icon { background: linear-gradient(135deg, #00E5C7, #0a9e8c); box-shadow: 0 0 18px rgba(0, 229, 199, 0.45); }
+.stat-card:nth-child(2) .stat-icon { background: linear-gradient(135deg, #18CBF0, #0d92b5); box-shadow: 0 0 18px rgba(24, 203, 240, 0.45); }
+.stat-card:nth-child(3) .stat-icon { background: linear-gradient(135deg, #FFB347, #f39c12); box-shadow: 0 0 18px rgba(255, 179, 71, 0.45); }
+.stat-card:nth-child(4) .stat-icon { background: linear-gradient(135deg, #A78BFA, #7c5cff); box-shadow: 0 0 18px rgba(167, 139, 250, 0.45); }
+
+.link-code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85rem; color: var(--primary-light); background: rgba(24, 203, 240, 0.1); padding: 3px 10px; border-radius: 6px; white-space: nowrap; }
+
+@media (max-width: 768px) {
+  .report-actions { width: 100%; }
+  .report-actions .range-select { flex: 1; }
+}
