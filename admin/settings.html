@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings â€” Shortnur Admin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>ðŸ”—</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/settings.css">
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="admin-layout" id="appRoot">
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="logo"><div class="logo-icon">ðŸ”—</div><span>Short<b>nur</b></span></a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link" data-page="dashboard"><span class="nav-icon" data-icon="dashboard"></span><span>Dashboard</span></a>
+        <a href="users.html" class="nav-link" data-page="users"><span class="nav-icon" data-icon="users"></span><span>Users</span></a>
+        <a href="links.html" class="nav-link" data-page="links"><span class="nav-icon" data-icon="link"></span><span>Links</span></a>
+        <a href="reports.html" class="nav-link" data-page="reports"><span class="nav-icon" data-icon="chart"></span><span>Reports</span></a>
+        <a href="analytics.html" class="nav-link" data-page="analytics"><span class="nav-icon" data-icon="activity"></span><span>Analytics</span></a>
+        <div class="nav-group">
+          <button class="nav-link nav-dropdown-toggle" type="button"><span class="nav-icon" data-icon="wallet"></span><span>Withdrawals</span><svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <div class="nav-dropdown">
+            <a href="withdrawals.html" class="nav-link nav-sub" data-page="withdrawals">Withdrawals</a>
+            <a href="withdraw-settings.html" class="nav-link nav-sub" data-page="withdraw-settings">Withdraw Settings</a>
+          </div>
+        </div>
+        <a href="cpm.html" class="nav-link" data-page="cpm"><span class="nav-icon" data-icon="money"></span><span>CPM Rates</span></a>
+        <a href="settings.html" class="nav-link active" data-page="settings"><span class="nav-icon" data-icon="settings"></span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar admin-avatar">A</div>
+          <div class="user-meta">
+            <b id="adminEmail">Admin</b>
+            <span>Admin Panel</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-block" id="logoutBtn"><span data-icon="log-out"></span> Logout</button>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="admin-main">
+      <div class="dash-topbar">
+        <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
+        <h1>Settings</h1>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h3><span data-icon="settings"></span> General</h3>
+        </div>
+        <form id="generalForm">
+          <div class="form-group">
+            <label>Platform Name</label>
+            <input type="text" id="siteName" class="form-control form-control-plain" value="Shortnur">
+          </div>
+          <div class="form-group">
+            <label>Base Short URL</label>
+            <input type="text" id="shortUrl" class="form-control form-control-plain" value="https://shortnur.mrprincekr007.workers.dev">
+          </div>
+          <div class="form-group">
+            <label>Links Per Page</label>
+            <input type="number" id="linksPerPage" class="form-control form-control-plain" value="10" min="5" max="50">
+          </div>
+          <button type="submit" class="btn btn-primary"><span data-icon="check"></span> Save Changes</button>
+        </form>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h3><span data-icon="zap"></span> Ad System</h3>
+        </div>
+        <p class="text-muted mb-2">Visitors pass through countdown ad pages before reaching the destination. Configure the interstitial ads here.</p>
+        <form id="adsForm">
+          <label class="option-toggle mb-2">
+            <span class="switch">
+              <input type="checkbox" id="adsEnabled" checked>
+              <span class="slider"></span>
+            </span>
+            Enable interstitial ad pages
+          </label>
+          <div class="form-group">
+            <label>Countdown Timer (seconds)</label>
+            <input type="number" id="adsTimer" class="form-control form-control-plain" value="8" min="3" max="60">
+          </div>
+          <div class="form-group">
+            <label>Ad Pages Per Link (default)</label>
+            <input type="number" id="adsPages" class="form-control form-control-plain" value="2" min="1" max="5">
+          </div>
+          <div class="form-group">
+            <label>Earning Rate ($ per 1000 completed views)</label>
+            <input type="number" id="adsRate" class="form-control form-control-plain" value="0.50" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>Banner Ad URL (iframe, optional)</label>
+            <input type="url" id="adsBannerUrl" class="form-control form-control-plain" placeholder="https://your-ad-banner-url">
+          </div>
+          <div class="form-group">
+            <label>Banner Ad HTML (optional, overrides URL)</label>
+            <textarea id="adsBannerHtml" class="form-control form-control-plain" rows="3" placeholder="<iframe src='...'></iframe> or AdSense code"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Popunder Ad URL (optional)</label>
+            <input type="url" id="adsPopunderUrl" class="form-control form-control-plain" placeholder="https://popunder-ad-url">
+          </div>
+          <button type="submit" class="btn btn-primary"><span data-icon="check"></span> Save Ad Settings</button>
+        </form>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h3><span data-icon="shield"></span> Admin Access</h3>
+        </div>
+        <p class="text-muted mb-2">Admin access is configured in <code>firebase/firebase-config.js</code> (<code>ADMIN_UIDS</code> array). Add your Firebase UID there to grant access.</p>
+        <div id="adminList"></div>
+      </div>
+
+      <div class="card danger-zone">
+        <div class="card-header">
+          <h3><span data-icon="trash"></span> Danger Zone</h3>
+        </div>
+        <p class="text-muted mb-2">These actions are irreversible. Be careful.</p>
+        <div class="danger-actions">
+          <button class="btn btn-danger btn-sm" id="clearAllLinks"><span data-icon="trash"></span> Delete All Links</button>
+          <button class="btn btn-danger btn-sm" id="clearAllUsers"><span data-icon="trash"></span> Delete All Users</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Confirm Action</h3>
+        <button class="modal-close" id="closeConfirmModal"><span data-icon="close"></span></button>
+      </div>
+      <p class="text-muted mb-2" id="confirmText"></p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelConfirm">Cancel</button>
+        <button class="btn btn-danger" id="doConfirm"><span data-icon="trash"></span> Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/nav.js"></script>
+  <script type="module" src="assets/js/settings.js"></script>
+</body>
+</html>
