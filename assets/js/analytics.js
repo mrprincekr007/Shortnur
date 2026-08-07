@@ -3,7 +3,7 @@
 // Self-contained — no shared dependencies
 // ============================================================
 
-import { auth, db, ref, push, set, update, remove, get, onValue, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence, SITE_CONFIG } from "../../firebase/firebase-config.js";
+import { auth, db, ref, push, set, update, remove, get, onValue, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence, SITE_CONFIG, getShortBaseUrl } from "../../firebase/firebase-config.js";
 
 // ============ SVG ICONS ============
 const ICONS = {
@@ -240,11 +240,12 @@ function setupUI() {
 async function loadData() {
   try {
     // Load user's links
+    const shortBase = await getShortBaseUrl();
     const linksSnap = await get(ref(db, 'links'));
     linksSnap.forEach((child) => {
       const link = child.val();
       if (link.uid === currentUser.uid) {
-        link.shortUrl = SITE_CONFIG.shortBaseUrl + '/' + link.code;
+        link.shortUrl = shortBase + '/' + link.code;
         allLinks.push(link);
       }
     });
