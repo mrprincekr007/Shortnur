@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports — Shortnur Admin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/reports.css">
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="admin-layout" id="appRoot">
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="logo"><div class="logo-icon">🔗</div><span>Short<b>nur</b></span></a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link" data-page="dashboard"><span class="nav-icon" data-icon="dashboard"></span><span>Dashboard</span></a>
+        <a href="users.html" class="nav-link" data-page="users"><span class="nav-icon" data-icon="users"></span><span>Users</span></a>
+        <a href="links.html" class="nav-link" data-page="links"><span class="nav-icon" data-icon="link"></span><span>Links</span></a>
+        <a href="reports.html" class="nav-link active" data-page="reports"><span class="nav-icon" data-icon="chart"></span><span>Reports</span></a>
+        <a href="analytics.html" class="nav-link" data-page="analytics"><span class="nav-icon" data-icon="activity"></span><span>Analytics</span></a>
+        <div class="nav-group">
+          <button class="nav-link nav-dropdown-toggle" type="button"><span class="nav-icon" data-icon="wallet"></span><span>Withdrawals</span><svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <div class="nav-dropdown">
+            <a href="withdrawals.html" class="nav-link nav-sub" data-page="withdrawals">Withdrawals</a>
+            <a href="withdraw-settings.html" class="nav-link nav-sub" data-page="withdraw-settings">Withdraw Settings</a>
+          </div>
+        </div>
+        <a href="cpm.html" class="nav-link" data-page="cpm"><span class="nav-icon" data-icon="money"></span><span>CPM Rates</span></a>
+        <a href="settings.html" class="nav-link" data-page="settings"><span class="nav-icon" data-icon="settings"></span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar admin-avatar">A</div>
+          <div class="user-meta">
+            <b id="adminEmail">Admin</b>
+            <span>Admin Panel</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-block" id="logoutBtn"><span data-icon="log-out"></span> Logout</button>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="admin-main">
+      <div class="dash-topbar">
+        <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
+        <h1>Reports</h1>
+      </div>
+
+      <div class="stat-grid" id="reportStats">
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Total Reports</span><span class="stat-icon"><span data-icon="message"></span></span></div>
+          <div class="stat-value" id="statTotalReports">0</div>
+          <div class="stat-change up">All submitted reports</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">New</span><span class="stat-icon"><span data-icon="clock"></span></span></div>
+          <div class="stat-value" id="statNewReports">0</div>
+          <div class="stat-change up">Awaiting review</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">In Review</span><span class="stat-icon"><span data-icon="eye"></span></span></div>
+          <div class="stat-value" id="statInReview">0</div>
+          <div class="stat-change up">Being handled</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Resolved</span><span class="stat-icon"><span data-icon="check"></span></span></div>
+          <div class="stat-value" id="statResolved">0</div>
+          <div class="stat-change up">Completed reports</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>User Reports</h3>
+          <span class="text-muted">Problems reported by users</span>
+          <div class="report-filters">
+            <select class="form-control report-filter-select" id="reportFilter">
+              <option value="all">All Reports</option>
+              <option value="new">New</option>
+              <option value="in-review">In Review</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="links-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Topic</th>
+                <th>Message</th>
+                <th>Status</th>
+                <th>Reported</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="userReportsBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state hidden" id="userReportsEmpty">
+          <div class="empty-icon"><span data-icon="message"></span></div>
+          <h3>No user reports</h3>
+          <p>Problems reported by users through the Support page will appear here.</p>
+        </div>
+        <div class="pagination" id="reportsPagination"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/nav.js"></script>
+  <script type="module" src="assets/js/reports.js"></script>
+</body>
+</html>
