@@ -5,19 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Earnings — Shortnur</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
-    <link rel="stylesheet" href="assets/css/base.css">
-  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/earnings.css">
 </head>
 <body>
   <div class="aurora"></div>
   <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 
-  <div class="loading-screen" id="loadingScreen">
-    <div class="logo-icon">🔗</div>
-    <div class="spinner"></div>
-  </div>
-
-  <div class="dash-layout hidden" id="appRoot">
+  <div class="dash-layout" id="appRoot">
     <aside class="sidebar" id="sidebar">
       <a href="index.html" class="logo">
         <div class="logo-icon">🔗</div>
@@ -25,7 +25,7 @@
       </a>
       <nav class="sidebar-nav">
         <a href="dashboard.html" class="nav-item" data-page="overview"><span class="nav-icon" data-icon="dashboard"></span><span>Overview</span></a>
-        <a href="dashboard.html#links" class="nav-item" data-page="links"><span class="nav-icon" data-icon="link"></span><span>My Links</span></a>
+        <a href="mylinks.html" class="nav-item" data-page="links"><span class="nav-icon" data-icon="link"></span><span>My Links</span></a>
         <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon" data-icon="chart"></span><span>Analytics</span></a>
         <a href="earnings.html" class="nav-item active" data-page="earnings"><span class="nav-icon" data-icon="wallet"></span><span>Earnings</span></a>
         <a href="referrals.html" class="nav-item" data-page="referrals"><span class="nav-icon" data-icon="users"></span><span>Referrals</span></a>
@@ -79,7 +79,7 @@
       <div class="card mb-3">
         <div class="card-header">
           <h3>Withdraw Balance</h3>
-          <span class="text-muted">Minimum withdrawal: $10</span>
+          <span class="text-muted" id="minWithdrawText">Minimum withdrawal: $10</span>
         </div>
         <div class="flex-between mb-2">
           <div>
@@ -121,20 +121,17 @@
         <h3>Request Withdrawal</h3>
         <button class="modal-close" data-close="withdrawModal"><span data-icon="close"></span></button>
       </div>
-      <div class="alert alert-info" id="withdrawInfo">You have <b id="wBalance">$0.00</b> available.</div>
+      <div class="alert alert-info" id="withdrawInfo">Available balance: <b id="wBalance">$0.00</b></div>
       <form id="withdrawForm">
         <div class="form-group">
-          <label for="wMethod">Payment method</label>
-          <select id="wMethod" class="form-control form-control-plain">
-            <option value="paypal">PayPal</option>
-            <option value="upi">UPI</option>
-            <option value="bank">Bank Transfer</option>
-          </select>
+          <label for="wAmount">Amount</label>
+          <input type="number" id="wAmount" class="form-control form-control-plain" placeholder="e.g. 50" min="10" step="0.01" required>
         </div>
         <div class="form-group">
-          <label for="wAccount">Account / Email</label>
-          <input type="text" id="wAccount" class="form-control form-control-plain" placeholder="Enter your payment details" required>
+          <label for="wMethod">Payment method</label>
+          <select id="wMethod" class="form-control form-control-plain"></select>
         </div>
+        <div id="wFields"></div>
         <div class="modal-actions">
           <button type="button" class="btn btn-ghost" data-close="withdrawModal">Cancel</button>
           <button type="submit" class="btn btn-success" id="withdrawSubmitBtn">Request</button>

@@ -5,14 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shortnur — Free URL Shortener with Advanced Analytics</title>
   <meta name="description" content="Shortnur is a free URL shortener. Shorten your links, earn from clicks, and track detailed analytics in real time.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
-    <link rel="stylesheet" href="assets/css/base.css">
-  <link rel="stylesheet" href="assets/css/landing.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/index.css">
 </head>
 <body>
   <div class="aurora"></div>
   <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 
   <!-- ======= NAVBAR ======= -->
   <nav class="navbar">
@@ -90,19 +94,15 @@
 
   <!-- ======= STATS STRIP ======= -->
   <section class="stats-strip">
-    <div class="stat-card reveal d2">
-      <div class="number">1B+</div>
+    <div class="stat-card reveal from-left d1">
+      <div class="number">50K+</div>
       <div class="label">Links Shortened</div>
     </div>
-    <div class="stat-card reveal d2">
-      <div class="number">5M+</div>
-      <div class="label">Daily Clicks</div>
+    <div class="stat-card reveal from-up d2">
+      <div class="number">100K+</div>
+      <div class="label">Monthly Clicks</div>
     </div>
-    <div class="stat-card reveal d2">
-      <div class="number">180+</div>
-      <div class="label">Countries Served</div>
-    </div>
-    <div class="stat-card reveal d2">
+    <div class="stat-card reveal from-right d3">
       <div class="number">99.9%</div>
       <div class="label">Uptime Guarantee</div>
     </div>
@@ -110,53 +110,53 @@
 
   <!-- ======= FEATURES ======= -->
   <section class="section" id="features">
-    <div class="section-title">
+    <div class="section-title reveal from-up d1">
       <h2>Everything a <span class="gradient-text">Pro</span> needs</h2>
       <p>Powerful tools for creators, marketers and businesses — all in one platform.</p>
     </div>
 
     <div class="features-grid">
-      <div class="feature-card reveal d2">
+      <div class="feature-card reveal from-left d1">
         <div class="feature-icon"><span data-icon="chart"></span></div>
         <h3>Real-time Analytics</h3>
         <p>Track clicks, locations, devices, browsers and referrers in real time with beautiful charts.</p>
       </div>
-      <div class="feature-card reveal d2">
+      <div class="feature-card reveal from-up d2">
         <div class="feature-icon"><span data-icon="money"></span></div>
         <h3>Earn Per Click</h3>
         <p>Monetize your links. You get paid for every visitor through our smart ad system.</p>
       </div>
-      <div class="feature-card reveal d2">
+      <div class="feature-card reveal from-right d3">
         <div class="feature-icon"><span data-icon="target"></span></div>
         <h3>Custom Alias</h3>
         <p>Create memorable branded short links with your own custom slugs.</p>
       </div>
-      <div class="feature-card reveal d2">
+      <div class="feature-card reveal from-up d4">
         <div class="feature-icon"><span data-icon="clock"></span></div>
         <h3>Ad Pages Before Redirect</h3>
         <p>Visitors pass through high-quality ad pages before reaching your destination link.</p>
       </div>
-      <div class="feature-card reveal d2">
+      <div class="feature-card reveal zoom-in d5">
         <div class="feature-icon"><span data-icon="globe"></span></div>
         <h3>Geo Targeting</h3>
         <p>Send visitors to different links based on their country or device.</p>
       </div>
-      <div class="feature-card reveal d2">
+      <div class="feature-card reveal from-up d4">
         <div class="feature-icon"><span data-icon="lock"></span></div>
         <h3>Password Protection</h3>
         <p>Protect your links with passwords. Only people with the key can access them.</p>
       </div>
-      <div class="feature-card reveal d2">
+      <div class="feature-card reveal from-left d3">
         <div class="feature-icon"><span data-icon="smartphone"></span></div>
         <h3>Mobile Optimized</h3>
         <p>Fully responsive dashboard that works beautifully on any device.</p>
       </div>
-      <div class="feature-card reveal d2">
+      <div class="feature-card reveal from-up d2">
         <div class="feature-icon"><span data-icon="shield"></span></div>
         <h3>Link Security</h3>
         <p>Automatic spam &amp; malware scanning keeps your links safe and trustworthy.</p>
       </div>
-      <div class="feature-card reveal d2">
+      <div class="feature-card reveal from-right d1">
         <div class="feature-icon"><span data-icon="zap"></span></div>
         <h3>Lightning Fast</h3>
         <p>Powered by Cloudflare Workers for instant redirects anywhere in the world.</p>
@@ -166,23 +166,23 @@
 
   <!-- ======= HOW IT WORKS ======= -->
   <section class="section" id="how">
-    <div class="section-title">
+    <div class="section-title reveal from-up d1">
       <h2>How Shortnur <span class="gradient-text">works</span></h2>
       <p>From long URL to earning clicks in just 3 simple steps.</p>
     </div>
 
     <div class="steps-grid">
-      <div class="step-card reveal d2">
+      <div class="step-card reveal from-left d1">
         <div class="step-number">1</div>
         <h3>Paste your URL</h3>
         <p>Paste any long link into the shortener box above. No registration needed.</p>
       </div>
-      <div class="step-card reveal d2">
+      <div class="step-card reveal from-up d2">
         <div class="step-number">2</div>
         <h3>Get your short link</h3>
         <p>We instantly generate a short, shareable link for you. Copy it anywhere.</p>
       </div>
-      <div class="step-card reveal d2">
+      <div class="step-card reveal from-right d3">
         <div class="step-number">3</div>
         <h3>Share &amp; earn</h3>
         <p>Share your link. Every click passes through our ad pages and you earn money.</p>
@@ -192,7 +192,7 @@
 
   <!-- ======= CTA ======= -->
   <section class="section">
-    <div class="cta-section">
+    <div class="cta-section reveal zoom-in d1">
       <h2>Ready to start earning?</h2>
       <p>Create your free account today and get access to advanced analytics.</p>
       <a href="login.html?tab=signup" class="btn">Get Started Free</a>

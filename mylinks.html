@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Links — Shortnur</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/mylinks.css">
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="dash-layout" id="appRoot">
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">🔗</div>
+        <span>Short<b>nur</b></span>
+      </a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item" data-page="overview"><span class="nav-icon" data-icon="dashboard"></span><span>Overview</span></a>
+        <a href="mylinks.html" class="nav-item active" data-page="links"><span class="nav-icon" data-icon="link"></span><span>My Links</span><span class="badge" id="linksBadge">0</span></a>
+        <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon" data-icon="chart"></span><span>Analytics</span></a>
+        <a href="earnings.html" class="nav-item" data-page="earnings"><span class="nav-icon" data-icon="wallet"></span><span>Earnings</span></a>
+        <a href="referrals.html" class="nav-item" data-page="referrals"><span class="nav-icon" data-icon="users"></span><span>Referrals</span></a>
+        <a href="tools.html" class="nav-item" data-page="tools"><span class="nav-icon" data-icon="tools"></span><span>Tools</span></a>
+        <a href="settings.html" class="nav-item" data-page="settings"><span class="nav-icon" data-icon="settings"></span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user" id="sidebarUser">
+          <div class="avatar" id="userAvatar">?</div>
+          <div class="user-meta"><b id="userName">Loading...</b><span id="userPlan">Free plan</span></div>
+        </div>
+        <button class="btn btn-ghost btn-block" id="logoutBtn"><span data-icon="log-out"></span> Logout</button>
+      </div>
+    </aside>
+
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <div class="flex">
+          <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
+          <span class="page-icon c-cyan" data-icon="link"></span>
+          <div>
+            <h1>My Links</h1>
+            <div class="sub">Manage all your shortened links</div>
+          </div>
+        </div>
+        <div class="flex">
+          <div class="search-bar">
+            <span data-icon="search"></span>
+            <input type="text" id="globalSearch" placeholder="Search links...">
+          </div>
+          <button class="btn btn-primary" id="createLinkBtn">+ New Link</button>
+        </div>
+      </div>
+
+      <div class="flex mb-3" style="gap:10px;flex-wrap:wrap;">
+        <select class="form-control" id="statusFilter" style="width:auto;padding:10px 14px;border-radius:12px;">
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="disabled">Disabled</option>
+        </select>
+        <span class="text-muted" style="align-self:center;font-size:0.9rem;" id="linksCount"></span>
+      </div>
+
+      <div class="card">
+        <div class="table-responsive">
+          <table class="links-table" id="linksTable">
+            <thead>
+              <tr>
+                <th>Link</th>
+                <th>Short URL</th>
+                <th>Clicks</th>
+                <th>Ads</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="linksBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state hidden" id="linksEmpty">
+          <div class="empty-icon"><span data-icon="link"></span></div>
+          <h3>No links yet</h3>
+          <p>Create your first short link to get started!</p>
+          <button class="btn btn-primary" id="emptyCreateBtn">+ Create your first link</button>
+        </div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+
+      <!-- CREATE LINK MODAL -->
+      <div class="modal-overlay" id="createModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3>Create New Link</h3>
+            <button class="modal-close" data-close="createModal"><span data-icon="close"></span></button>
+          </div>
+          <div class="alert alert-error" id="createError"></div>
+          <form id="createLinkForm">
+            <div class="form-group">
+              <label for="cLongUrl">Destination URL *</label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="link"></span></span>
+                <input type="url" id="cLongUrl" class="form-control" placeholder="https://your-long-link.com/..." required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="cTitle">Title <span class="text-muted">(optional)</span></label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="tag"></span></span>
+                <input type="text" id="cTitle" class="form-control" placeholder="My awesome link" maxlength="60">
+              </div>
+            </div>
+            <label class="option-toggle mb-2">
+              <span class="switch">
+                <input type="checkbox" id="cCustomToggle">
+                <span class="slider"></span>
+              </span>
+              Use custom alias
+            </label>
+            <div class="form-group hidden" id="cAliasGroup">
+              <label for="cAlias">Custom alias</label>
+              <div class="flex">
+                <span class="text-muted" style="white-space:nowrap;font-weight:600;">shortnur.to/</span>
+                <input type="text" id="cAlias" class="form-control form-control-plain" placeholder="my-custom-name" maxlength="30" pattern="[A-Za-z0-9_-]+">
+              </div>
+            </div>
+            <label class="option-toggle mb-2">
+              <span class="switch">
+                <input type="checkbox" id="cAdsToggle" checked>
+                <span class="slider"></span>
+              </span>
+              Show ads before destination
+            </label>
+            <div class="form-group" id="cAdsGroup">
+              <label for="cAdPages">Ad pages <span class="text-muted">(default from settings)</span></label>
+              <input type="number" id="cAdPages" class="form-control form-control-plain" value="2" min="1" max="5">
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn btn-ghost" data-close="createModal">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="createSubmitBtn"><span id="createSubmitText">Create Link</span></button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- EDIT LINK MODAL -->
+      <div class="modal-overlay" id="editModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3>Edit Link</h3>
+            <button class="modal-close" data-close="editModal"><span data-icon="close"></span></button>
+          </div>
+          <div class="alert alert-error" id="editError"></div>
+          <form id="editLinkForm">
+            <input type="hidden" id="eCode">
+            <div class="form-group">
+              <label for="eLongUrl">Destination URL *</label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="link"></span></span>
+                <input type="url" id="eLongUrl" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="eTitle">Title <span class="text-muted">(optional)</span></label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="tag"></span></span>
+                <input type="text" id="eTitle" class="form-control" maxlength="60">
+              </div>
+            </div>
+            <label class="option-toggle mb-2">
+              <span class="switch">
+                <input type="checkbox" id="eAdsToggle" checked>
+                <span class="slider"></span>
+              </span>
+              Show ads before destination
+            </label>
+            <div class="form-group" id="eAdsGroup">
+              <label for="eAdPages">Ad pages</label>
+              <input type="number" id="eAdPages" class="form-control form-control-plain" value="2" min="1" max="5">
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn btn-ghost" data-close="editModal">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="editSubmitBtn"><span id="editSubmitText">Save Changes</span></button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- DELETE CONFIRM MODAL -->
+      <div class="modal-overlay" id="deleteModal">
+        <div class="modal" style="max-width:420px;text-align:center;">
+          <div class="modal-header" style="justify-content:center;">
+            <h3>Delete Link?</h3>
+          </div>
+          <p class="text-muted mb-3" id="deleteConfirmText">Are you sure?</p>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" data-close="deleteModal">Cancel</button>
+            <button class="btn btn-danger" id="confirmDeleteBtn"><span data-icon="trash"></span> Yes, Delete</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="assets/js/mylinks.js"></script>
+</body>
+</html>

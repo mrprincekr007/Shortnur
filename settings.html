@@ -5,19 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Settings — Shortnur</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
-    <link rel="stylesheet" href="assets/css/base.css">
-  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/settings.css">
 </head>
 <body>
   <div class="aurora"></div>
   <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 
-  <div class="loading-screen" id="loadingScreen">
-    <div class="logo-icon">🔗</div>
-    <div class="spinner"></div>
-  </div>
-
-  <div class="dash-layout hidden" id="appRoot">
+  <div class="dash-layout" id="appRoot">
     <aside class="sidebar" id="sidebar">
       <a href="index.html" class="logo">
         <div class="logo-icon">🔗</div>
@@ -25,7 +25,7 @@
       </a>
       <nav class="sidebar-nav">
         <a href="dashboard.html" class="nav-item" data-page="overview"><span class="nav-icon" data-icon="dashboard"></span><span>Overview</span></a>
-        <a href="dashboard.html#links" class="nav-item" data-page="links"><span class="nav-icon" data-icon="link"></span><span>My Links</span></a>
+        <a href="mylinks.html" class="nav-item" data-page="links"><span class="nav-icon" data-icon="link"></span><span>My Links</span></a>
         <a href="analytics.html" class="nav-item" data-page="analytics"><span class="nav-icon" data-icon="chart"></span><span>Analytics</span></a>
         <a href="earnings.html" class="nav-item" data-page="earnings"><span class="nav-icon" data-icon="wallet"></span><span>Earnings</span></a>
         <a href="referrals.html" class="nav-item" data-page="referrals"><span class="nav-icon" data-icon="users"></span><span>Referrals</span></a>
@@ -60,6 +60,7 @@
           <div class="avatar" id="profileAvatar" style="width:72px;height:72px;font-size:1.8rem;border-radius:20px;">?</div>
           <div>
             <div class="text-muted">Account: <b id="profileEmail">—</b></div>
+            <div class="text-muted">Username: <b id="profileUsername">—</b></div>
             <div class="text-muted">Member since: <b id="profileJoined">—</b></div>
           </div>
         </div>
@@ -71,6 +72,11 @@
           <div class="form-group">
             <label for="pName">Full name</label>
             <input type="text" id="pName" class="form-control form-control-plain" required>
+          </div>
+          <div class="form-group">
+            <label for="pUsername">Username <span class="text-muted">(optional, unique handle)</span></label>
+            <input type="text" id="pUsername" class="form-control form-control-plain" placeholder="e.g. john_doe" autocomplete="off">
+            <div class="input-hint" id="usernameHint"></div>
           </div>
           <div class="form-group">
             <label for="pBio">Bio <span class="text-muted">(optional)</span></label>
