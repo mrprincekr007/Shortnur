@@ -1,0 +1,53 @@
+/* ============================================
+   Shortnur Admin - CPM Rates Page (extends dashboard.css)
+   ============================================ */
+
+.dash-topbar { flex-wrap: wrap; }
+
+/* Stat card icon colors */
+.stat-card:nth-child(1) .stat-icon { background: linear-gradient(135deg, #00E5C7, #0a9e8c); box-shadow: 0 0 18px rgba(0, 229, 199, 0.45); }
+.stat-card:nth-child(2) .stat-icon { background: linear-gradient(135deg, #18CBF0, #0d92b5); box-shadow: 0 0 18px rgba(24, 203, 240, 0.45); }
+.stat-card:nth-child(3) .stat-icon { background: linear-gradient(135deg, #FFB347, #f39c12); box-shadow: 0 0 18px rgba(255, 179, 71, 0.45); }
+.stat-card:nth-child(4) .stat-icon { background: linear-gradient(135deg, #A78BFA, #7c5cff); box-shadow: 0 0 18px rgba(167, 139, 250, 0.45); }
+
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.cpm-user { display: flex; align-items: center; gap: 12px; }
+.report-avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: #fff; font-size: 0.95rem; flex-shrink: 0; }
+.report-user-meta b { display: block; font-size: 0.92rem; font-weight: 600; }
+.report-user-meta span { font-size: 0.8rem; color: var(--text-muted); }
+
+.cpm-value { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--warning); white-space: nowrap; }
+.cpm-value svg { width: 14px; height: 14px; }
+
+/* ---- User search ---- */
+.cpm-search { width: 100%; }
+.cpm-search input { flex: 1; width: auto; }
+.cpm-search input:focus { width: auto; }
+
+.user-search-wrap { position: relative; }
+.user-search-results {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 20;
+  background: #0D1526; border: 1px solid var(--dark-border); border-radius: 12px;
+  overflow: hidden; max-height: 260px; overflow-y: auto; display: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.user-search-results.show { display: block; }
+.user-search-item {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 14px;
+  background: transparent; border: none; color: var(--text-main); cursor: pointer;
+  text-align: left; transition: background 0.15s;
+}
+.user-search-item:hover { background: rgba(255, 255, 255, 0.05); }
+.user-search-item .report-avatar { width: 34px; height: 34px; font-size: 0.85rem; }
+.user-search-text { min-width: 0; }
+.user-search-text b { display: block; font-size: 0.92rem; }
+.user-search-text small { color: var(--text-muted); font-size: 0.8rem; }
+.user-search-empty { padding: 14px; color: var(--text-muted); font-size: 0.88rem; text-align: center; }
+
+.selected-user {
+  display: flex; align-items: center; gap: 12px; margin-top: 10px;
+  padding: 10px 14px; background: var(--dark-bg-2); border: 1px solid var(--dark-border); border-radius: 12px;
+}
+.selected-user .btn { margin-left: auto; }
+.cpm-rate-info { margin-top: 10px; font-size: 0.85rem; }
