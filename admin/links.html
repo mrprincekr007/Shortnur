@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Links — Shortnur Admin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/links.css">
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="admin-layout" id="appRoot">
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="logo"><div class="logo-icon">🔗</div><span>Short<b>nur</b></span></a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link" data-page="dashboard"><span class="nav-icon" data-icon="dashboard"></span><span>Dashboard</span></a>
+        <a href="users.html" class="nav-link" data-page="users"><span class="nav-icon" data-icon="users"></span><span>Users</span></a>
+        <a href="links.html" class="nav-link active" data-page="links"><span class="nav-icon" data-icon="link"></span><span>Links</span></a>
+        <a href="reports.html" class="nav-link" data-page="reports"><span class="nav-icon" data-icon="chart"></span><span>Reports</span></a>
+        <a href="analytics.html" class="nav-link" data-page="analytics"><span class="nav-icon" data-icon="activity"></span><span>Analytics</span></a>
+        <div class="nav-group">
+          <button class="nav-link nav-dropdown-toggle" type="button"><span class="nav-icon" data-icon="wallet"></span><span>Withdrawals</span><svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <div class="nav-dropdown">
+            <a href="withdrawals.html" class="nav-link nav-sub" data-page="withdrawals">Withdrawals</a>
+            <a href="withdraw-settings.html" class="nav-link nav-sub" data-page="withdraw-settings">Withdraw Settings</a>
+          </div>
+        </div>
+        <a href="cpm.html" class="nav-link" data-page="cpm"><span class="nav-icon" data-icon="money"></span><span>CPM Rates</span></a>
+        <a href="settings.html" class="nav-link" data-page="settings"><span class="nav-icon" data-icon="settings"></span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar admin-avatar">A</div>
+          <div class="user-meta">
+            <b id="adminEmail">Admin</b>
+            <span>Admin Panel</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-block" id="logoutBtn"><span data-icon="log-out"></span> Logout</button>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="admin-main">
+      <div class="dash-topbar">
+        <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
+        <h1>Links</h1>
+      </div>
+
+      <div class="flex-between mb-3" style="align-items:stretch;">
+        <div class="search-bar">
+          <span data-icon="search"></span>
+          <input type="text" id="searchInput" placeholder="Search links...">
+        </div>
+        <div class="toolbar-filters">
+          <select id="statusFilter" class="form-control form-control-plain">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="disabled">Disabled</option>
+          </select>
+          <select id="adsFilter" class="form-control form-control-plain">
+            <option value="all">All Ads</option>
+            <option value="on">Ads On</option>
+            <option value="off">Ads Off</option>
+          </select>
+          <button class="btn btn-danger btn-sm hidden" id="bulkDeleteBtn"><span data-icon="trash"></span> Delete Selected (<span id="bulkCount">0</span>)</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-responsive">
+          <table class="links-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll" title="Select all"></th>
+                <th>Destination</th>
+                <th>Short Code</th>
+                <th>Owner</th>
+                <th>Clicks</th>
+                <th>Ad Views</th>
+                <th>Earnings</th>
+                <th>Ads</th>
+                <th>Status</th>
+                <th>Expires</th>
+                <th>Created</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="linksBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state hidden" id="emptyState">
+          <div class="empty-icon"><span data-icon="link"></span></div>
+          <h3>No links found</h3>
+          <p>Links will appear here once users create them.</p>
+        </div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Delete Link</h3>
+        <button class="modal-close" id="closeDeleteModal"><span data-icon="close"></span></button>
+      </div>
+      <p class="text-muted mb-2">Are you sure you want to permanently delete this link?</p>
+      <p class="mb-2"><strong id="deleteLinkCode"></strong></p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelDelete">Cancel</button>
+        <button class="btn btn-danger" id="confirmDelete"><span data-icon="trash"></span> Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="bulkDeleteModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Delete Links</h3>
+        <button class="modal-close" id="closeBulkDeleteModal"><span data-icon="close"></span></button>
+      </div>
+      <p class="text-muted mb-2">Are you sure you want to delete <strong id="bulkDeleteCount">0</strong> selected link(s)? All click and ad view data will also be removed.</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelBulkDelete">Cancel</button>
+        <button class="btn btn-danger" id="confirmBulkDelete"><span data-icon="trash"></span> Delete All</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3>Link Details</h3>
+        <button class="modal-close" id="closeDetailModal"><span data-icon="close"></span></button>
+      </div>
+      <div class="detail-dest">
+        <div class="detail-favicon" id="detailFavicon"></div>
+        <div class="detail-identity">
+          <h4 id="detailTitle">—</h4>
+          <div class="text-muted detail-url" id="detailUrl">—</div>
+          <div class="detail-badges">
+            <span class="status-badge status-active" id="detailStatus">ACTIVE</span>
+            <span class="status-badge status-free" id="detailAds">ADS OFF</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-short">
+        <span class="short-code" id="detailShortCode">—</span>
+        <button class="btn btn-ghost btn-sm" id="detailCopyBtn"><span data-icon="copy"></span> Copy</button>
+      </div>
+      <div class="detail-stats">
+        <div class="detail-stat"><b id="detailClicks">0</b><span>Clicks</span></div>
+        <div class="detail-stat"><b id="detailAdViews">0</b><span>Ad Views</span></div>
+        <div class="detail-stat"><b id="detailEarnings">$0.00</b><span>Earnings</span></div>
+        <div class="detail-stat"><b id="detailOwner">—</b><span>Owner</span></div>
+        <div class="detail-stat"><b id="detailCreated">—</b><span>Created</span></div>
+        <div class="detail-stat"><b id="detailAdsPages">—</b><span>Ad Pages</span></div>
+      </div>
+      <div class="detail-expiry">
+        <div>
+          <b>Link Expiry</b>
+          <span class="text-muted" id="expiryStatus"></span>
+        </div>
+        <div class="expiry-controls">
+          <input type="datetime-local" id="expiryInput" class="form-control form-control-plain">
+          <button class="btn btn-primary btn-sm" id="setExpiryBtn"><span data-icon="check"></span> Set</button>
+          <button class="btn btn-ghost btn-sm" id="clearExpiryBtn"><span data-icon="close"></span> Clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/nav.js"></script>
+  <script type="module" src="assets/js/links.js"></script>
+</body>
+</html>
