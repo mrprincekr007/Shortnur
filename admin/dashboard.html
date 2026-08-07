@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Shortnur</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="admin-layout" id="appRoot">
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="logo"><div class="logo-icon">🔗</div><span>Short<b>nur</b></span></a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link active" data-page="dashboard"><span class="nav-icon" data-icon="dashboard"></span><span>Dashboard</span></a>
+        <a href="users.html" class="nav-link" data-page="users"><span class="nav-icon" data-icon="users"></span><span>Users</span></a>
+        <a href="links.html" class="nav-link" data-page="links"><span class="nav-icon" data-icon="link"></span><span>Links</span></a>
+        <a href="reports.html" class="nav-link" data-page="reports"><span class="nav-icon" data-icon="chart"></span><span>Reports</span></a>
+        <a href="analytics.html" class="nav-link" data-page="analytics"><span class="nav-icon" data-icon="activity"></span><span>Analytics</span></a>
+        <div class="nav-group">
+          <button class="nav-link nav-dropdown-toggle" type="button"><span class="nav-icon" data-icon="wallet"></span><span>Withdrawals</span><svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <div class="nav-dropdown">
+            <a href="withdrawals.html" class="nav-link nav-sub" data-page="withdrawals">Withdrawals</a>
+            <a href="withdraw-settings.html" class="nav-link nav-sub" data-page="withdraw-settings">Withdraw Settings</a>
+          </div>
+        </div>
+        <a href="cpm.html" class="nav-link" data-page="cpm"><span class="nav-icon" data-icon="money"></span><span>CPM Rates</span></a>
+        <a href="settings.html" class="nav-link" data-page="settings"><span class="nav-icon" data-icon="settings"></span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar admin-avatar">A</div>
+          <div class="user-meta">
+            <b id="adminEmail">Admin</b>
+            <span>Admin Panel</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-block" id="logoutBtn"><span data-icon="log-out"></span> Logout</button>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="admin-main">
+      <div class="dash-topbar">
+        <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
+        <h1>Dashboard</h1>
+      </div>
+
+      <div class="stat-grid" id="overviewStats">
+        <div class="stat-card">
+          <div class="stat-head">
+            <span class="stat-label">Total Users</span>
+            <span class="stat-icon"><span data-icon="users"></span></span>
+          </div>
+          <div class="stat-value" id="statUsers">0</div>
+          <div class="stat-change up">Registered accounts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head">
+            <span class="stat-label">Total Links</span>
+            <span class="stat-icon"><span data-icon="link"></span></span>
+          </div>
+          <div class="stat-value" id="statLinks">0</div>
+          <div class="stat-change up">All shortened URLs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head">
+            <span class="stat-label">Total Clicks</span>
+            <span class="stat-icon"><span data-icon="pointer"></span></span>
+          </div>
+          <div class="stat-value" id="statClicks">0</div>
+          <div class="stat-change up">Lifetime clicks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head">
+            <span class="stat-label">Total Earnings</span>
+            <span class="stat-icon"><span data-icon="money"></span></span>
+          </div>
+          <div class="stat-value" id="statEarnings">$0.00</div>
+          <div class="stat-change up">Platform revenue</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head">
+            <span class="stat-label">Ad Views</span>
+            <span class="stat-icon"><span data-icon="eye"></span></span>
+          </div>
+          <div class="stat-value" id="statAdViews">0</div>
+          <div class="stat-change up">Interstitial impressions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head">
+            <span class="stat-label">Today Clicks</span>
+            <span class="stat-icon"><span data-icon="chart"></span></span>
+          </div>
+          <div class="stat-value" id="statToday">0</div>
+          <div class="stat-change up">Last 24 hours</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head">
+            <span class="stat-label">Conversion Rate</span>
+            <span class="stat-icon"><span data-icon="target"></span></span>
+          </div>
+          <div class="stat-value" id="statConversion">0%</div>
+          <div class="stat-change up">Completed to destination</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head">
+            <span class="stat-label">Pending Withdrawals</span>
+            <span class="stat-icon"><span data-icon="clock"></span></span>
+          </div>
+          <div class="stat-value" id="statWithdrawals">0</div>
+          <div class="stat-change up">Awaiting review</div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h3>Traffic Overview</h3>
+          <span class="text-muted">Last 14 days</span>
+        </div>
+        <div style="height:300px;position:relative;"><canvas id="trafficChart"></canvas></div>
+      </div>
+
+      <div class="flex-between mb-3" style="align-items:stretch;">
+        <div class="card" style="flex:1;">
+          <div class="card-header"><h3>By Device</h3></div>
+          <div style="height:250px;position:relative;"><canvas id="deviceChart"></canvas></div>
+        </div>
+        <div class="card" style="flex:1;">
+          <div class="card-header"><h3>By Country</h3></div>
+          <div style="height:250px;position:relative;"><canvas id="countryChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h3>Recent Withdrawals</h3>
+          <a href="withdrawals.html" class="btn btn-ghost btn-sm">View All</a>
+        </div>
+        <div class="table-responsive">
+          <table class="links-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Method</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Requested</th>
+              </tr>
+            </thead>
+            <tbody id="recentWithdrawalsBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state hidden" id="withdrawalsEmpty">
+          <div class="empty-icon"><span data-icon="wallet"></span></div>
+          <h3>No withdrawals yet</h3>
+          <p>Requests will appear here when users submit them.</p>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h3>Recent Users</h3>
+          <a href="users.html" class="btn btn-ghost btn-sm">View All</a>
+        </div>
+        <div class="table-responsive">
+          <table class="links-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Plan</th>
+                <th>Links</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody id="recentUsersBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state hidden" id="usersEmpty">
+          <div class="empty-icon"><span data-icon="users"></span></div>
+          <h3>No users yet</h3>
+          <p>Users will appear here once they register.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Recent Links</h3>
+          <a href="links.html" class="btn btn-ghost btn-sm">View All</a>
+        </div>
+        <div class="table-responsive">
+          <table class="links-table">
+            <thead>
+              <tr>
+                <th>Destination</th>
+                <th>Short Code</th>
+                <th>Clicks</th>
+                <th>Status</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody id="recentLinksBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state hidden" id="linksEmpty">
+          <div class="empty-icon"><span data-icon="link"></span></div>
+          <h3>No links yet</h3>
+          <p>Links will appear here once users create them.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/nav.js"></script>
+  <script type="module" src="assets/js/dashboard.js"></script>
+</body>
+</html>
