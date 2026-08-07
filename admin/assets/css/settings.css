@@ -465,3 +465,34 @@ body { font-family: var(--font); }
       linear-gradient(90deg, rgba(24, 203, 240, 0.02) 1px, transparent 1px);
   }
 }
+
+/* ============ Ad System Boxes ============ */
+.ad-box {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(24,203,240,0.15);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+.ad-box-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-main);
+}
+.ad-box-title .icon { width: 18px; height: 18px; color: var(--primary); }
+.ad-box p { margin-bottom: 12px; line-height: 1.5; }
+.ad-box small { display: block; margin-top: 6px; line-height: 1.4; }
+.ad-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0 16px;
+}
+.ad-code-box {
+  font-family: "Consolas", "Menlo", monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
