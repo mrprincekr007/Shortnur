@@ -6,7 +6,7 @@
 
 import { auth, db, ref, get, remove, update, onAuthStateChanged, signOut, ensureAdmins, isAdminUser, getShortBaseUrl } from "../../firebase/firebase-config.js";
 
-let SHORT_BASE = 'https://shortnur.mrprincekr007.workers.dev';
+let SHORT_BASE = 'https://linkbaba.online';
 getShortBaseUrl().then((v) => { SHORT_BASE = v; });
 
 // ============ SVG ICONS ============
