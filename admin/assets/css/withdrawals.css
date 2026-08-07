@@ -1,0 +1,36 @@
+/* ============================================
+   Shortnur Admin - Withdrawals Page (extends dashboard.css)
+   ============================================ */
+
+.report-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+
+.dash-topbar { flex-wrap: wrap; }
+
+/* Filter tabs */
+.filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.filter-tab { padding: 8px 18px; border-radius: 50px; background: var(--dark-bg-2); border: 1px solid var(--dark-border); color: var(--text-muted); font-size: 0.88rem; font-weight: 600; transition: all 0.2s; }
+.filter-tab:hover { color: #fff; border-color: var(--primary); }
+.filter-tab.active { background: var(--gradient); color: #050A18; border-color: transparent; box-shadow: var(--glow-soft); }
+
+/* Status badges for withdrawals */
+.status-pending { background: rgba(255, 179, 71, 0.15); color: var(--warning); }
+.status-approved { background: rgba(0, 206, 180, 0.15); color: var(--success); }
+.status-rejected { background: rgba(255, 94, 138, 0.15); color: var(--danger); }
+
+.amount-cell { font-weight: 700; color: var(--warning); }
+.account-masked { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85rem; color: var(--text-muted); }
+.method-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; background: rgba(24, 203, 240, 0.1); color: var(--primary-light); font-size: 0.8rem; font-weight: 600; }
+
+.btn-approve { background: rgba(0, 206, 180, 0.15); border: 1px solid rgba(0, 206, 180, 0.4); color: var(--success); }
+.btn-approve:hover { background: var(--success); color: #050A18; }
+.btn-reject { background: rgba(255, 94, 138, 0.15); border: 1px solid rgba(255, 94, 138, 0.4); color: var(--danger); }
+.btn-reject:hover { background: var(--danger); color: #fff; }
+
+@media (max-width: 768px) {
+  .report-actions { width: 100%; }
+}
+
+/* Withdrawal details */
+.detail-block { display: flex; flex-direction: column; gap: 2px; }
+.detail-line { font-size: 0.8rem; color: var(--text-muted); max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.detail-line .detail-label { margin-right: 6px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.03em; opacity: 0.65; }
