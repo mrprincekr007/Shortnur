@@ -56,6 +56,14 @@
         ".read": "auth != null",
         ".write": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'"
       },
+      "ads": {
+        ".read": true,
+        ".write": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'"
+      },
+      "shortBaseUrl": {
+        ".read": true,
+        ".write": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'"
+      },
       "$key": {
         ".read": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'",
         ".write": "root.child('settings/admins/' + auth.uid).exists() || auth.uid === 'E8eHGeEEdJZ8AMQZZuIo4xEnDsc2'"
