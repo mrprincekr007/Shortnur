@@ -1,0 +1,38 @@
+/* ============================================
+   Shortnur Admin - Reports Page (extends dashboard.css)
+   ============================================ */
+
+.report-filters { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+
+.report-filter-select { width: auto; padding: 9px 14px; border-radius: 12px; font-size: 0.88rem; }
+
+.dash-topbar { flex-wrap: wrap; }
+
+/* Stat card icon colors for the report stat grid */
+.stat-card:nth-child(1) .stat-icon { background: linear-gradient(135deg, #18CBF0, #0d92b5); box-shadow: 0 0 18px rgba(24, 203, 240, 0.45); }
+.stat-card:nth-child(2) .stat-icon { background: linear-gradient(135deg, #FFB347, #f39c12); box-shadow: 0 0 18px rgba(255, 179, 71, 0.45); }
+.stat-card:nth-child(3) .stat-icon { background: linear-gradient(135deg, #A78BFA, #7c5cff); box-shadow: 0 0 18px rgba(167, 139, 250, 0.45); }
+.stat-card:nth-child(4) .stat-icon { background: linear-gradient(135deg, #00E5C7, #0a9e8c); box-shadow: 0 0 18px rgba(0, 229, 199, 0.45); }
+
+/* ---- User reports ---- */
+.topic-badge { display: inline-flex; padding: 4px 12px; border-radius: 50px; font-size: 0.78rem; font-weight: 600; background: rgba(24, 203, 240, 0.12); color: var(--primary-light); white-space: nowrap; }
+
+.report-msg { margin: 0; color: var(--text-muted); font-size: 0.88rem; line-height: 1.45; max-width: 300px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+.report-user { display: flex; align-items: center; gap: 12px; }
+.report-avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: #fff; font-size: 0.95rem; flex-shrink: 0; }
+.report-user-meta b { display: block; font-size: 0.92rem; font-weight: 600; }
+.report-user-meta span { font-size: 0.8rem; color: var(--text-muted); }
+
+.report-date { color: var(--text-muted); font-size: 0.85rem; white-space: nowrap; }
+
+.status-in-review { background: rgba(255, 179, 71, 0.15); color: var(--warning); }
+.status-resolved { background: rgba(0, 206, 180, 0.15); color: var(--success); }
+
+/* ---- Pagination ---- */
+.pagination { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 24px; flex-wrap: wrap; }
+.page-btn { min-width: 38px; height: 38px; padding: 0 10px; border-radius: 10px; background: var(--dark-bg-2); border: 1px solid var(--dark-border); color: var(--text-muted); font-size: 0.9rem; display: grid; place-items: center; transition: all 0.2s; cursor: pointer; }
+.page-btn:hover { color: #fff; border-color: var(--primary); }
+.page-btn.active { background: var(--gradient); color: #050A18; border-color: transparent; font-weight: 700; }
+.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.page-btn svg { width: 1em; height: 1em; }
