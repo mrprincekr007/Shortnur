@@ -81,7 +81,7 @@
         <div class="card-header">
           <h3><span data-icon="zap"></span> Ad System</h3>
         </div>
-        <p class="text-muted mb-2">Visitors pass through countdown ad pages before reaching the destination. Configure the interstitial ads here.</p>
+        <p class="text-muted mb-2">Visitors pass through countdown ad pages before reaching the destination. Har ad ka apna box hai — niche samjha hai kaunsa ad kya karta hai.</p>
         <form id="adsForm">
           <label class="option-toggle mb-2">
             <span class="switch">
@@ -90,30 +90,56 @@
             </span>
             Enable interstitial ad pages
           </label>
-          <div class="form-group">
-            <label>Countdown Timer (seconds)</label>
-            <input type="number" id="adsTimer" class="form-control form-control-plain" value="8" min="3" max="60">
+
+          <div class="ad-box">
+            <div class="ad-box-title"><span data-icon="clock"></span> Countdown &amp; Earning</div>
+            <div class="ad-grid">
+              <div class="form-group">
+                <label>Countdown Timer (seconds)</label>
+                <input type="number" id="adsTimer" class="form-control form-control-plain" value="8" min="3" max="60">
+                <small class="text-muted">Visitor ad pe kitne second tak rahega. Jitna zyada, utna ad dikhna (earning badhne ka mauka).</small>
+              </div>
+              <div class="form-group">
+                <label>Ad Pages Per Link</label>
+                <input type="number" id="adsPages" class="form-control form-control-plain" value="2" min="1" max="5">
+                <small class="text-muted">Har link khulte hi kitni ad pages dikhein (har page pe timer + ad).</small>
+              </div>
+              <div class="form-group">
+                <label>Earning Rate ($ per 1000 views)</label>
+                <input type="number" id="adsRate" class="form-control form-control-plain" value="0.50" min="0" step="0.01">
+                <small class="text-muted">1000 completed views pe kitna earn karna hai (user dashboard me dikhta hai).</small>
+              </div>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Ad Pages Per Link (default)</label>
-            <input type="number" id="adsPages" class="form-control form-control-plain" value="2" min="1" max="5">
+
+          <div class="ad-box">
+            <div class="ad-box-title"><span data-icon="tag"></span> 1. Main Ad — Multitag / Banner</div>
+            <p class="text-muted">Ye ad countdown page ke <b>upar bade box</b> me dikhta hai. Adsterra Multitag ya kisi bhi network ka banner code yahan paste karo. (Multitag me Vignette / In-Page Push / Banner sab isi code se aate hain.)</p>
+            <div class="form-group">
+              <label>Ad Code (HTML)</label>
+              <textarea id="adsBannerHtml" class="form-control form-control-plain ad-code-box" rows="4" placeholder="<script src=&quot;https://quge5.com/88/tag.min.js&quot; data-zone=&quot;267946&quot; async data-cfasync=&quot;false&quot;></script>"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Ya Banner URL (iframe, optional)</label>
+              <input type="url" id="adsBannerUrl" class="form-control form-control-plain" placeholder="https://your-ad-banner-url">
+              <small class="text-muted">Agar upar HTML code hai toh ye khaali chhodo. Sirf tab use karo jab iframe URL ho.</small>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Earning Rate ($ per 1000 completed views)</label>
-            <input type="number" id="adsRate" class="form-control form-control-plain" value="0.50" min="0" step="0.01">
+
+          <div class="ad-box">
+            <div class="ad-box-title"><span data-icon="eye"></span> 2. OnClick Popunder</div>
+            <p class="text-muted">Visitor pehli baar <b>click</b> kare toh popunder naye tab me khulega (aur page scroll unlock hoga). Adsterra dashboard me <b>OnClick (Popunder)</b> zone bana ke uska code yahan daalo.</p>
+            <div class="form-group">
+              <label>Popunder Code (HTML)</label>
+              <textarea id="adsPopunderCode" class="form-control form-control-plain ad-code-box" rows="3" placeholder="<script src=&quot;https://.../click.min.js&quot; data-zone=&quot;YOUR_ZONE&quot; async></script>"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Ya Popunder URL (optional)</label>
+              <input type="url" id="adsPopunderUrl" class="form-control form-control-plain" placeholder="https://popunder-ad-url">
+              <small class="text-muted">Agar code hai toh ye khaali chhodo. URL only tab use karo jab code na ho.</small>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Banner Ad URL (iframe, optional)</label>
-            <input type="url" id="adsBannerUrl" class="form-control form-control-plain" placeholder="https://your-ad-banner-url">
-          </div>
-          <div class="form-group">
-            <label>Banner Ad HTML (optional, overrides URL)</label>
-            <textarea id="adsBannerHtml" class="form-control form-control-plain" rows="3" placeholder="<iframe src='...'></iframe> or AdSense code"></textarea>
-          </div>
-          <div class="form-group">
-            <label>Popunder Ad URL (optional)</label>
-            <input type="url" id="adsPopunderUrl" class="form-control form-control-plain" placeholder="https://popunder-ad-url">
-          </div>
+
           <button type="submit" class="btn btn-primary"><span data-icon="check"></span> Save Ad Settings</button>
         </form>
       </div>
