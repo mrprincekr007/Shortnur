@@ -3,7 +3,7 @@
 // Self-contained — no shared dependencies
 // ============================================================
 
-import { auth, db, ref, push, set, update, remove, get, onValue, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence, SITE_CONFIG } from "../../firebase/firebase-config.js";
+import { auth, db, ref, push, set, update, remove, get, onValue, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence, SITE_CONFIG, getShortBaseUrl } from "../../firebase/firebase-config.js";
 
 // ============ SVG ICONS ============
 const ICONS = {
@@ -281,6 +281,7 @@ async function bulkShorten() {
 
   const results = [];
   let created = 0;
+  const shortBase = await getShortBaseUrl();
 
   for (const raw of urls) {
     const url = normalizeUrl(raw);
@@ -307,7 +308,7 @@ async function bulkShorten() {
         isCustom: false,
       });
 
-      results.push({ original: url, shortUrl: SITE_CONFIG.shortBaseUrl + '/' + code, error: null });
+      results.push({ original: url, shortUrl: shortBase + '/' + code, error: null });
       created++;
     } catch (err) {
       results.push({ original: url, shortUrl: null, error: 'Failed' });
