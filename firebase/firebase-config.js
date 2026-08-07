@@ -1,6 +1,6 @@
-// ============================================================
+﻿// ============================================================
 // Shortnur - Firebase Configuration (SHARED)
-// Change your Firebase credentials here — all pages use this.
+// Change your Firebase credentials here â€” all pages use this.
 // ============================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -24,11 +24,26 @@ getAnalytics(app);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-export const SITE_CONFIG = {
-  shortBaseUrl: "https://shortnur.to",
+const SITE_CONFIG = {
+  shortBaseUrl: "https://shortnur.mrprincekr007.workers.dev",
   websiteBaseUrl: "https://mrprincekr007.github.io/Shortnur",
   appName: "Shortnur",
   linksPerPage: 10,
 };
 
-export { auth, db, ref, push, set, update, remove, get, onValue, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, sendPasswordResetEmail, updateProfile, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence };
+let cachedShortBase = null;
+
+// Admin settings (settings/shortBaseUrl) ko priority deta hai, warna SITE_CONFIG
+async function getShortBaseUrl() {
+  if (cachedShortBase) return cachedShortBase;
+  try {
+    const snap = await get(ref(db, "settings/shortBaseUrl"));
+    if (snap.exists() && snap.val()) {
+      cachedShortBase = snap.val();
+      return cachedShortBase;
+    }
+  } catch (e) {}
+  return SITE_CONFIG.shortBaseUrl;
+}
+
+export { auth, db, ref, push, set, update, remove, get, onValue, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, sendPasswordResetEmail, updateProfile, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence, SITE_CONFIG, getShortBaseUrl };
