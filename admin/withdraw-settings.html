@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Withdraw Settings — Shortnur Admin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/withdraw-settings.css">
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="admin-layout" id="appRoot">
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="logo"><div class="logo-icon">🔗</div><span>Short<b>nur</b></span></a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link" data-page="dashboard"><span class="nav-icon" data-icon="dashboard"></span><span>Dashboard</span></a>
+        <a href="users.html" class="nav-link" data-page="users"><span class="nav-icon" data-icon="users"></span><span>Users</span></a>
+        <a href="links.html" class="nav-link" data-page="links"><span class="nav-icon" data-icon="link"></span><span>Links</span></a>
+        <a href="reports.html" class="nav-link" data-page="reports"><span class="nav-icon" data-icon="chart"></span><span>Reports</span></a>
+        <a href="analytics.html" class="nav-link" data-page="analytics"><span class="nav-icon" data-icon="activity"></span><span>Analytics</span></a>
+        <div class="nav-group">
+          <button class="nav-link nav-dropdown-toggle" type="button"><span class="nav-icon" data-icon="wallet"></span><span>Withdrawals</span><svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <div class="nav-dropdown">
+            <a href="withdrawals.html" class="nav-link nav-sub" data-page="withdrawals">Withdrawals</a>
+            <a href="withdraw-settings.html" class="nav-link nav-sub active" data-page="withdraw-settings">Withdraw Settings</a>
+          </div>
+        </div>
+        <a href="cpm.html" class="nav-link" data-page="cpm"><span class="nav-icon" data-icon="money"></span><span>CPM Rates</span></a>
+        <a href="settings.html" class="nav-link" data-page="settings"><span class="nav-icon" data-icon="settings"></span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar admin-avatar">A</div>
+          <div class="user-meta">
+            <b id="adminEmail">Admin</b>
+            <span>Admin Panel</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-block" id="logoutBtn"><span data-icon="log-out"></span> Logout</button>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="admin-main">
+      <div class="dash-topbar">
+        <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
+        <h1>Withdraw Settings</h1>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <h3>Minimum Withdrawal</h3>
+        </div>
+        <p class="text-muted mb-2">The minimum amount a user must have before they can request a withdrawal.</p>
+        <div class="flex" style="max-width:360px;align-items:flex-end;">
+          <div class="form-group" style="flex:1;margin-bottom:0;">
+            <label for="minAmountInput">Minimum amount (USD)</label>
+            <input type="number" id="minAmountInput" class="form-control form-control-plain" min="0" step="0.01" placeholder="e.g. 10">
+          </div>
+          <button class="btn btn-primary" id="saveMinBtn">Save</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Payment Methods</h3>
+          <button class="btn btn-primary btn-sm" id="addMethodBtn"><span data-icon="plus"></span> Add Method</button>
+        </div>
+        <div id="methodsList"></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="confirmTitle">Confirm</h3>
+        <button class="modal-close" id="closeConfirmModal"><span data-icon="close"></span></button>
+      </div>
+      <p class="text-muted mb-2" id="confirmMessage"></p>
+      <p class="mb-2"><strong id="confirmAmount"></strong></p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelConfirm">Cancel</button>
+        <button class="btn" id="confirmAction">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="methodModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="methodModalTitle">Add Withdrawal Method</h3>
+        <button class="modal-close" id="closeMethodModal"><span data-icon="close"></span></button>
+      </div>
+      <div class="form-group">
+        <label for="methodNameInput">Method name</label>
+        <input type="text" id="methodNameInput" class="form-control" placeholder="e.g. PhonePe, Google Pay, Bank Transfer, Binance">
+      </div>
+      <div class="form-group">
+        <label for="methodFieldsInput">Payment fields (one per line)</label>
+        <textarea id="methodFieldsInput" class="form-control" rows="4" placeholder="UPI ID&#10;Phone Number"></textarea>
+        <div class="text-muted" style="font-size:0.8rem;margin-top:4px;">These fields will appear when users select this method. One field per line.</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelMethod">Cancel</button>
+        <button class="btn btn-primary" id="saveMethodBtn">Save Method</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/nav.js"></script>
+  <script type="module" src="assets/js/withdraw-settings.js"></script>
+</body>
+</html>
