@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Withdrawals — Shortnur Admin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/withdrawals.css">
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="admin-layout" id="appRoot">
+    <aside class="sidebar" id="sidebar">
+      <a href="index.html" class="logo"><div class="logo-icon">🔗</div><span>Short<b>nur</b></span></a>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link" data-page="dashboard"><span class="nav-icon" data-icon="dashboard"></span><span>Dashboard</span></a>
+        <a href="users.html" class="nav-link" data-page="users"><span class="nav-icon" data-icon="users"></span><span>Users</span></a>
+        <a href="links.html" class="nav-link" data-page="links"><span class="nav-icon" data-icon="link"></span><span>Links</span></a>
+        <a href="reports.html" class="nav-link" data-page="reports"><span class="nav-icon" data-icon="chart"></span><span>Reports</span></a>
+        <a href="analytics.html" class="nav-link" data-page="analytics"><span class="nav-icon" data-icon="activity"></span><span>Analytics</span></a>
+        <div class="nav-group">
+          <button class="nav-link nav-dropdown-toggle" type="button"><span class="nav-icon" data-icon="wallet"></span><span>Withdrawals</span><svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <div class="nav-dropdown">
+            <a href="withdrawals.html" class="nav-link nav-sub active" data-page="withdrawals">Withdrawals</a>
+            <a href="withdraw-settings.html" class="nav-link nav-sub" data-page="withdraw-settings">Withdraw Settings</a>
+          </div>
+        </div>
+        <a href="cpm.html" class="nav-link" data-page="cpm"><span class="nav-icon" data-icon="money"></span><span>CPM Rates</span></a>
+        <a href="settings.html" class="nav-link" data-page="settings"><span class="nav-icon" data-icon="settings"></span><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar admin-avatar">A</div>
+          <div class="user-meta">
+            <b id="adminEmail">Admin</b>
+            <span>Admin Panel</span>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-block" id="logoutBtn"><span data-icon="log-out"></span> Logout</button>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="admin-main">
+      <div class="dash-topbar">
+        <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
+        <h1>Withdrawals</h1>
+        <div class="report-actions">
+          <button class="btn btn-ghost btn-sm" id="exportCsvBtn"><span data-icon="download"></span> Export CSV</button>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Pending</span><span class="stat-icon"><span data-icon="clock"></span></span></div>
+          <div class="stat-value" id="statPending">0</div>
+          <div class="stat-change up" id="statPendingAmount">$0.00 awaiting review</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Approved</span><span class="stat-icon"><span data-icon="check"></span></span></div>
+          <div class="stat-value" id="statApproved">0</div>
+          <div class="stat-change up" id="statApprovedAmount">$0.00 processed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Rejected</span><span class="stat-icon"><span data-icon="close"></span></span></div>
+          <div class="stat-value" id="statRejected">0</div>
+          <div class="stat-change down" id="statRejectedAmount">$0.00 refunded</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span class="stat-label">Total Paid Out</span><span class="stat-icon"><span data-icon="money"></span></span></div>
+          <div class="stat-value" id="statPaidOut">$0.00</div>
+          <div class="stat-change up">Lifetime payouts</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="filter-tabs" id="filterTabs">
+          <button class="filter-tab active" data-filter="all">All</button>
+          <button class="filter-tab" data-filter="pending">Pending</button>
+          <button class="filter-tab" data-filter="approved">Approved</button>
+          <button class="filter-tab" data-filter="rejected">Rejected</button>
+        </div>
+        <div class="table-responsive">
+          <table class="links-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Method</th>
+                <th>Account</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Requested</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="withdrawalsBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state hidden" id="emptyState">
+          <div class="empty-icon"><span data-icon="wallet"></span></div>
+          <h3>No withdrawal requests</h3>
+          <p>Requests will appear here when users submit them.</p>
+        </div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="confirmTitle">Confirm</h3>
+        <button class="modal-close" id="closeConfirmModal"><span data-icon="close"></span></button>
+      </div>
+      <p class="text-muted mb-2" id="confirmMessage"></p>
+      <p class="mb-2"><strong id="confirmAmount"></strong></p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelConfirm">Cancel</button>
+        <button class="btn" id="confirmAction">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/nav.js"></script>
+  <script type="module" src="assets/js/withdrawals.js"></script>
+</body>
+</html>
