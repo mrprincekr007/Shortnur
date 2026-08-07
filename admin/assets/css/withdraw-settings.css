@@ -1,0 +1,25 @@
+/* ============================================
+   Shortnur Admin - Withdraw Settings Page (extends dashboard.css)
+   ============================================ */
+
+/* Payment methods */
+.method-item { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--dark-border); flex-wrap: wrap; }
+.method-item:last-child { border-bottom: none; }
+.method-info { flex: 1; min-width: 200px; }
+.method-name { font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.method-fields { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.field-chip { padding: 3px 10px; border-radius: 50px; background: rgba(24, 203, 240, 0.08); border: 1px solid rgba(24, 203, 240, 0.2); color: var(--primary-light); font-size: 0.75rem; }
+.method-actions { display: flex; align-items: center; gap: 10px; }
+
+/* Toggle switch */
+.switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch .slider { position: absolute; inset: 0; background: var(--dark-bg-2); border: 1px solid var(--dark-border); border-radius: 50px; transition: 0.2s; cursor: pointer; }
+.switch .slider:before { content: ""; position: absolute; width: 16px; height: 16px; left: 2px; top: 2px; background: var(--text-muted); border-radius: 50%; transition: 0.2s; }
+.switch input:checked + .slider { background: var(--gradient); border-color: transparent; }
+.switch input:checked + .slider:before { transform: translateX(18px); background: #050A18; }
+
+.btn-edit { background: rgba(24, 203, 240, 0.1); border: 1px solid rgba(24, 203, 240, 0.35); color: var(--primary-light); }
+.btn-edit:hover { background: var(--primary-light); color: #050A18; }
+.btn-delete { background: rgba(255, 94, 138, 0.12); border: 1px solid rgba(255, 94, 138, 0.35); color: var(--danger); }
+.btn-delete:hover { background: var(--danger); color: #fff; }
