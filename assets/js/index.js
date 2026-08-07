@@ -3,7 +3,7 @@
 // Self-contained — no shared dependencies
 // ============================================================
 
-import { auth, db, ref, push, set, update, remove, get, onValue, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence, SITE_CONFIG } from "../../firebase/firebase-config.js";
+import { auth, db, ref, push, set, update, remove, get, onValue, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence, SITE_CONFIG, getShortBaseUrl } from "../../firebase/firebase-config.js";
 
 // ============ SVG ICONS ============
 const ICONS = {
@@ -188,6 +188,11 @@ function animateCounter(el, target, opts = {}) {
 // Shortnur - Landing page logic
 initMotion();
 
+getShortBaseUrl().then((v) => {
+  const el = document.getElementById('aliasPrefix');
+  if (el) el.textContent = v + '/';
+});
+
 let currentUser = null;
 let pendingShortLink = null;
 
@@ -327,7 +332,8 @@ async function createLink(longUrl, customAlias) {
     }
   }
 
-  return { ...linkData, shortUrl: SITE_CONFIG.shortBaseUrl + '/' + code };
+  const shortBase = await getShortBaseUrl();
+  return { ...linkData, shortUrl: shortBase + '/' + code };
 }
 
 function setLoading(isLoading) {
