@@ -25,7 +25,7 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 
 const SITE_CONFIG = {
-  shortBaseUrl: "https://shortnur.mrprincekr007.workers.dev",
+  shortBaseUrl: "https://linkbaba.online",
   websiteBaseUrl: "https://mrprincekr007.github.io/Shortnur",
   appName: "Shortnur",
   linksPerPage: 10,
