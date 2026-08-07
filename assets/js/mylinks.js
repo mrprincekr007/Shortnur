@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur - Dashboard Page
+// Shortnur - Mylinks Page
 // Self-contained — no shared dependencies
 // ============================================================
 
@@ -190,7 +190,13 @@ initMotion();
 let currentUser = null;
 let userData = null;
 let allLinks = [];
+let filteredLinks = [];
+let currentPage = 1;
+let currentFilter = 'all';
+let searchTerm = '';
+let deleteTarget = null;
 let linksListener = null;
+const PER_PAGE = 10;
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) { window.location.href = 'login.html'; return; }
@@ -214,15 +220,6 @@ function setupUI() {
   document.getElementById('userPlan').textContent = (userData.plan || 'free').toUpperCase() + ' plan';
   renderAvatar(document.getElementById('userAvatar'), userData, name);
 
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('pageSub').textContent = `${greeting}, ${name}!`;
-  const welcomeEmoji = document.getElementById('welcomeEmoji');
-  if (welcomeEmoji) {
-    welcomeEmoji.textContent = hour < 12 ? '🌅' : hour < 17 ? '☀️' : '🌙';
-    document.getElementById('welcomeTitle').textContent = `${greeting}, ${name}!`;
-  }
-
   startLinksListener();
   setupEventHandlers();
 }
@@ -240,10 +237,9 @@ function startLinksListener() {
       }
     });
     allLinks.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-    renderOverview();
-    renderRecentLinks();
+    applyFiltersAndRender();
   }, (err) => {
-    showToast('Database rules blocked. Set your RTDB rules.', 'error', 6000);
+    showToast('Database rules blocked. Set your RTDB rules to continue.', 'error', 6000);
   });
 }
 
@@ -258,42 +254,71 @@ function setupEventHandlers() {
     document.getElementById('sidebar').classList.toggle('open');
   });
 
-  document.getElementById('createLinkBtn').addEventListener('click', () => window.location.href = 'mylinks.html');
-  const welcomeCreate = document.getElementById('welcomeCreateBtn');
-  if (welcomeCreate) welcomeCreate.addEventListener('click', () => window.location.href = 'mylinks.html');
+  document.getElementById('createLinkBtn').addEventListener('click', openCreateModal);
+  document.getElementById('emptyCreateBtn').addEventListener('click', openCreateModal);
 
-  document.getElementById('emptyCreateBtn').addEventListener('click', () => window.location.href = 'mylinks.html');
+  document.getElementById('statusFilter').addEventListener('change', (e) => {
+    currentFilter = e.target.value;
+    currentPage = 1;
+    applyFiltersAndRender();
+  });
+
+  document.getElementById('globalSearch').addEventListener('input', (e) => {
+    searchTerm = e.target.value.toLowerCase();
+    currentPage = 1;
+    applyFiltersAndRender();
+  });
+
+  document.getElementById('createLinkForm').addEventListener('submit', handleCreateLink);
+  document.getElementById('editLinkForm').addEventListener('submit', handleEditLink);
+  document.getElementById('cCustomToggle').addEventListener('change', (e) => {
+    document.getElementById('cAliasGroup').classList.toggle('hidden', !e.target.checked);
+  });
+  document.getElementById('cAdsToggle').addEventListener('change', (e) => {
+    document.getElementById('cAdsGroup').classList.toggle('hidden', !e.target.checked);
+  });
+  document.getElementById('eAdsToggle').addEventListener('change', (e) => {
+    document.getElementById('eAdsGroup').classList.toggle('hidden', !e.target.checked);
+  });
+  document.getElementById('confirmDeleteBtn').addEventListener('click', handleDelete);
 
   document.querySelectorAll('[data-close]').forEach((btn) => {
     btn.addEventListener('click', () => document.getElementById(btn.dataset.close).classList.remove('show'));
   });
-}
-
-function renderOverview() {
-  const totalClicks = allLinks.reduce((sum, l) => sum + (l.clicks || 0), 0);
-  const totalEarnings = allLinks.reduce((sum, l) => sum + (l.earnings || 0), 0);
-
-  animateCounter(document.getElementById('statTotalLinks'), allLinks.length);
-  animateCounter(document.getElementById('statTotalClicks'), totalClicks);
-  animateCounter(document.getElementById('statEarnings'), totalEarnings, { prefix: '$', decimals: 2 });
-  animateCounter(document.getElementById('statAvgClicks'), allLinks.length ? Math.round(totalClicks / allLinks.length) : 0);
-}
-
-function renderRecentLinks() {
-  const tbody = document.getElementById('recentLinksBody');
-  const table = document.getElementById('recentLinksTable');
-  const empty = document.getElementById('recentEmpty');
-  const recent = allLinks.slice(0, 5);
-
-  table.style.display = recent.length ? '' : 'none';
-  empty.classList.toggle('hidden', recent.length > 0);
-
-  if (recent.length === 0) { tbody.innerHTML = ''; return; }
-  tbody.innerHTML = recent.map(renderLinkRow).join('');
-
-  tbody.querySelectorAll('.copy-link').forEach((btn) => {
-    btn.addEventListener('click', () => copyToClipboard(btn.dataset.url));
+  document.querySelectorAll('.modal-overlay').forEach((overlay) => {
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('show'); });
   });
+}
+
+function applyFiltersAndRender() {
+  filteredLinks = allLinks.filter((link) => {
+    if (currentFilter !== 'all' && link.status !== currentFilter) return false;
+    if (searchTerm) {
+      const haystack = ((link.title || '') + ' ' + link.longUrl + ' ' + link.code + ' ' + link.shortUrl).toLowerCase();
+      if (!haystack.includes(searchTerm)) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('linksBadge').textContent = allLinks.length;
+  document.getElementById('linksCount').textContent = filteredLinks.length + ' of ' + allLinks.length + ' links';
+  renderLinksTable();
+  renderPagination();
+}
+
+function renderLinksTable() {
+  const tbody = document.getElementById('linksBody');
+  const table = document.getElementById('linksTable');
+  const empty = document.getElementById('linksEmpty');
+  const start = (currentPage - 1) * PER_PAGE;
+  const pageLinks = filteredLinks.slice(start, start + PER_PAGE);
+
+  table.style.display = pageLinks.length ? '' : 'none';
+  empty.classList.toggle('hidden', pageLinks.length > 0);
+
+  if (pageLinks.length === 0) { tbody.innerHTML = ''; return; }
+  tbody.innerHTML = pageLinks.map(renderLinkRow).join('');
+  bindRowActions();
 }
 
 function renderLinkRow(link) {
@@ -301,24 +326,187 @@ function renderLinkRow(link) {
   const title = link.title || link.longUrl;
   const statusClass = link.status === 'disabled' ? 'status-disabled' : 'status-active';
   const statusText = link.status === 'disabled' ? 'Disabled' : 'Active';
+  const adsClass = link.adsEnabled === false ? 'status-disabled' : 'status-active';
+  const adsText = link.adsEnabled === false ? 'Off' : (link.adPages || 2) + ' pages';
   const faviconHtml = favicon ? `<img src="${favicon}" alt="" onerror="this.style.display='none'">` : icon('link');
   return `
-    <tr>
+    <tr data-code="${escapeHtml(link.code)}">
       <td>
         <div class="link-dest">
           <div class="favicon">${faviconHtml}</div>
           <div>
-            <div class="link-title"><a href="${escapeHtml(link.shortUrl)}" target="_blank">${escapeHtml(shortenDisplay(title, 30))}</a></div>
-            <div class="link-dest-small">${escapeHtml(shortenDisplay(link.longUrl, 45))}</div>
+            <div class="link-title" title="${escapeHtml(title)}"><a href="${escapeHtml(link.shortUrl)}" target="_blank" rel="noopener">${escapeHtml(shortenDisplay(title, 35))}</a></div>
+            <div class="link-dest-small" title="${escapeHtml(link.longUrl)}">${escapeHtml(shortenDisplay(link.longUrl, 50))}</div>
           </div>
         </div>
       </td>
       <td><span class="text-primary" style="font-weight:600;">${escapeHtml(link.shortUrl)}</span></td>
       <td><span class="click-count">${icon('pointer')} ${formatNumber(link.clicks || 0)}</span></td>
+      <td><span class="status-badge ${adsClass}">${adsText}</span></td>
       <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-      <td class="text-muted">${timeAgo(link.createdAt)}</td>
-      <td><div class="action-cell"><button class="btn-icon copy-link" data-url="${escapeHtml(link.shortUrl)}" title="Copy">${icon('copy')}</button></div></td>
+      <td class="text-muted" title="${formatDate(link.createdAt)}">${timeAgo(link.createdAt)}</td>
+      <td>
+        <div class="action-cell">
+          <button class="btn-icon copy-link" data-url="${escapeHtml(link.shortUrl)}" title="Copy">${icon('copy')}</button>
+          <button class="btn-icon toggle-status" data-code="${escapeHtml(link.code)}" data-status="${link.status}" title="${link.status === 'disabled' ? 'Enable' : 'Disable'}">${link.status === 'disabled' ? icon('play') : icon('pause')}</button>
+          <button class="btn-icon edit-link" data-code="${escapeHtml(link.code)}" title="Edit">${icon('edit')}</button>
+          <button class="btn-icon danger delete-link" data-code="${escapeHtml(link.code)}" title="Delete">${icon('trash')}</button>
+        </div>
+      </td>
     </tr>`;
+}
+
+function bindRowActions() {
+  document.querySelectorAll('.copy-link').forEach((btn) => {
+    btn.addEventListener('click', () => copyToClipboard(btn.dataset.url));
+  });
+  document.querySelectorAll('.toggle-status').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const newStatus = btn.dataset.status === 'disabled' ? 'active' : 'disabled';
+      await update(ref(db, 'links/' + btn.dataset.code), { status: newStatus });
+      showToast(newStatus === 'active' ? 'Link enabled' : 'Link disabled', 'success');
+    });
+  });
+  document.querySelectorAll('.edit-link').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const link = allLinks.find((l) => l.code === btn.dataset.code);
+      if (link) openEditModal(link);
+    });
+  });
+  document.querySelectorAll('.delete-link').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const link = allLinks.find((l) => l.code === btn.dataset.code);
+      if (link) openDeleteModal(link);
+    });
+  });
+}
+
+function renderPagination() {
+  const container = document.getElementById('pagination');
+  const totalPages = Math.ceil(filteredLinks.length / PER_PAGE);
+  if (totalPages <= 1) { container.innerHTML = ''; return; }
+
+  let html = `<button class="page-btn" data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''}>${icon('chevron-left')}</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (totalPages > 7 && i > 2 && i < totalPages - 1 && Math.abs(i - currentPage) > 1) {
+      if (Math.abs(i - currentPage) === 2) html += `<span class="page-btn" style="background:transparent;border:none;pointer-events:none;">...</span>`;
+      continue;
+    }
+    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+  }
+  html += `<button class="page-btn" data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''}>${icon('chevron-right')}</button>`;
+  container.innerHTML = html;
+
+  container.querySelectorAll('.page-btn').forEach((btn) => {
+    if (btn.disabled) return;
+    btn.addEventListener('click', () => { currentPage = parseInt(btn.dataset.page); applyFiltersAndRender(); });
+  });
+}
+
+function openCreateModal() {
+  document.getElementById('createError').classList.remove('show');
+  document.getElementById('createLinkForm').reset();
+  document.getElementById('cAliasGroup').classList.add('hidden');
+  document.getElementById('cCustomToggle').checked = false;
+  document.getElementById('cAdsToggle').checked = true;
+  document.getElementById('cAdsGroup').classList.remove('hidden');
+  document.getElementById('createModal').classList.add('show');
+}
+
+async function handleCreateLink(e) {
+  e.preventDefault();
+  const errorEl = document.getElementById('createError');
+  const url = normalizeUrl(document.getElementById('cLongUrl').value);
+  const title = document.getElementById('cTitle').value.trim();
+
+  if (!isValidUrl(url)) { errorEl.textContent = 'Please enter a valid URL.'; errorEl.classList.add('show'); return; }
+
+  let code = null;
+  if (document.getElementById('cCustomToggle').checked) {
+    code = document.getElementById('cAlias').value.trim();
+    if (!code) { errorEl.textContent = 'Please enter a custom alias.'; errorEl.classList.add('show'); return; }
+    if (!/^[A-Za-z0-9_-]+$/.test(code)) { errorEl.textContent = 'Alias: letters, numbers, - and _ only.'; errorEl.classList.add('show'); return; }
+    if ((await get(ref(db, 'links/' + code))).exists()) { errorEl.textContent = 'Alias already taken.'; errorEl.classList.add('show'); return; }
+  }
+
+  const btn = document.getElementById('createSubmitBtn');
+  btn.disabled = true;
+  document.getElementById('createSubmitText').textContent = 'Creating...';
+
+  try {
+    if (!code) { code = generateShortCode(6); if ((await get(ref(db, 'links/' + code))).exists()) code = generateShortCode(6); }
+    await set(ref(db, 'links/' + code), { code, longUrl: url, title: title || url, uid: currentUser.uid, createdBy: currentUser.email, createdAt: Date.now(), clicks: 0, earnings: 0, adViews: 0, adsEnabled: document.getElementById('cAdsToggle').checked, adPages: parseInt(document.getElementById('cAdPages').value) || 2, status: 'active', isCustom: !!document.getElementById('cCustomToggle').checked });
+    await update(ref(db, 'users/' + currentUser.uid), { linksCount: (userData.linksCount || 0) + 1 });
+    userData.linksCount = (userData.linksCount || 0) + 1;
+    showToast('Link created!', 'success');
+    document.getElementById('createModal').classList.remove('show');
+  } catch (err) {
+    errorEl.textContent = 'Failed to create link.'; errorEl.classList.add('show');
+  } finally {
+    btn.disabled = false;
+    document.getElementById('createSubmitText').textContent = 'Create Link';
+  }
+}
+
+function openEditModal(link) {
+  document.getElementById('editError').classList.remove('show');
+  document.getElementById('eCode').value = link.code;
+  document.getElementById('eLongUrl').value = link.longUrl;
+  document.getElementById('eTitle').value = link.title || '';
+  document.getElementById('eAdsToggle').checked = link.adsEnabled !== false;
+  document.getElementById('eAdPages').value = link.adPages || 2;
+  document.getElementById('eAdsGroup').classList.toggle('hidden', link.adsEnabled === false);
+  document.getElementById('editModal').classList.add('show');
+}
+
+async function handleEditLink(e) {
+  e.preventDefault();
+  const errorEl = document.getElementById('editError');
+  const code = document.getElementById('eCode').value;
+  const url = normalizeUrl(document.getElementById('eLongUrl').value);
+  const title = document.getElementById('eTitle').value.trim();
+  if (!isValidUrl(url)) { errorEl.textContent = 'Please enter a valid URL.'; errorEl.classList.add('show'); return; }
+
+  const btn = document.getElementById('editSubmitBtn');
+  btn.disabled = true;
+  document.getElementById('editSubmitText').textContent = 'Saving...';
+
+  try {
+    await update(ref(db, 'links/' + code), { longUrl: url, title: title || url, adsEnabled: document.getElementById('eAdsToggle').checked, adPages: parseInt(document.getElementById('eAdPages').value) || 2, updatedAt: Date.now() });
+    showToast('Link updated', 'success');
+    document.getElementById('editModal').classList.remove('show');
+  } catch (err) {
+    errorEl.textContent = 'Failed to update link.'; errorEl.classList.add('show');
+  } finally {
+    btn.disabled = false;
+    document.getElementById('editSubmitText').textContent = 'Save Changes';
+  }
+}
+
+function openDeleteModal(link) {
+  deleteTarget = link;
+  document.getElementById('deleteConfirmText').textContent = `Delete "${link.title || link.shortUrl}"? This cannot be undone.`;
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+async function handleDelete() {
+  if (!deleteTarget) return;
+  const btn = document.getElementById('confirmDeleteBtn');
+  btn.disabled = true;
+  try {
+    await remove(ref(db, 'links/' + deleteTarget.code));
+    await remove(ref(db, 'clicks/' + deleteTarget.code));
+    await remove(ref(db, 'adviews/' + deleteTarget.code));
+    await update(ref(db, 'users/' + currentUser.uid), { linksCount: Math.max(0, (userData.linksCount || 0) - 1) });
+    userData.linksCount = Math.max(0, (userData.linksCount || 0) - 1);
+    showToast('Link deleted', 'success');
+    document.getElementById('deleteModal').classList.remove('show');
+    deleteTarget = null;
+  } catch (err) {
+    showToast('Failed to delete', 'error');
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 // Guarantee animation replays on every visit (incl. back/forward cache)
