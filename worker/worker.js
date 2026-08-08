@@ -202,6 +202,7 @@ const DEFAULT_ADS = {
   inPagePushCode: "",
   vignetteCode: "",
   directLinkUrl: "",
+  directList: [],
   ratePer1000: 10,
 };
 
@@ -333,9 +334,17 @@ function adPage(o) {
   const secondAd = adSlot2
     ? `<div class="ad-card"><div class="ad-tag">Advertisement</div><div class="ad-slot ad-slot-second">${adSlot2}</div></div>`
     : "";
-  const directBox = o.directLinkUrl
-    ? `<div class="ad-card"><div class="ad-tag">Sponsored</div><div class="ad-slot ad-slot-second"><iframe class="ad-frame" src="${escapeAttr(o.directLinkUrl)}" loading="lazy" scrolling="no" frameborder="0" title="Advertisement"></iframe></div></div>`
-    : "";
+  const directUrls = [];
+  if (o.directLinkUrl) directUrls.push(String(o.directLinkUrl).trim());
+  if (Array.isArray(o.directList)) {
+    for (const u of o.directList) {
+      const t = String(u || "").trim();
+      if (t) directUrls.push(t);
+    }
+  }
+  const directBoxes = directUrls
+    .map(u => `<div class="ad-card"><div class="ad-tag">Sponsored</div><div class="ad-slot ad-slot-second"><iframe class="ad-frame" src="${escapeAttr(u)}" loading="lazy" scrolling="no" frameborder="0" title="Advertisement"></iframe></div></div>`)
+    .join("\n");
   const popUrl = JSON.stringify(o.popunderUrl || "").replace(/</g, "\\u003c");
   const extraAds = [o.popunderCode, o.pushCode, o.inPagePushCode, o.vignetteCode].filter(Boolean).join("\n");
   const href = `/go?t=${o.token}`;
@@ -462,7 +471,7 @@ function adPage(o) {
     .replace(/HREF/g, () => href)
     .replace(/ADSLOT/g, () => adSlot)
     .replace(/SECONDAD/g, () => secondAd)
-    .replace(/DIRECTBOX/g, () => directBox)
+    .replace(/DIRECTBOX/g, () => directBoxes)
     .replace(/EXTRASCRIPTS/g, () => extraAds)
     .replace(/POPURL/g, () => popUrl);
 }
@@ -576,7 +585,7 @@ async function handleGo(request, url) {
   const nextStep = session.step + 1;
   await dbUpdate(`adsessions/${token}`, { step: nextStep }).catch(() => {});
   trackAdView(session.code, request, nextStep);
-  return html(adPage({ step: nextStep, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, pushCode: ads.pushCode, inPagePushCode: ads.inPagePushCode, vignetteCode: ads.vignetteCode, directLinkUrl: ads.directLinkUrl, token }));
+  return html(adPage({ step: nextStep, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, pushCode: ads.pushCode, inPagePushCode: ads.inPagePushCode, vignetteCode: ads.vignetteCode, directLinkUrl: ads.directLinkUrl, directList: ads.directList, token }));
 }
 
 // ============ ROUTER ============
@@ -720,7 +729,7 @@ export default {
         expiresAt: Date.now() + SESSION_TTL,
       }).catch(() => {});
       trackAdView(code, request, 1);
-      return html(adPage({ step: 1, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, pushCode: ads.pushCode, inPagePushCode: ads.inPagePushCode, vignetteCode: ads.vignetteCode, directLinkUrl: ads.directLinkUrl, token }));
+      return html(adPage({ step: 1, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, pushCode: ads.pushCode, inPagePushCode: ads.inPagePushCode, vignetteCode: ads.vignetteCode, directLinkUrl: ads.directLinkUrl, directList: ads.directList, token }));
     }
 
     // ---- Direct redirect (no ads) ----
