@@ -102,6 +102,10 @@ async function loadSettings() {
       document.getElementById('adsBanner2Html').value = ads.banner2Html || '';
       document.getElementById('adsPopunderUrl').value = ads.popunderUrl || '';
       document.getElementById('adsPopunderCode').value = ads.popunderCode || '';
+      document.getElementById('adsPushCode').value = ads.pushCode || '';
+      document.getElementById('adsInPagePushCode').value = ads.inPagePushCode || '';
+      document.getElementById('adsVignetteCode').value = ads.vignetteCode || '';
+      document.getElementById('adsDirectLink').value = ads.directLinkUrl || '';
     }
   } catch (err) {
     console.error(err);
@@ -156,6 +160,10 @@ document.getElementById('adsForm').addEventListener('submit', async (e) => {
         banner2Html: document.getElementById('adsBanner2Html').value.trim(),
         popunderUrl: document.getElementById('adsPopunderUrl').value.trim(),
         popunderCode: document.getElementById('adsPopunderCode').value.trim(),
+        pushCode: document.getElementById('adsPushCode').value.trim(),
+        inPagePushCode: document.getElementById('adsInPagePushCode').value.trim(),
+        vignetteCode: document.getElementById('adsVignetteCode').value.trim(),
+        directLinkUrl: document.getElementById('adsDirectLink').value.trim(),
       },
     });
     showToast('Ad settings saved successfully.', 'success');
