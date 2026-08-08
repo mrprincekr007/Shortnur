@@ -350,9 +350,9 @@ function adPage(o) {
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; display: flex; justify-content: center; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; }
     body.locked { overflow: hidden; }
-    .page { width: 100%; max-width: 560px; padding: 16px 16px 32px; }
+    .page { width: 100%; max-width: 560px; margin: 0 auto; padding: 16px 16px 32px; }
     .top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
     .logo { font-weight: 800; font-size: 1.05rem; }
     .logo span { background: linear-gradient(135deg,#18CBF0,#00E5C7); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
