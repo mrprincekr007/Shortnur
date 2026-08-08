@@ -341,7 +341,8 @@ function adPage(o) {
     .logo span { background: linear-gradient(135deg,#18CBF0,#00E5C7); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .steps { font-size: .8rem; color: #8892A4; background: rgba(255,255,255,.05); padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.08); }
     .ad-card { background: #0D1526; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 12px; margin-bottom: 18px; }
-    .ad-slot { width: 100%; min-height: 340px; background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.12); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .ad-slot { width: 100%; min-height: 340px; background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.12); border-radius: 12px; overflow: hidden; text-align: center; }
+    .ad-slot iframe { margin: 0 auto; display: block; }
     .ad-frame { width: 100%; min-height: 340px; border: 0; display: block; }
     .ad-placeholder { text-align: center; color: #8892A4; padding: 40px 20px; }
     .ad-placeholder span { display: block; font-size: 1rem; color: #fff; font-weight: 700; margin-top: 10px; }
