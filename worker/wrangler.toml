@@ -1,0 +1,21 @@
+name = "shortnur"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# Apna custom domain yahan daalo (baad me)
+# routes = [
+#   { pattern = "shortnur.to/*", zone_name = "shortnur.to" }
+# ]
+
+# Ya phir workers.dev subdomain:
+# workers_dev = true
+
+# Roz subah 3 baje expired adsessions cleanup ke liye
+[triggers]
+crons = ["0 3 * * *"]
+
+# Deploy se pehle:
+#   wrangler secret put FIREBASE_SERVICE_ACCOUNT   <- service account JSON
+# Optional vars (wrangler.toml [vars] section ya dashboard se):
+#   FIREBASE_DB_URL = "https://link-shortnur-default-rtdb.firebaseio.com"
+#   WEBSITE_BASE_URL = "https://mrprincekr007.github.io/Shortnur"
