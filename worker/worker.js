@@ -1,5 +1,5 @@
-// ============================================================
-// Shortnur — Cloudflare Worker
+﻿// ============================================================
+// Shortnur â€” Cloudflare Worker
 // Redirects short URLs, tracks clicks, serves password page,
 // and runs the ADVANCED interstitial ad system.
 //
@@ -191,12 +191,14 @@ const SESSION_TTL = 10 * 60 * 1000;
 const DEFAULT_ADS = {
   enabled: true,
   timerSeconds: 8,
-  adPages: 2,
+  adPages: 4,
   bannerUrl: "",
   bannerHtml: "",
+  banner2Url: "",
+  banner2Html: "",
   popunderUrl: "",
   popunderCode: "",
-  ratePer1000: 0.5,
+  ratePer1000: 10,
 };
 
 async function getAdsConfig() {
@@ -213,7 +215,7 @@ function landingPage(siteUrl) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shortnur — Shorten Your Links</title>
+  <title>Shortnur â€” Shorten Your Links</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; overflow: hidden; }
@@ -237,7 +239,7 @@ function landingPage(siteUrl) {
   <div class="container">
     <h1><span>Shortnur</span></h1>
     <p>Shorten your links, track every click, and earn from every share.</p>
-    <a href="${escapeAttr(base)}/user/login.html" class="cta">Get Started Free →</a>
+    <a href="${escapeAttr(base)}/user/login.html" class="cta">Get Started Free â†’</a>
   </div>
 </body>
 </html>`;
@@ -248,7 +250,7 @@ const PASSWORD_PAGE = (code) => `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Password Protected — Shortnur</title>
+  <title>Password Protected â€” Shortnur</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; }
@@ -271,7 +273,7 @@ const PASSWORD_PAGE = (code) => `<!DOCTYPE html>
     <p>This link is password protected. Enter the password to continue.</p>
     <form method="POST" action="/${code}">
       <input type="password" name="password" placeholder="Enter password" required autofocus>
-      <button type="submit">Continue →</button>
+      <button type="submit">Continue â†’</button>
     </form>
     <div class="error" id="err">Wrong password. Try again.</div>
   </div>
@@ -288,7 +290,7 @@ const ERROR_PAGE = (title, message) => `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title} — Shortnur</title>
+  <title>${title} â€” Shortnur</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; }
@@ -305,7 +307,7 @@ const ERROR_PAGE = (title, message) => `<!DOCTYPE html>
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
     <h2>${title}</h2>
     <p>${message}</p>
-    <a href="/">← Back to Shortnur</a>
+    <a href="/">â† Back to Shortnur</a>
   </div>
 </body>
 </html>`;
@@ -319,6 +321,14 @@ function adPage(o) {
     : o.bannerUrl
       ? `<iframe class="ad-frame" src="${escapeAttr(o.bannerUrl)}" loading="lazy" scrolling="no" frameborder="0" title="Advertisement"></iframe>`
       : `<div class="ad-placeholder"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#5a6b8c" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Advertisement</span><small>Your ad could be here</small></div>`;
+  const adSlot2 = o.banner2Html
+    ? o.banner2Html
+    : o.banner2Url
+      ? `<iframe class="ad-frame" src="${escapeAttr(o.banner2Url)}" loading="lazy" scrolling="no" frameborder="0" title="Advertisement"></iframe>`
+      : "";
+  const secondAd = adSlot2
+    ? `<div class="ad-card"><div class="ad-tag">Advertisement</div><div class="ad-slot ad-slot-second">${adSlot2}</div></div>`
+    : "";
   const popUrl = JSON.stringify(o.popunderUrl || "").replace(/</g, "\\u003c");
   const popCode = o.popunderCode || "";
   const href = `/go?t=${o.token}`;
@@ -329,7 +339,7 @@ function adPage(o) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
-  <title>Redirecting… — Shortnur</title>
+  <title>Redirectingâ€¦ â€” Shortnur</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; }
@@ -341,8 +351,11 @@ function adPage(o) {
     .logo span { background: linear-gradient(135deg,#18CBF0,#00E5C7); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .steps { font-size: .8rem; color: #8892A4; background: rgba(255,255,255,.05); padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.08); }
     .ad-card { background: #0D1526; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 12px; margin-bottom: 18px; }
-    .ad-slot { width: 100%; min-height: 340px; background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.12); border-radius: 12px; overflow: hidden; text-align: center; }
+    .ad-slot { width: 100%; min-height: 400px; background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.12); border-radius: 12px; overflow: hidden; text-align: center; }
     .ad-slot iframe { margin: 0 auto; display: block; }
+    .ad-slot-main { min-height: 520px; }
+    .ad-slot-second { min-height: 340px; }
+    .ad-tag { text-align: center; color: #5a6b8c; font-size: .7rem; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 8px; }
     .ad-frame { width: 100%; min-height: 340px; border: 0; display: block; }
     .ad-placeholder { text-align: center; color: #8892A4; padding: 40px 20px; }
     .ad-placeholder span { display: block; font-size: 1rem; color: #fff; font-weight: 700; margin-top: 10px; }
@@ -366,14 +379,14 @@ function adPage(o) {
   </style>
 </head>
 <body>
-  <div class="lock-bar" id="lockBar">👆 <b>Tap anywhere</b> to unlock the page — then scroll down</div>
+  <div class="lock-bar" id="lockBar">ðŸ‘† <b>Tap anywhere</b> to unlock the page â€” then scroll down</div>
   <div class="page">
     <div class="top">
       <div class="logo">Short<span>nur</span></div>
       <div class="steps">Step STEPNUM of TOTALPAGES</div>
     </div>
     <div class="ad-card">
-      <div class="ad-slot">ADSLOT</div>
+      <div class="ad-slot ad-slot-main">ADSLOT</div>
       <div class="earn-note"><span class="pulse"></span> You earn only if you stay until the timer finishes</div>
     </div>
     <div class="timer-card">
@@ -382,8 +395,9 @@ function adPage(o) {
         <div class="timer-label">Please wait for the countdown to finish</div>
       </div>
     </div>
-    <a class="continue-btn" id="continueBtn" href="HREF">Continue →</a>
-    <div class="hint">↓ Scroll up to see the ad again</div>
+    SECONDAD
+    <a class="continue-btn" id="continueBtn" href="HREF">Continue â†’</a>
+    <div class="hint">â†“ Scroll up to see the ad again</div>
     <div class="note">Shortnur helps creators earn from every click</div>
   </div>
   POPCODEHTML
@@ -423,7 +437,7 @@ function adPage(o) {
         left--;
         if (left <= 0) {
           clearInterval(iv);
-          count.textContent = '✓';
+          count.textContent = 'âœ“';
           btn.classList.add('ready');
           ring.style.background = 'conic-gradient(#00E5C7 360deg, #1a2a4a 0deg)';
         } else {
@@ -439,6 +453,7 @@ function adPage(o) {
     .replace(/TIMER/g, () => timer)
     .replace(/HREF/g, () => href)
     .replace(/ADSLOT/g, () => adSlot)
+    .replace(/SECONDAD/g, () => secondAd)
     .replace(/POPURL/g, () => popUrl)
     .replace(/POPCODEHTML/g, () => popCode);
 }
@@ -552,7 +567,7 @@ async function handleGo(request, url) {
   const nextStep = session.step + 1;
   await dbUpdate(`adsessions/${token}`, { step: nextStep }).catch(() => {});
   trackAdView(session.code, request, nextStep);
-  return html(adPage({ step: nextStep, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, token }));
+  return html(adPage({ step: nextStep, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, token }));
 }
 
 // ============ ROUTER ============
@@ -635,7 +650,7 @@ export default {
     // ---- Extract short code ----
     const code = path.replace(/^\//, "").replace(/\/$/, "");
 
-    // Basic validation — short codes are alphanumeric + hyphens/underscores
+    // Basic validation â€” short codes are alphanumeric + hyphens/underscores
     if (!code || code.length > 30 || /[^a-zA-Z0-9_-]/.test(code)) {
       return html(ERROR_PAGE("Not Found", "This link does not exist or has been removed."), 404);
     }
@@ -696,7 +711,7 @@ export default {
         expiresAt: Date.now() + SESSION_TTL,
       }).catch(() => {});
       trackAdView(code, request, 1);
-      return html(adPage({ step: 1, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, token }));
+      return html(adPage({ step: 1, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, token }));
     }
 
     // ---- Direct redirect (no ads) ----
