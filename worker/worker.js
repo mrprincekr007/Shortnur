@@ -101,12 +101,18 @@ async function getAccessToken() {
 
 async function dbReq(path, options) {
   const token = await getAccessToken();
-  const url = firebaseDbUrl + "/" + path + ".json" + (token ? "?auth=" + encodeURIComponent(token) : "");
-  let res = await fetch(url, options);
+  const baseUrl = firebaseDbUrl + "/" + path + ".json";
+  let res;
+  if (token) {
+    const headers = new Headers(options && options.headers ? options.headers : {});
+    headers.set("Authorization", "Bearer " + token);
+    res = await fetch(baseUrl, Object.assign({}, options, { headers }));
+  } else {
+    res = await fetch(baseUrl, options);
+  }
   // Agar service account token reject ho jaye (401/403) toh bina token retry karo
   if (token && (res.status === 401 || res.status === 403)) {
-    const publicUrl = firebaseDbUrl + "/" + path + ".json";
-    res = await fetch(publicUrl, options);
+    res = await fetch(baseUrl, options);
   }
   return res;
 }
