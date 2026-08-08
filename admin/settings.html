@@ -101,13 +101,13 @@
               </div>
               <div class="form-group">
                 <label>Ad Pages Per Link</label>
-                <input type="number" id="adsPages" class="form-control form-control-plain" value="2" min="1" max="5">
-                <small class="text-muted">Har link khulte hi kitni ad pages dikhein (har page pe timer + ad).</small>
+                <input type="number" id="adsPages" class="form-control form-control-plain" value="4" min="1" max="8">
+                <small class="text-muted">Har link khulte hi kitni ad pages dikhein (har page pe timer + ad). Jitni zyada pages, utni zyada earning.</small>
               </div>
               <div class="form-group">
                 <label>Earning Rate ($ per 1000 views)</label>
-                <input type="number" id="adsRate" class="form-control form-control-plain" value="0.50" min="0" step="0.01">
-                <small class="text-muted">1000 completed views pe kitna earn karna hai (user dashboard me dikhta hai).</small>
+                <input type="number" id="adsRate" class="form-control form-control-plain" value="10" min="0" step="0.01">
+                <small class="text-muted">1000 completed views pe user ko kitna (CPM). $10 = 1000 views pe $10. Ye ad earnings se chhota hona chahiye.</small>
               </div>
             </div>
           </div>
@@ -123,6 +123,20 @@
               <label>Ya Banner URL (iframe, optional)</label>
               <input type="url" id="adsBannerUrl" class="form-control form-control-plain" placeholder="https://your-ad-banner-url">
               <small class="text-muted">Agar upar HTML code hai toh ye khaali chhodo. Sirf tab use karo jab iframe URL ho.</small>
+            </div>
+          </div>
+
+          <div class="ad-box">
+            <div class="ad-box-title"><span data-icon="tag"></span> 1b. Second Ad — Bottom Box (optional)</div>
+            <p class="text-muted">Ye ad timer ke <b>neeche second bade box</b> me dikhta hai. Iske liye Adsterra me alag <b>Display Banner zone</b> banao (duplicate zone na ho toh better). Agar chhodo toh second box nahi dikhega.</p>
+            <div class="form-group">
+              <label>Ad Code (HTML)</label>
+              <textarea id="adsBanner2Html" class="form-control form-control-plain ad-code-box" rows="4" placeholder="<script type=&quot;text/javascript&quot;> atOptions = { 'key': 'YOUR_KEY', 'format': 'iframe', 'height': 250, 'width': 300, 'params': {} }; </script>"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Ya Banner URL (iframe, optional)</label>
+              <input type="url" id="adsBanner2Url" class="form-control form-control-plain" placeholder="https://your-second-ad-banner-url">
+              <small class="text-muted">Agar upar HTML code hai toh ye khaali chhodo.</small>
             </div>
           </div>
 
