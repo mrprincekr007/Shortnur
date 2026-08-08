@@ -345,6 +345,9 @@ function adPage(o) {
   const directBoxes = directUrls
     .map(u => `<div class="ad-card"><div class="ad-tag">Sponsored</div><div class="ad-slot ad-slot-second"><iframe class="ad-frame" src="${escapeAttr(u)}" loading="lazy" scrolling="no" frameborder="0" title="Advertisement"></iframe></div></div>`)
     .join("\n");
+  const stepDots = Array.from({ length: Math.max(1, parseInt(o.totalPages) || 1) }, (_, i) =>
+    `<span class="step-dot${i + 1 === parseInt(o.step) ? " active" : ""}"></span>`
+  ).join("");
   const popUrl = JSON.stringify(o.popunderUrl || "").replace(/</g, "\\u003c");
   const extraAds = [o.popunderCode, o.pushCode, o.inPagePushCode, o.vignetteCode].filter(Boolean).join("\n");
   const href = `/go?t=${o.token}`;
@@ -355,53 +358,86 @@ function adPage(o) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
-  <title>Redirectingâ€¦ â€” Shortnur</title>
+  <title>Redirecting... &#8212; Shortnur</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #070B16; color: #fff; overflow-x: hidden; }
     body.locked { overflow: hidden; }
-    .page { width: 100%; max-width: 560px; margin: 0 auto; padding: 16px 16px 32px; }
-    .top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-    .logo { font-weight: 800; font-size: 1.05rem; }
+    .glow { position: fixed; border-radius: 50%; filter: blur(110px); z-index: 0; pointer-events: none; }
+    .g1 { width: 320px; height: 320px; top: -70px; left: -60px; background: #18CBF0; opacity: .16; animation: drift 9s ease-in-out infinite; }
+    .g2 { width: 380px; height: 380px; bottom: -90px; right: -70px; background: #00E5C7; opacity: .14; animation: drift 11s ease-in-out infinite reverse; }
+    .g3 { width: 300px; height: 300px; top: 45%; left: 50%; margin-left: -150px; margin-top: -150px; background: #7B5CFF; opacity: .09; }
+    @keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20px, 16px); } }
+    .lock-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(7, 11, 22, .94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: grid; place-items: center; text-align: center; transition: opacity .5s ease, visibility .5s ease; }
+    .lock-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .lock-icon { width: 74px; height: 74px; margin: 0 auto 18px; border-radius: 24px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); display: grid; place-items: center; animation: bob 1.6s ease-in-out infinite; box-shadow: 0 0 40px rgba(24,203,240,.25); }
+    .lock-icon svg { width: 36px; height: 36px; }
+    .lock-title { font-size: 1.25rem; font-weight: 800; letter-spacing: -.2px; }
+    .lock-title b { background: linear-gradient(135deg,#18CBF0,#00E5C7); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .lock-sub { color: #8892A4; font-size: .86rem; margin-top: 8px; }
+    .lock-hint { position: absolute; bottom: 40px; left: 0; right: 0; color: #5a6b8c; font-size: .75rem; animation: bob 2s ease-in-out infinite; }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+    .page { position: relative; z-index: 1; width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px 36px; }
+    .top { display: flex; align-items: center; justify-content: space-between; padding: 20px 4px 14px; }
+    .logo { font-weight: 900; font-size: 1.2rem; letter-spacing: -.3px; }
     .logo span { background: linear-gradient(135deg,#18CBF0,#00E5C7); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-    .steps { font-size: .8rem; color: #8892A4; background: rgba(255,255,255,.05); padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.08); }
-    .ad-card { background: #0D1526; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 12px; margin-bottom: 18px; }
-    .ad-slot { width: 100%; min-height: 400px; background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.12); border-radius: 12px; overflow: hidden; text-align: center; }
+    .steps { display: flex; align-items: center; gap: 8px; font-size: .78rem; color: #9fb0d1; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); padding: 6px 12px; border-radius: 999px; }
+    .steps-dots { display: flex; align-items: center; gap: 5px; }
+    .step-dot { width: 6px; height: 6px; border-radius: 99px; background: rgba(255,255,255,.16); transition: .3s; }
+    .step-dot.active { width: 18px; background: linear-gradient(135deg,#18CBF0,#00E5C7); box-shadow: 0 0 10px rgba(24,203,240,.5); }
+    .ad-card { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.09); border-radius: 20px; padding: 10px; margin-bottom: 16px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 10px 40px rgba(0,0,0,.35); }
+    .ad-tag { display: flex; align-items: center; gap: 7px; color: #8b9bb8; font-size: .68rem; text-transform: uppercase; letter-spacing: .14em; margin: 6px 0 10px 8px; }
+    .ad-tag i { width: 6px; height: 6px; border-radius: 50%; background: #00E5C7; box-shadow: 0 0 8px #00E5C7; }
+    .ad-slot { width: 100%; min-height: 400px; background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.12); border-radius: 14px; overflow: hidden; text-align: center; }
     .ad-slot iframe { margin: 0 auto; display: block; }
     .ad-slot-main { min-height: 520px; }
     .ad-slot-second { min-height: 340px; }
-    .ad-tag { text-align: center; color: #5a6b8c; font-size: .7rem; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 8px; }
     .ad-frame { width: 100%; min-height: 340px; border: 0; display: block; }
-    .ad-placeholder { text-align: center; color: #8892A4; padding: 40px 20px; }
+    .ad-placeholder { text-align: center; color: #8892A4; padding: 46px 20px; }
     .ad-placeholder span { display: block; font-size: 1rem; color: #fff; font-weight: 700; margin-top: 10px; }
     .ad-placeholder small { font-size: .8rem; }
-    .earn-note { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 12px 0 2px; color: #9fb0d1; font-size: .83rem; text-align: center; }
-    .earn-note .pulse { width: 8px; height: 8px; border-radius: 50%; background: #00E5C7; animation: pulse 1.2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-    .timer-card { background: #0D1526; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 20px; margin-bottom: 18px; text-align: center; }
-    .timer-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
-    .ring { width: 84px; height: 84px; border-radius: 50%; background: conic-gradient(#18CBF0 0deg,#1a2a4a 0deg); display: grid; place-items: center; transition: background .1s linear; }
-    .ring-inner { width: 68px; height: 68px; border-radius: 50%; background: #0D1526; display: grid; place-items: center; font-size: 1.6rem; font-weight: 800; }
-    .timer-label { color: #8892A4; font-size: .85rem; }
-    .continue-btn { display: block; width: 100%; padding: 15px; border: none; border-radius: 12px; background: linear-gradient(135deg,#18CBF0,#00E5C7); color: #050A18; font-weight: 800; font-size: 1.02rem; cursor: pointer; text-decoration: none; text-align: center; opacity: .45; pointer-events: none; transition: .2s; }
-    .continue-btn.ready { opacity: 1; pointer-events: auto; }
-    .continue-btn.ready:hover { box-shadow: 0 8px 30px rgba(24,203,240,.35); transform: translateY(-1px); }
-    .note { text-align: center; color: #5a6b8c; font-size: .75rem; margin-top: 14px; }
-    .lock-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; background: rgba(6,11,24,.95); backdrop-filter: blur(6px); border-bottom: 1px solid rgba(255,255,255,.08); padding: 12px 16px; text-align: center; font-size: .85rem; color: #dfe7f5; transition: transform .3s, opacity .3s; }
-    .lock-bar b { color: #18CBF0; }
-    .lock-bar.hidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-    .hint { text-align: center; color: #5a6b8c; font-size: .8rem; margin-top: 10px; }
+    .earn-note { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 12px 0 6px; color: #9fb0d1; font-size: .8rem; text-align: center; }
+    .earn-note .pulse { width: 8px; height: 8px; border-radius: 50%; background: #00E5C7; animation: pulse 1.2s infinite; box-shadow: 0 0 8px #00E5C7; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+    .timer-card { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.09); border-radius: 20px; padding: 22px; margin-bottom: 16px; text-align: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 10px 40px rgba(0,0,0,.35); }
+    .timer-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .ring { width: 92px; height: 92px; border-radius: 50%; background: conic-gradient(#18CBF0 0deg, #16233f 0deg); display: grid; place-items: center; position: relative; transition: background .12s linear; box-shadow: 0 0 34px rgba(24,203,240,.18); }
+    .ring-inner { width: 74px; height: 74px; border-radius: 50%; background: #0b1222; display: grid; place-items: center; font-size: 1.7rem; font-weight: 800; }
+    .ring.done { background: conic-gradient(#00E5C7 360deg, #16233f 0deg); box-shadow: 0 0 44px rgba(0,229,199,.4); }
+    .ring.done .ring-inner { color: #00E5C7; }
+    .timer-label { color: #8892A4; font-size: .85rem; margin-top: 14px; }
+    .progress-track { height: 5px; background: rgba(255,255,255,.08); border-radius: 99px; overflow: hidden; margin-top: 18px; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#18CBF0,#00E5C7); border-radius: 99px; transition: width 1s linear; }
+    .continue-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 16px; border: none; border-radius: 14px; background: linear-gradient(135deg,#18CBF0,#00E5C7); color: #050A18; font-weight: 800; font-size: 1.05rem; cursor: pointer; text-decoration: none; opacity: .4; pointer-events: none; transition: .25s; box-shadow: 0 10px 30px rgba(24,203,240,.25); }
+    .continue-btn.ready { opacity: 1; pointer-events: auto; box-shadow: 0 12px 38px rgba(0,229,199,.4); }
+    .continue-btn.ready:hover { transform: translateY(-2px); }
+    .continue-btn.ready:active { transform: scale(.98); }
+    .hint { display: flex; align-items: center; justify-content: center; gap: 6px; text-align: center; color: #5a6b8c; font-size: .8rem; margin-top: 14px; }
+    .note { text-align: center; color: #5a6b8c; font-size: .73rem; margin-top: 20px; }
   </style>
 </head>
 <body>
-  <div class="lock-bar" id="lockBar">ðŸ‘† <b>Tap anywhere</b> to unlock the page â€” then scroll down</div>
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+  <div class="glow g3"></div>
+  <div class="lock-overlay" id="lockOverlay">
+    <div>
+      <div class="lock-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#18CBF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 0-4 4v6H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><path d="M12 12v4"/><circle cx="12" cy="18" r="1"/></svg>
+      </div>
+      <div class="lock-title"><b>Tap anywhere</b> to unlock</div>
+      <div class="lock-sub">Then scroll down to see the ads</div>
+      <div class="lock-hint">&#8593; Swipe up to scroll</div>
+    </div>
+  </div>
   <div class="page">
     <div class="top">
       <div class="logo">Short<span>nur</span></div>
-      <div class="steps">Step STEPNUM of TOTALPAGES</div>
+      <div class="steps"><span class="steps-dots">STEPDOTS</span> STEPNUM / TOTALPAGES</div>
     </div>
     <div class="ad-card">
+      <div class="ad-tag"><i></i> Advertisement</div>
       <div class="ad-slot ad-slot-main">ADSLOT</div>
       <div class="earn-note"><span class="pulse"></span> You earn only if you stay until the timer finishes</div>
     </div>
@@ -410,11 +446,12 @@ function adPage(o) {
         <div class="ring" id="ring"><div class="ring-inner" id="count">TIMER</div></div>
         <div class="timer-label">Please wait for the countdown to finish</div>
       </div>
+      <div class="progress-track"><div class="progress-fill" id="prog"></div></div>
     </div>
     SECONDAD
     DIRECTBOX
-    <a class="continue-btn" id="continueBtn" href="HREF">Continue →</a>
-    <div class="hint">↓ Scroll up to see the ads again</div>
+    <a class="continue-btn" id="continueBtn" href="HREF">Continue <span>&#8594;</span></a>
+    <div class="hint"><span>&#8593;</span> Scroll up to see the ads again</div>
     <div class="note">Shortnur helps creators earn from every click</div>
   </div>
   EXTRASCRIPTS
@@ -424,14 +461,15 @@ function adPage(o) {
       var left = total;
       var count = document.getElementById('count');
       var ring = document.getElementById('ring');
+      var prog = document.getElementById('prog');
       var btn = document.getElementById('continueBtn');
-      var lockBar = document.getElementById('lockBar');
+      var overlay = document.getElementById('lockOverlay');
       var unlocked = false;
       function unlock() {
         if (unlocked) return;
         unlocked = true;
         document.body.classList.remove('locked');
-        lockBar.classList.add('hidden');
+        overlay.classList.add('hidden');
         if (POPURL) {
           try {
             var w = window.open(POPURL, '_blank');
@@ -446,17 +484,20 @@ function adPage(o) {
       document.addEventListener('scroll', unlock, { passive: true, once: true });
       function render() {
         count.textContent = left;
-        var deg = Math.round(((total - left) / total) * 360);
-        ring.style.background = 'conic-gradient(#18CBF0 ' + deg + 'deg, #1a2a4a 0deg)';
+        var done = total - left;
+        var deg = Math.round((done / total) * 360);
+        ring.style.background = 'conic-gradient(#18CBF0 ' + deg + 'deg, #16233f 0deg)';
+        if (prog) prog.style.width = Math.round((done / total) * 100) + '%';
       }
       render();
       var iv = setInterval(function () {
         left--;
         if (left <= 0) {
           clearInterval(iv);
-          count.textContent = 'âœ“';
+          count.textContent = '\u2713';
+          ring.classList.add('done');
+          if (prog) prog.style.width = '100%';
           btn.classList.add('ready');
-          ring.style.background = 'conic-gradient(#00E5C7 360deg, #1a2a4a 0deg)';
         } else {
           render();
         }
@@ -467,6 +508,7 @@ function adPage(o) {
 </html>`
     .replace(/STEPNUM/g, () => o.step)
     .replace(/TOTALPAGES/g, () => o.totalPages)
+    .replace(/STEPDOTS/g, () => stepDots)
     .replace(/TIMER/g, () => timer)
     .replace(/HREF/g, () => href)
     .replace(/ADSLOT/g, () => adSlot)
