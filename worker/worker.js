@@ -13,6 +13,7 @@
 // ============================================================
 
 const DEFAULT_DB = "https://link-shortnur-default-rtdb.firebaseio.com";
+const FRONTEND_ORIGIN = "https://mrprincekr007.github.io/Shortnur";
 
 let serviceAccount = null;
 let firebaseDbUrl = DEFAULT_DB;
@@ -567,6 +568,17 @@ async function scheduled(event, env) {
   await Promise.all(tasks);
 }
 
+// ---- Frontend proxy (GitHub Pages) ----
+// linkbaba.online par user panel (GitHub Pages frontend) serve karta hai.
+async function serveFrontend(pathname) {
+  const target = FRONTEND_ORIGIN + (pathname === "/" ? "/" : pathname);
+  const res = await fetch(target);
+  const headers = new Headers(res.headers);
+  headers.set("Access-Control-Allow-Origin", "*");
+  headers.set("Cache-Control", "public, max-age=300");
+  return new Response(res.body, { status: res.status, headers });
+}
+
 export default {
   async fetch(request, env) {
     setEnv(env);
@@ -585,9 +597,28 @@ export default {
       });
     }
 
-    // ---- Landing page ----
+    // ---- Root: user panel (frontend) with worker landing fallback ----
     if (path === "/" || path === "") {
-      return html(landingPage(env.WEBSITE_BASE_URL));
+      try {
+        return await serveFrontend("/");
+      } catch (e) {
+        return html(landingPage(env.WEBSITE_BASE_URL));
+      }
+    }
+
+    // ---- Frontend static files (proxy from GitHub Pages) ----
+    const isFrontendPath =
+      path.startsWith("/admin/") ||
+      path.startsWith("/assets/") ||
+      path.startsWith("/firebase/") ||
+      /\.[a-z0-9]{2,5}$/i.test(path);
+
+    if (isFrontendPath) {
+      try {
+        return await serveFrontend(path);
+      } catch (e) {
+        return html(ERROR_PAGE("Error", "Frontend temporarily unavailable. Please try again later."), 502);
+      }
     }
 
     // ---- Favicon ----
