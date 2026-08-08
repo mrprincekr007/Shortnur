@@ -100,6 +100,8 @@ async function loadSettings() {
       document.getElementById('adsBannerHtml').value = ads.bannerHtml || '';
       document.getElementById('adsBanner2Url').value = ads.banner2Url || '';
       document.getElementById('adsBanner2Html').value = ads.banner2Html || '';
+      document.getElementById('adsBanner3Url').value = ads.banner3Url || '';
+      document.getElementById('adsBanner3Html').value = ads.banner3Html || '';
       document.getElementById('adsPopunderUrl').value = ads.popunderUrl || '';
       document.getElementById('adsPopunderCode').value = ads.popunderCode || '';
       document.getElementById('adsPushCode').value = ads.pushCode || '';
@@ -161,6 +163,8 @@ document.getElementById('adsForm').addEventListener('submit', async (e) => {
         bannerHtml: document.getElementById('adsBannerHtml').value.trim(),
         banner2Url: document.getElementById('adsBanner2Url').value.trim(),
         banner2Html: document.getElementById('adsBanner2Html').value.trim(),
+        banner3Url: document.getElementById('adsBanner3Url').value.trim(),
+        banner3Html: document.getElementById('adsBanner3Html').value.trim(),
         popunderUrl: document.getElementById('adsPopunderUrl').value.trim(),
         popunderCode: document.getElementById('adsPopunderCode').value.trim(),
         pushCode: document.getElementById('adsPushCode').value.trim(),
