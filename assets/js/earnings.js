@@ -311,9 +311,19 @@ function renderMethodFields() {
   `).join('');
 }
 
+function computeStats() {
+  const linksTotal = allLinks.reduce((s, l) => s + (l.earnings || 0), 0);
+  const hasUserEarnings = (userData.totalEarnings || 0) > 0 || (userData.monthEarnings || 0) > 0;
+  return {
+    totalEarnings: hasUserEarnings ? (userData.totalEarnings || 0) : linksTotal,
+    monthEarnings: hasUserEarnings ? (userData.monthEarnings || 0) : linksTotal
+  };
+}
+
 function renderStats() {
-  const totalEarnings = userData.totalEarnings || 0;
-  const monthEarnings = userData.monthEarnings || 0;
+  const stats = computeStats();
+  const totalEarnings = stats.totalEarnings;
+  const monthEarnings = stats.monthEarnings;
   const totalClicks = allLinks.reduce((s, l) => s + (l.clicks || 0), 0);
 
   animateCounter(document.getElementById('totalEarnings'), totalEarnings, { prefix: '$', decimals: 2 });
@@ -352,7 +362,7 @@ function renderEarningsTable() {
 }
 
 function openWithdrawModal() {
-  const balance = userData.totalEarnings || 0;
+  const balance = computeStats().totalEarnings;
   document.getElementById('wBalance').textContent = '$' + balance.toFixed(2);
   document.getElementById('withdrawModal').classList.add('show');
 }
