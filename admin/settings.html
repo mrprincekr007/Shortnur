@@ -154,6 +154,42 @@
             </div>
           </div>
 
+          <div class="ad-box">
+            <div class="ad-box-title"><span data-icon="bell"></span> 3. Push Notifications</div>
+            <p class="text-muted">Browser push notification ad (mobile + desktop). Adsterra <b>Push Notifications</b> zone ka code yahan daalo. Ise <code>sw.js</code> service worker bhi chahiye — ad page pe automatically load hoga.</p>
+            <div class="form-group">
+              <label>Push Code (HTML)</label>
+              <textarea id="adsPushCode" class="form-control form-control-plain ad-code-box" rows="3" placeholder="<script src=&quot;https://.../service.min.js&quot; data-zone=&quot;YOUR_ZONE&quot; async></script>"></textarea>
+            </div>
+          </div>
+
+          <div class="ad-box">
+            <div class="ad-box-title"><span data-icon="chat"></span> 4. In-Page Push</div>
+            <p class="text-muted">Page ke andar push-notification jaisa ad widget dikhta hai. Adsterra <b>In-Page Push</b> zone ka code yahan daalo.</p>
+            <div class="form-group">
+              <label>In-Page Push Code (HTML)</label>
+              <textarea id="adsInPagePushCode" class="form-control form-control-plain ad-code-box" rows="3" placeholder="<script src=&quot;https://.../smart.min.js&quot; data-zone=&quot;YOUR_ZONE&quot; async></script>"></textarea>
+            </div>
+          </div>
+
+          <div class="ad-box">
+            <div class="ad-box-title"><span data-icon="fullscreen"></span> 5. Vignette / Interstitial</div>
+            <p class="text-muted">Poora screen cover karne wala fullscreen ad. Adsterra <b>Vignette (Interstitial)</b> zone ka code yahan daalo.</p>
+            <div class="form-group">
+              <label>Vignette Code (HTML)</label>
+              <textarea id="adsVignetteCode" class="form-control form-control-plain ad-code-box" rows="3" placeholder="<script src=&quot;https://.../interstitial.min.js&quot; data-zone=&quot;YOUR_ZONE&quot; async></script>"></textarea>
+            </div>
+          </div>
+
+          <div class="ad-box">
+            <div class="ad-box-title"><span data-icon="link"></span> 6. Direct Link</div>
+            <p class="text-muted">Adsterra <b>Direct link</b> (advertiser ka seedha URL) — second box ke neeche sponsored iframe me dikhta hai.</p>
+            <div class="form-group">
+              <label>Direct Link URL</label>
+              <input type="url" id="adsDirectLink" class="form-control form-control-plain" placeholder="https://direct-ad-link">
+            </div>
+          </div>
+
           <button type="submit" class="btn btn-primary"><span data-icon="check"></span> Save Ad Settings</button>
         </form>
       </div>
