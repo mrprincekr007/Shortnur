@@ -196,6 +196,8 @@ const DEFAULT_ADS = {
   bannerHtml: "",
   banner2Url: "",
   banner2Html: "",
+  banner3Url: "",
+  banner3Html: "",
   popunderUrl: "",
   popunderCode: "",
   pushCode: "",
@@ -334,6 +336,14 @@ function adPage(o) {
   const secondAd = adSlot2
     ? `<div class="ad-card"><div class="ad-tag">Advertisement</div><div class="ad-slot ad-slot-second">${adSlot2}</div></div>`
     : "";
+  const adSlot3 = o.banner3Html
+    ? o.banner3Html
+    : o.banner3Url
+      ? `<iframe class="ad-frame" src="${escapeAttr(o.banner3Url)}" loading="lazy" scrolling="no" frameborder="0" title="Advertisement"></iframe>`
+      : "";
+  const thirdAd = adSlot3
+    ? `<div class="ad-card"><div class="ad-tag">Advertisement</div><div class="ad-slot ad-slot-second">${adSlot3}</div></div>`
+    : "";
   const directUrls = [];
   if (o.directLinkUrl) directUrls.push(String(o.directLinkUrl).trim());
   if (Array.isArray(o.directList)) {
@@ -371,13 +381,10 @@ function adPage(o) {
     @keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20px, 16px); } }
     .lock-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(7, 11, 22, .94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: grid; place-items: center; text-align: center; transition: opacity .5s ease, visibility .5s ease; }
     .lock-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-    .lock-icon { width: 74px; height: 74px; margin: 0 auto 18px; border-radius: 24px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); display: grid; place-items: center; animation: bob 1.6s ease-in-out infinite; box-shadow: 0 0 40px rgba(24,203,240,.25); }
-    .lock-icon svg { width: 36px; height: 36px; }
-    .lock-title { font-size: 1.25rem; font-weight: 800; letter-spacing: -.2px; }
-    .lock-title b { background: linear-gradient(135deg,#18CBF0,#00E5C7); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-    .lock-sub { color: #8892A4; font-size: .86rem; margin-top: 8px; }
-    .lock-hint { position: absolute; bottom: 40px; left: 0; right: 0; color: #5a6b8c; font-size: .75rem; animation: bob 2s ease-in-out infinite; }
-    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+    .start-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; padding: 15px 44px; border: none; border-radius: 14px; background: linear-gradient(135deg,#18CBF0,#00E5C7); color: #050A18; font-weight: 800; font-size: 1.1rem; cursor: pointer; box-shadow: 0 10px 40px rgba(24,203,240,.4); transition: .2s; }
+    .start-btn:hover { transform: translateY(-2px); }
+    .start-btn:active { transform: scale(.96); }
+    .start-btn.hidden { display: none; }
     .page { position: relative; z-index: 1; width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px 36px; }
     .top { display: flex; align-items: center; justify-content: space-between; padding: 20px 4px 14px; }
     .logo { font-weight: 900; font-size: 1.2rem; letter-spacing: -.3px; }
@@ -389,11 +396,11 @@ function adPage(o) {
     .ad-card { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.09); border-radius: 20px; padding: 10px; margin-bottom: 16px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 10px 40px rgba(0,0,0,.35); }
     .ad-tag { display: flex; align-items: center; gap: 7px; color: #8b9bb8; font-size: .68rem; text-transform: uppercase; letter-spacing: .14em; margin: 6px 0 10px 8px; }
     .ad-tag i { width: 6px; height: 6px; border-radius: 50%; background: #00E5C7; box-shadow: 0 0 8px #00E5C7; }
-    .ad-slot { width: 100%; min-height: 400px; background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.12); border-radius: 14px; overflow: hidden; text-align: center; }
+    .ad-slot { width: 100%; min-height: 0; background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.12); border-radius: 14px; overflow: hidden; text-align: center; }
     .ad-slot iframe { margin: 0 auto; display: block; }
     .ad-slot-main { min-height: 520px; }
-    .ad-slot-second { min-height: 340px; }
-    .ad-frame { width: 100%; min-height: 340px; border: 0; display: block; }
+    .ad-slot-second { min-height: 250px; }
+    .ad-frame { width: 100%; min-height: 250px; border: 0; display: block; }
     .ad-placeholder { text-align: center; color: #8892A4; padding: 46px 20px; }
     .ad-placeholder span { display: block; font-size: 1rem; color: #fff; font-weight: 700; margin-top: 10px; }
     .ad-placeholder small { font-size: .8rem; }
@@ -421,16 +428,6 @@ function adPage(o) {
   <div class="glow g1"></div>
   <div class="glow g2"></div>
   <div class="glow g3"></div>
-  <div class="lock-overlay" id="lockOverlay">
-    <div>
-      <div class="lock-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#18CBF0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 0-4 4v6H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><path d="M12 12v4"/><circle cx="12" cy="18" r="1"/></svg>
-      </div>
-      <div class="lock-title"><b>Tap anywhere</b> to unlock</div>
-      <div class="lock-sub">Then scroll down to see the ads</div>
-      <div class="lock-hint">&#8593; Swipe up to scroll</div>
-    </div>
-  </div>
   <div class="page">
     <div class="top">
       <div class="logo">Short<span>nur</span></div>
@@ -443,15 +440,17 @@ function adPage(o) {
     </div>
     <div class="timer-card">
       <div class="timer-wrap">
-        <div class="ring" id="ring"><div class="ring-inner" id="count">TIMER</div></div>
-        <div class="timer-label">Please wait for the countdown to finish</div>
+        <div class="ring" id="ring" style="display:none"><div class="ring-inner" id="count">TIMER</div></div>
+        <button class="start-btn" id="startBtn">Click to Continue <span>&#9654;</span></button>
+        <div class="timer-label" id="timerLabel">Start the timer to unlock your link</div>
       </div>
-      <div class="progress-track"><div class="progress-fill" id="prog"></div></div>
+      <div class="progress-track" id="progTrack" style="display:none"><div class="progress-fill" id="prog"></div></div>
     </div>
     SECONDAD
     DIRECTBOX
     <a class="continue-btn" id="continueBtn" href="HREF">Continue <span>&#8594;</span></a>
-    <div class="hint"><span>&#8593;</span> Scroll up to see the ads again</div>
+    <div class="hint" id="bottomHint" style="display:none"><span>&#8595;</span> Scroll down to continue</div>
+    THIRDAD
     <div class="note">Shortnur helps creators earn from every click</div>
   </div>
   EXTRASCRIPTS
@@ -462,14 +461,20 @@ function adPage(o) {
       var count = document.getElementById('count');
       var ring = document.getElementById('ring');
       var prog = document.getElementById('prog');
+      var progTrack = document.getElementById('progTrack');
       var btn = document.getElementById('continueBtn');
-      var overlay = document.getElementById('lockOverlay');
-      var unlocked = false;
-      function unlock() {
-        if (unlocked) return;
-        unlocked = true;
-        document.body.classList.remove('locked');
-        overlay.classList.add('hidden');
+      var startBtn = document.getElementById('startBtn');
+      var timerLabel = document.getElementById('timerLabel');
+      var bottomHint = document.getElementById('bottomHint');
+      var started = false;
+      var iv = null;
+      function start() {
+        if (started) return;
+        started = true;
+        startBtn.classList.add('hidden');
+        ring.style.display = 'grid';
+        progTrack.style.display = 'block';
+        timerLabel.textContent = 'Please wait for the countdown to finish';
         if (POPURL) {
           try {
             var w = window.open(POPURL, '_blank');
@@ -477,11 +482,23 @@ function adPage(o) {
           } catch (e) {}
           window.focus();
         }
+        render();
+        iv = setInterval(tick, 1000);
       }
-      document.body.classList.add('locked');
-      document.addEventListener('pointerdown', unlock, { once: true });
-      document.addEventListener('touchstart', unlock, { passive: true, once: true });
-      document.addEventListener('scroll', unlock, { passive: true, once: true });
+      function tick() {
+        left--;
+        if (left <= 0) {
+          clearInterval(iv);
+          count.textContent = '\u2713';
+          ring.classList.add('done');
+          if (prog) prog.style.width = '100%';
+          timerLabel.textContent = 'Scroll down and tap Continue';
+          bottomHint.style.display = 'flex';
+          btn.classList.add('ready');
+        } else {
+          render();
+        }
+      }
       function render() {
         count.textContent = left;
         var done = total - left;
@@ -489,19 +506,7 @@ function adPage(o) {
         ring.style.background = 'conic-gradient(#18CBF0 ' + deg + 'deg, #16233f 0deg)';
         if (prog) prog.style.width = Math.round((done / total) * 100) + '%';
       }
-      render();
-      var iv = setInterval(function () {
-        left--;
-        if (left <= 0) {
-          clearInterval(iv);
-          count.textContent = '\u2713';
-          ring.classList.add('done');
-          if (prog) prog.style.width = '100%';
-          btn.classList.add('ready');
-        } else {
-          render();
-        }
-      }, 1000);
+      startBtn.addEventListener('click', start);
     })();
   </script>
 </body>
@@ -513,6 +518,7 @@ function adPage(o) {
     .replace(/HREF/g, () => href)
     .replace(/ADSLOT/g, () => adSlot)
     .replace(/SECONDAD/g, () => secondAd)
+    .replace(/THIRDAD/g, () => thirdAd)
     .replace(/DIRECTBOX/g, () => directBoxes)
     .replace(/EXTRASCRIPTS/g, () => extraAds)
     .replace(/POPURL/g, () => popUrl);
@@ -627,7 +633,7 @@ async function handleGo(request, url) {
   const nextStep = session.step + 1;
   await dbUpdate(`adsessions/${token}`, { step: nextStep }).catch(() => {});
   trackAdView(session.code, request, nextStep);
-  return html(adPage({ step: nextStep, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, pushCode: ads.pushCode, inPagePushCode: ads.inPagePushCode, vignetteCode: ads.vignetteCode, directLinkUrl: ads.directLinkUrl, directList: ads.directList, token }));
+  return html(adPage({ step: nextStep, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, banner3Url: ads.banner3Url, banner3Html: ads.banner3Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, pushCode: ads.pushCode, inPagePushCode: ads.inPagePushCode, vignetteCode: ads.vignetteCode, directLinkUrl: ads.directLinkUrl, directList: ads.directList, token }));
 }
 
 // ============ ROUTER ============
@@ -771,7 +777,7 @@ export default {
         expiresAt: Date.now() + SESSION_TTL,
       }).catch(() => {});
       trackAdView(code, request, 1);
-      return html(adPage({ step: 1, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, pushCode: ads.pushCode, inPagePushCode: ads.inPagePushCode, vignetteCode: ads.vignetteCode, directLinkUrl: ads.directLinkUrl, directList: ads.directList, token }));
+      return html(adPage({ step: 1, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, banner3Url: ads.banner3Url, banner3Html: ads.banner3Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, pushCode: ads.pushCode, inPagePushCode: ads.inPagePushCode, vignetteCode: ads.vignetteCode, directLinkUrl: ads.directLinkUrl, directList: ads.directList, token }));
     }
 
     // ---- Direct redirect (no ads) ----
