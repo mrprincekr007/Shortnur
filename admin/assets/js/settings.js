@@ -67,12 +67,39 @@ function previewBadge(text) {
   return `<div class="preview-badge">&#128205; ${text}</div>`;
 }
 
-function slotContent(html, url) {
-  const h = (html || '').trim();
-  const u = (url || '').trim();
-  if (h) return h;
-  if (u) return `<iframe class="ad-frame" src="${u}" loading="lazy" scrolling="no" frameborder="0" title="Advertisement"></iframe>`;
-  return '';
+function escHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function parseAdSize(code) {
+  const c = code || '';
+  const kv = re => { const m = c.match(re); return m ? parseInt(m[1]) : null; };
+  const atW = kv(/['"]?width['"]?\s*:\s*(\d+)/i);
+  const atH = kv(/['"]?height['"]?\s*:\s*(\d+)/i);
+  if (atW && atH) return { w: atW, h: atH };
+  const aW = kv(/width\s*=\s*["'](\d+)/i);
+  const aH = kv(/height\s*=\s*["'](\d+)/i);
+  if (aW && aH) return { w: aW, h: aH };
+  const KNOWN = [[300, 250], [728, 90], [320, 50], [468, 60], [160, 600], [160, 300], [970, 90], [250, 250], [336, 280], [120, 600], [120, 240], [120, 90]];
+  for (const [w, h] of KNOWN) {
+    if (c.includes(w + 'x' + h) || c.includes(w + '*' + h) || c.includes(w + ' \u00d7 ' + h) || c.includes(w + ' &times; ' + h)) return { w, h };
+  }
+  return null;
+}
+
+function mockAdBlock(html, url, opts) {
+  const size = parseAdSize(html) || parseAdSize(url);
+  const o = opts || {};
+  const maxW = o.maxW || 500;
+  const maxH = o.maxH || 320;
+  const text = o.text || 'Ye ad yahan aayega';
+  if (size) {
+    return '<div class="ad-mock sized" style="width:' + Math.min(size.w, maxW) + 'px;height:' + Math.min(size.h, maxH) + 'px">' +
+      '<span class="mock-ad-tag">AD</span><b>' + size.w + ' \u00d7 ' + size.h + '</b>' +
+      '<span class="mock-ad-size">' + text + ' — itna bada box milega</span></div>';
+  }
+  return '<div class="ad-mock fluid"><span class="mock-ad-tag">AD</span><b>Responsive ad</b>' +
+    '<span class="mock-ad-size">' + text + ' — code me size nahi likha, isliye poore box me aayega</span></div>';
 }
 
 function buildRealPage(key) {
@@ -86,41 +113,42 @@ function buildRealPage(key) {
     `<span class="step-dot${i + 1 === step ? ' active' : ''}"></span>`).join('');
 
   const isTarget = s => key === s;
-  const mainContent = slotContent(g('adsBannerHtml'), g('adsBannerUrl'));
-  const secContent = slotContent(g('adsBanner2Html'), g('adsBanner2Url'));
-  const thirdContent = slotContent(g('adsBanner3Html'), g('adsBanner3Url'));
+  const hasMain = !!(g('adsBannerHtml') || '').trim() || !!(g('adsBannerUrl') || '').trim();
+  const hasSec = !!(g('adsBanner2Html') || '').trim() || !!(g('adsBanner2Url') || '').trim();
+  const hasThird = !!(g('adsBanner3Html') || '').trim() || !!(g('adsBanner3Url') || '').trim();
 
   let mainCard = `<div class="ad-card${isTarget('banner1') ? ' preview-glow' : ''}">
       ${isTarget('banner1') ? previewBadge(PREV_SLOT_INFO.banner1.label) : ''}
       <div class="ad-tag"><i></i> Advertisement</div>
-      <div class="ad-slot ad-slot-main">${mainContent || (isTarget('banner1') ? '<div class="ad-placeholder"><span>Ye box — is code ka ad yahan aayega</span><small>Upar Ad Code paste karo</small></div>' : '<div class="ad-placeholder"><span>Advertisement</span><small>Yahan ad aayega</small></div>')}</div>
+      <div class="ad-slot ad-slot-main">${hasMain ? mockAdBlock(g('adsBannerHtml'), g('adsBannerUrl'), { text: 'Ye ad (Main Box) yahan aayega', maxW: 500, maxH: 340 }) : (isTarget('banner1') ? '<div class="ad-placeholder"><span>Ye box — is code ka ad yahan aayega</span><small>Upar Ad Code paste karo</small></div>' : '<div class="ad-placeholder"><span>Advertisement</span><small>Yahan ad aayega</small></div>')}</div>
       <div class="earn-note"><span class="pulse"></span> You earn only if you stay until the timer finishes</div>
     </div>`;
 
-  const secondCard = secContent || isTarget('banner2')
+  const secondCard = hasSec || isTarget('banner2')
     ? `<div class="ad-card${isTarget('banner2') ? ' preview-glow' : ''}">
       ${isTarget('banner2') ? previewBadge(PREV_SLOT_INFO.banner2.label) : ''}
       <div class="ad-tag"><i></i> Advertisement</div>
-      <div class="ad-slot ad-slot-second">${secContent || '<div class="ad-placeholder"><span>Ye box — second ad yahan aayega</span><small>Banner 2 me code paste karo</small></div>'}</div>
+      <div class="ad-slot ad-slot-second">${hasSec ? mockAdBlock(g('adsBanner2Html'), g('adsBanner2Url'), { text: 'Ye ad (Second Box) yahan aayega', maxW: 360, maxH: 300 }) : '<div class="ad-placeholder"><span>Ye box — second ad yahan aayega</span><small>Banner 2 me code paste karo</small></div>'}</div>
     </div>`
     : '';
 
-  const directBoxes = (g('adsDirectList').split('\n').map(s => s.trim()).filter(Boolean)).map(u =>
-    `<div class="ad-card${isTarget('direct') ? ' preview-glow' : ''}"><div class="ad-tag">Sponsored</div><div class="ad-slot ad-slot-second"><iframe class="ad-frame" src="${u}" loading="lazy" scrolling="no" frameborder="0" title="Sponsored"></iframe></div></div>`).join('');
+  const directUrls = g('adsDirectList').split('\n').map(s => s.trim()).filter(Boolean);
+  const directBoxes = directUrls.map(u => {
+    const domain = (u.replace(/^https?:\/\//, '').split('/')[0]) || u;
+    return `<div class="ad-card${isTarget('direct') ? ' preview-glow' : ''}"><div class="ad-tag">Sponsored</div><div class="ad-slot ad-slot-second"><div class="ad-mock fluid"><span class="mock-ad-tag">SPONSORED</span><b>${escHtml(domain)}</b><span class="mock-ad-size">${escHtml(u)}<br>Ye sponsored box yahan aayega</span></div></div></div>`;
+  }).join('');
   const directBlock = isTarget('direct')
     ? previewBadge(PREV_SLOT_INFO.direct.label) + (directBoxes || '<div class="ad-card preview-glow"><div class="ad-tag">Sponsored</div><div class="ad-slot ad-slot-second"><div class="ad-placeholder"><span>Direct links yahan aayenge</span><small>Direct Links box me har line pe ek URL daalo</small></div></div></div>')
     : directBoxes;
 
-  const thirdCard = thirdContent || isTarget('banner3')
+  const thirdCard = hasThird || isTarget('banner3')
     ? `<div class="ad-card${isTarget('banner3') ? ' preview-glow' : ''}">
       ${isTarget('banner3') ? previewBadge(PREV_SLOT_INFO.banner3.label) : ''}
       <div class="ad-tag"><i></i> Advertisement</div>
-      <div class="ad-slot ad-slot-second">${thirdContent || '<div class="ad-placeholder"><span>Ye box — Continue ke neeche ad yahan aayega</span><small>Banner 3 me code paste karo</small></div>'}</div>
+      <div class="ad-slot ad-slot-second">${hasThird ? mockAdBlock(g('adsBanner3Html'), g('adsBanner3Url'), { text: 'Ye ad (Continue ke neeche) yahan aayega', maxW: 500, maxH: 200 }) : '<div class="ad-placeholder"><span>Ye box — Continue ke neeche ad yahan aayega</span><small>Banner 3 me code paste karo</small></div>'}</div>
     </div>`
     : '';
 
-  const extraScripts = [g('adsPopunderCode'), g('adsPushCode'), g('adsInPagePushCode'), g('adsVignetteCode')].filter(Boolean).join('\n');
-  const popUrl = JSON.stringify(g('adsPopunderUrl') || '').replace(/</g, '\\u003c');
   const popBadge = isTarget('popunder') ? previewBadge(PREV_SLOT_INFO.popunder.label) : '';
   const pushBadge = isTarget('push') ? previewBadge(PREV_SLOT_INFO.push.label) : '';
   const inpageBadge = isTarget('inpage') ? previewBadge(PREV_SLOT_INFO.inpage.label) : '';
@@ -162,6 +190,13 @@ function buildRealPage(key) {
     .ad-placeholder { text-align: center; color: #8892A4; padding: 36px 20px; }
     .ad-placeholder span { display: block; font-size: 1rem; color: #fff; font-weight: 700; margin-top: 10px; }
     .ad-placeholder small { font-size: .8rem; }
+    .ad-mock { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; margin: 0 auto; background: repeating-linear-gradient(45deg, rgba(24,203,240,.05), rgba(24,203,240,.05) 12px, rgba(24,203,240,.10) 12px, rgba(24,203,240,.10) 24px); border: 2px dashed rgba(24,203,240,.6); border-radius: 14px; color: #9fb0d1; text-align: center; padding: 14px; }
+    .ad-mock.sized { padding: 12px; }
+    .ad-mock.fluid { min-height: 180px; }
+    .ad-mock b { font-size: 1rem; color: #fff; word-break: break-all; }
+    .mock-ad-tag { font-size: .6rem; letter-spacing: .22em; text-transform: uppercase; color: #18CBF0; background: rgba(24,203,240,.14); border: 1px solid rgba(24,203,240,.35); padding: 3px 10px; border-radius: 999px; }
+    .mock-ad-size { font-size: .78rem; line-height: 1.5; }
+    .mock-ad-note { font-size: .72rem; color: #5a6b8c; }
     .earn-note { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 12px 0 6px; color: #9fb0d1; font-size: .8rem; text-align: center; }
     .earn-note .pulse { width: 8px; height: 8px; border-radius: 50%; background: #00E5C7; animation: pulse 1.2s infinite; box-shadow: 0 0 8px #00E5C7; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
@@ -233,7 +268,6 @@ function buildRealPage(key) {
     ${thirdCard}
     <div class="note">LINK BABA helps creators earn from every click</div>
   </div>
-  ${extraScripts}
   <script>
     (function () {
       var total = ${timer};
@@ -257,13 +291,6 @@ function buildRealPage(key) {
         ring.style.display = 'grid';
         progTrack.style.display = 'block';
         timerLabel.textContent = 'Please wait for the countdown to finish';
-        if (${popUrl}) {
-          try {
-            var w = window.open(${popUrl}, '_blank');
-            if (w) w.blur();
-          } catch (e) {}
-          window.focus();
-        }
         t0 = Date.now();
         tick();
         iv = setInterval(tick, 250);
@@ -312,9 +339,9 @@ function refreshPreview(key) {
   empty.style.display = 'none';
   frame.srcdoc = buildRealPage(key);
   if (note) {
-    if (key === 'popunder') note.textContent = 'Start button click karo — popunder naya tab kholne ka try karega (bilkul worker jaisa). Sandbox ki wajah se kuch browsers ise rok sakte hain, par asli site pe kholta hai.';
-    else if (key === 'push' || key === 'inpage' || key === 'vignette') note.textContent = 'Ye code is page me load ho chuka hai. Push notification ke liye browser permission chahiye hoti hai (preview me allow nahi hoti), par code chala raha hai.';
-    else note.textContent = 'Ye aapka asli ad is box me load hua hai — bilkul worker page jaisa. Aadhe second me ad aata hai.';
+    if (key === 'popunder') note.textContent = 'Popunder asli site pe visitor ke pehle click par naya TAB kholta hai. Preview me bas badge dikhta hai — code load nahi hota, taaki preview me asli ads na khulein.';
+    else if (key === 'push' || key === 'inpage' || key === 'vignette') note.textContent = 'Ye preview me code load nahi karta — bas badge batata hai ki kahan / kya dikhega. Asli code sirf worker page pe chalega.';
+    else note.textContent = 'Ye mock box aapke code se nikaala gaya size dikhata hai — asli ad isi size ka yahan aayega. Code badaloge to size bhi update hoga.';
   }
 }
 
