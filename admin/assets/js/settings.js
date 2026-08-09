@@ -95,6 +95,7 @@ async function loadSettings() {
       const ads = s.ads || {};
       document.getElementById('adsEnabled').checked = ads.enabled !== false;
       document.getElementById('adsTimer').value = ads.timerSeconds || 8;
+      document.getElementById('adsFakeTimer').value = ads.fakeTimerSeconds || 0;
       document.getElementById('adsPages').value = ads.adPages || 2;
       document.getElementById('adsRate').value = ads.ratePer1000 ?? 0.50;
       document.getElementById('adsBannerUrl').value = ads.bannerUrl || '';
@@ -170,6 +171,7 @@ document.getElementById('adsForm').addEventListener('submit', async (e) => {
         ...existingAds,
         enabled: document.getElementById('adsEnabled').checked,
         timerSeconds: parseInt(document.getElementById('adsTimer').value) || 8,
+        fakeTimerSeconds: parseInt(document.getElementById('adsFakeTimer').value) || 0,
         adPages: parseInt(document.getElementById('adsPages').value) || 2,
         ratePer1000: parseFloat(document.getElementById('adsRate').value) || 0,
         bannerUrl: document.getElementById('adsBannerUrl').value.trim(),
