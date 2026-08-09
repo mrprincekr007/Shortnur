@@ -18,4 +18,4 @@ crons = ["0 3 * * *"]
 #   wrangler secret put FIREBASE_SERVICE_ACCOUNT   <- service account JSON
 # Optional vars (wrangler.toml [vars] section ya dashboard se):
 #   FIREBASE_DB_URL = "https://link-shortnur-default-rtdb.firebaseio.com"
-#   WEBSITE_BASE_URL = "https://mrprincekr007.github.io/Shortnur"
+#   WEBSITE_BASE_URL = "https://mrprincekr007.github.io/LINK BABA"
