@@ -105,6 +105,11 @@
                 <small class="text-muted">Countdown slow ho jata hai: fake seconds countdown ke andar kha jate hain, dikhega 1-per-second par asli wait zyada. Example: Timer 15 + Fake 10 = countdown 15s mein 0 hone ki jagah 25s lagata hai.</small>
               </div>
               <div class="form-group">
+                <label>Continue Wait (seconds)</label>
+                <input type="number" id="adsContinueWait" class="form-control form-control-plain" value="0" min="0" max="120">
+                <small class="text-muted">Countdown pura hone ke baad Continue button itne second baad active hota hai. Tab tak bas wait animation dikhegi (number nahi). Example: 5 = countdown ke baad 5s tak wait, phir button khulega.</small>
+              </div>
+              <div class="form-group">
                 <label>Ad Pages Per Link</label>
                 <input type="number" id="adsPages" class="form-control form-control-plain" value="4" min="1" max="8">
                 <small class="text-muted">Har link khulte hi kitni ad pages dikhein (har page pe timer + ad). Jitni zyada pages, utni zyada earning.</small>
