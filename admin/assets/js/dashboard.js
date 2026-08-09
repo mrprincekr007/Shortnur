@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur Admin - Dashboard
+// LINK BABA Admin - Dashboard
 // ============================================================
 
 import { auth, db, ref, get, onAuthStateChanged, signOut, ensureAdmins, isAdminUser } from "../../firebase/firebase-config.js";
