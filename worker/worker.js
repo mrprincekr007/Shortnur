@@ -1,5 +1,5 @@
 // ============================================================
-// LINK BABA â€” Cloudflare Worker
+// LINK BABA Ã¢â‚¬â€ Cloudflare Worker
 // Redirects short URLs, tracks clicks, serves password page,
 // and runs the ADVANCED interstitial ad system.
 //
@@ -27,15 +27,101 @@ function setEnv(env) {
 
 // ============ HELPERS ============
 
-function html(content, status = 200) {
-  return new Response(content, {
-    status,
-    headers: { "Content-Type": "text/html;charset=UTF-8", "Access-Control-Allow-Origin": "*" },
-  });
+const CSP_VALUE = "default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' https: data: blob:; style-src 'unsafe-inline' https:; img-src * data: blob:; font-src https: data:; frame-src *; connect-src *; media-src *; base-uri 'none'; form-action 'self'; worker-src 'self' https:";
+
+function html(content, status = 200, opts = {}) {
+  const { csp = true, noStore = false, headers = {} } = opts || {};
+  const h = {
+    "Content-Type": "text/html;charset=UTF-8",
+    "X-Frame-Options": "DENY",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+  };
+  if (csp) h["Content-Security-Policy"] = CSP_VALUE;
+  if (noStore) h["Cache-Control"] = "no-store, no-cache, max-age=0";
+  return new Response(content, { status, headers: { ...h, ...headers } });
 }
 
 function redirect(url) {
   return Response.redirect(url, 302);
+}
+
+function safeUrl(u) {
+  try {
+    const p = new URL(u);
+    return p.protocol === "http:" || p.protocol === "https:" ? u : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+// ============ SECURITY ============
+
+const ALLOWED_ORIGINS = new Set([
+  "https://linkbaba.online",
+  "https://mrprincekr007.github.io",
+]);
+
+const RATE_WINDOW_MS = 10 * 1000;
+const RATE_MAX = 25;
+const rateBuckets = new Map();
+
+const TRACKED_WINDOW_MS = 5 * 60 * 1000;
+const CONVERSION_WINDOW_MS = 10 * 60 * 1000;
+const trackedViews = new Map();
+
+function clientIp(request) {
+  return request.headers.get("CF-Connecting-IP") || request.headers.get("X-Forwarded-For") || "";
+}
+
+function isRateLimited(ip) {
+  if (!ip) return false;
+  const now = Date.now();
+  const b = rateBuckets.get(ip);
+  if (!b || now - b.start > RATE_WINDOW_MS) {
+    rateBuckets.set(ip, { count: 1, start: now });
+    return false;
+  }
+  b.count++;
+  if (rateBuckets.size > 5000) rateBuckets.clear();
+  return b.count > RATE_MAX;
+}
+
+function isVerifiedBot(request) {
+  const cf = request.cf || {};
+  const bm = cf.botManagement;
+  if (!bm) return false;
+  if (bm.verifiedBot) return true;
+  if (typeof bm.score === "number" && bm.score <= 5) return true;
+  return false;
+}
+
+function shouldTrack(ip, key, windowMs) {
+  if (!ip) return true;
+  const now = Date.now();
+  const k = key + ":" + ip;
+  const last = trackedViews.get(k);
+  if (last && now - last < windowMs) return false;
+  trackedViews.set(k, now);
+  if (trackedViews.size > 20000) {
+    for (const [kk, v] of trackedViews) {
+      if (now - v > 2 * 60 * 60 * 1000) trackedViews.delete(kk);
+    }
+  }
+  return true;
+}
+
+function corsHeader(request) {
+  const origin = request.headers.get("Origin");
+  if (origin && ALLOWED_ORIGINS.has(origin)) return { "Access-Control-Allow-Origin": origin, "Vary": "Origin" };
+  return {};
+}
+
+function httpsRedirect(url) {
+  if (url.protocol === "http:") {
+    return redirect("https://" + url.host + url.pathname + url.search);
+  }
+  return null;
 }
 
 function b64urlEncode(str) {
@@ -201,13 +287,14 @@ const DEFAULT_PROMO = {
   buttonText: "Visit Now",
   url: "",
   imageUrl: "",
-  emoji: "🎁",
+  emoji: "ðŸŽ",
   timerSeconds: 5,
 };
 
 const DEFAULT_ADS = {
   enabled: true,
   timerSeconds: 8,
+  fakeTimerSeconds: 0,
   adPages: 4,
   bannerUrl: "",
   bannerHtml: "",
@@ -242,7 +329,7 @@ function landingPage(siteUrl) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LINK BABA â€” Shorten Your Links</title>
+  <title>LINK BABA Ã¢â‚¬â€ Shorten Your Links</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; overflow: hidden; }
@@ -266,7 +353,7 @@ function landingPage(siteUrl) {
   <div class="container">
     <h1><span>LINK BABA</span></h1>
     <p>Shorten your links, track every click, and earn from every share.</p>
-    <a href="${escapeAttr(base)}/user/login.html" class="cta">Get Started Free â†’</a>
+    <a href="${escapeAttr(base)}/user/login.html" class="cta">Get Started Free Ã¢â€ â€™</a>
   </div>
 </body>
 </html>`;
@@ -277,7 +364,7 @@ const PASSWORD_PAGE = (code) => `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Password Protected â€” LINK BABA</title>
+  <title>Password Protected Ã¢â‚¬â€ LINK BABA</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; }
@@ -300,7 +387,7 @@ const PASSWORD_PAGE = (code) => `<!DOCTYPE html>
     <p>This link is password protected. Enter the password to continue.</p>
     <form method="POST" action="/${code}">
       <input type="password" name="password" placeholder="Enter password" required autofocus>
-      <button type="submit">Continue â†’</button>
+      <button type="submit">Continue Ã¢â€ â€™</button>
     </form>
     <div class="error" id="err">Wrong password. Try again.</div>
   </div>
@@ -317,7 +404,7 @@ const ERROR_PAGE = (title, message) => `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title} â€” LINK BABA</title>
+  <title>${title} Ã¢â‚¬â€ LINK BABA</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; }
@@ -334,7 +421,7 @@ const ERROR_PAGE = (title, message) => `<!DOCTYPE html>
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
     <h2>${title}</h2>
     <p>${message}</p>
-    <a href="/">â† Back to LINK BABA</a>
+    <a href="/">Ã¢â€ Â Back to LINK BABA</a>
   </div>
 </body>
 </html>`;
@@ -343,6 +430,8 @@ const ERROR_PAGE = (title, message) => `<!DOCTYPE html>
 
 function adPage(o) {
   const timer = Math.max(3, parseInt(o.timerSeconds) || 8);
+  const fakeTimer = Math.max(0, parseInt(o.fakeTimerSeconds) || 0);
+  const totalWait = timer + fakeTimer;
   const adSlot = o.bannerHtml
     ? o.bannerHtml
     : o.bannerUrl
@@ -419,10 +508,11 @@ function adPage(o) {
     .ad-tag { display: flex; align-items: center; gap: 7px; color: #8b9bb8; font-size: .68rem; text-transform: uppercase; letter-spacing: .14em; margin: 6px 0 10px 8px; }
     .ad-tag i { width: 6px; height: 6px; border-radius: 50%; background: #00E5C7; box-shadow: 0 0 8px #00E5C7; }
     .ad-slot { width: 100%; min-height: 0; background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.12); border-radius: 14px; overflow: hidden; text-align: center; }
-    .ad-slot iframe { margin: 0 auto; display: block; }
+    .ad-slot iframe { margin: 0 auto; display: block; max-width: 100%; }
     .ad-slot-main { min-height: 520px; }
     .ad-slot-second { min-height: 250px; }
     .ad-frame { width: 100%; min-height: 250px; border: 0; display: block; }
+    .ad-slot iframe.ad-frame[src*="highperformanceformat"] { max-width: 320px; }
     .ad-placeholder { text-align: center; color: #8892A4; padding: 46px 20px; }
     .ad-placeholder span { display: block; font-size: 1rem; color: #fff; font-weight: 700; margin-top: 10px; }
     .ad-placeholder small { font-size: .8rem; }
@@ -444,6 +534,25 @@ function adPage(o) {
     .continue-btn.ready:active { transform: scale(.98); }
     .hint { display: flex; align-items: center; justify-content: center; gap: 6px; text-align: center; color: #5a6b8c; font-size: .8rem; margin-top: 14px; }
     .note { text-align: center; color: #5a6b8c; font-size: .73rem; margin-top: 20px; }
+    @media (max-width: 480px) {
+      .page { padding: 0 10px 24px; }
+      .top { padding: 14px 2px 10px; }
+      .logo { font-size: 1.05rem; }
+      .steps { font-size: .7rem; padding: 5px 9px; }
+      .ad-card { padding: 7px; border-radius: 16px; margin-bottom: 12px; }
+      .ad-tag { font-size: .62rem; margin: 4px 0 8px 6px; }
+      .ad-slot-main { min-height: 380px; }
+      .ad-slot-second { min-height: 210px; }
+      .ad-frame { min-height: 210px; }
+      .timer-card { padding: 16px; border-radius: 16px; }
+      .ring { width: 76px; height: 76px; }
+      .ring-inner { width: 60px; height: 60px; font-size: 1.4rem; }
+      .continue-btn { padding: 14px; font-size: 1rem; }
+      .start-btn { padding: 13px 34px; font-size: 1rem; }
+    }
+    @media (min-width: 1400px) {
+      .page { max-width: 620px; }
+    }
   </style>
 </head>
 <body>
@@ -479,7 +588,7 @@ function adPage(o) {
   <script>
     (function () {
       var total = TIMER;
-      var left = total;
+      var waitMs = TOTALWAIT * 1000;
       var count = document.getElementById('count');
       var ring = document.getElementById('ring');
       var prog = document.getElementById('prog');
@@ -489,6 +598,8 @@ function adPage(o) {
       var timerLabel = document.getElementById('timerLabel');
       var bottomHint = document.getElementById('bottomHint');
       var started = false;
+      var done = false;
+      var t0 = null;
       var iv = null;
       function start() {
         if (started) return;
@@ -504,29 +615,36 @@ function adPage(o) {
           } catch (e) {}
           window.focus();
         }
-        render();
-        iv = setInterval(tick, 1000);
+        t0 = Date.now();
+        tick();
+        iv = setInterval(tick, 250);
       }
       function tick() {
-        left--;
-        if (left <= 0) {
-          clearInterval(iv);
+        var elapsed = Math.floor((Date.now() - t0) / 1000);
+        var left = total - elapsed;
+        if (left > 0) {
+          render(left, Math.min(elapsed, total));
+        } else if (!done && Date.now() - t0 < waitMs) {
+          render(0, total);
           count.textContent = '\u2713';
           ring.classList.add('done');
-          if (prog) prog.style.width = '100%';
+          timerLabel.textContent = 'Almost there, please wait\u2026';
+        } else if (!done) {
+          done = true;
+          clearInterval(iv);
+          render(0, total);
+          count.textContent = '\u2713';
+          ring.classList.add('done');
           timerLabel.textContent = 'Scroll down and tap Continue';
           bottomHint.style.display = 'flex';
           btn.classList.add('ready');
-        } else {
-          render();
         }
       }
-      function render() {
+      function render(left, doneSec) {
         count.textContent = left;
-        var done = total - left;
-        var deg = Math.round((done / total) * 360);
+        var deg = Math.round((doneSec / total) * 360);
         ring.style.background = 'conic-gradient(#18CBF0 ' + deg + 'deg, #16233f 0deg)';
-        if (prog) prog.style.width = Math.round((done / total) * 100) + '%';
+        if (prog) prog.style.width = Math.round((doneSec / total) * 100) + '%';
       }
       startBtn.addEventListener('click', start);
     })();
@@ -537,6 +655,7 @@ function adPage(o) {
     .replace(/TOTALPAGES/g, () => o.totalPages)
     .replace(/STEPDOTS/g, () => stepDots)
     .replace(/TIMER/g, () => timer)
+    .replace(/TOTALWAIT/g, () => totalWait)
     .replace(/HREF/g, () => href)
     .replace(/ADSLOT/g, () => adSlot)
     .replace(/SECONDAD/g, () => secondAd)
@@ -552,7 +671,7 @@ function promoPage(o) {
   const timer = Math.max(3, parseInt(o.timerSeconds) || 5);
   const image = o.imageUrl
     ? `<div class="promo-img"><img src="${escapeAttr(o.imageUrl)}" alt="" onerror="this.parentNode.style.display='none'"></div>`
-    : `<div class="promo-icon">${o.emoji || "🎁"}</div>`;
+    : `<div class="promo-icon">${o.emoji || "ðŸŽ"}</div>`;
   const visitBtn = o.url
     ? `<a class="visit-btn" href="${escapeAttr(o.url)}" target="_blank" rel="nofollow noopener">${escapeAttr(o.buttonText || "Visit Now")} <span>&#8599;</span></a>`
     : "";
@@ -615,6 +734,24 @@ function promoPage(o) {
     .continue-btn.ready:hover { transform: translateY(-2px); }
     .continue-btn.ready:active { transform: scale(.98); }
     .note { text-align: center; color: #5a6b8c; font-size: .73rem; margin-top: 20px; }
+    @media (max-width: 480px) {
+      .page { padding: 0 10px 24px; }
+      .top { padding: 14px 2px 10px; }
+      .logo { font-size: 1.05rem; }
+      .steps { font-size: .7rem; padding: 5px 9px; }
+      .promo-card { padding: 20px 14px; border-radius: 16px; margin-bottom: 12px; }
+      .promo-card h2 { font-size: 1.15rem; }
+      .promo-card p { font-size: .88rem; }
+      .promo-img { max-height: 160px; }
+      .timer-card { padding: 16px; border-radius: 16px; }
+      .ring { width: 76px; height: 76px; }
+      .ring-inner { width: 60px; height: 60px; font-size: 1.4rem; }
+      .start-btn { padding: 13px 34px; font-size: 1rem; }
+      .continue-btn { padding: 14px; font-size: 1rem; }
+    }
+    @media (min-width: 1400px) {
+      .page { max-width: 620px; }
+    }
   </style>
 </head>
 <body>
@@ -723,6 +860,7 @@ function renderStepPage(step, adPages, totalPages, ads, promo, token) {
     step,
     totalPages,
     timerSeconds: ads.timerSeconds,
+    fakeTimerSeconds: ads.fakeTimerSeconds,
     bannerUrl: ads.bannerUrl,
     bannerHtml: ads.bannerHtml,
     banner2Url: ads.banner2Url,
@@ -743,11 +881,14 @@ function renderStepPage(step, adPages, totalPages, ads, promo, token) {
 // ============ TRACKING ============
 
 function trackAdView(code, request, step, ctx) {
+  const ip = clientIp(request);
+  if (isVerifiedBot(request)) return;
+  if (!shouldTrack(ip, "av:" + code, TRACKED_WINDOW_MS)) return;
   ctx.waitUntil(dbPush(`adviews/${code}`, {
     linkCode: code,
     timestamp: Date.now(),
     step,
-    ip: request.headers.get("CF-Connecting-IP") || "Unknown",
+    ip,
     country: getCountry(request),
     device: getDevice(request),
     referrer: getReferrer(request),
@@ -755,7 +896,10 @@ function trackAdView(code, request, step, ctx) {
 }
 
 function trackConversion(code, link, request, ads, totalPages, ctx) {
+  const ip = clientIp(request);
   const task = (async () => {
+    if (isVerifiedBot(request)) return;
+    if (!shouldTrack(ip, "cv:" + code, CONVERSION_WINDOW_MS)) return;
     let user = null;
     let ratePer1000 = parseFloat(ads.ratePer1000) || 0;
 
@@ -771,7 +915,7 @@ function trackConversion(code, link, request, ads, totalPages, ctx) {
     const clickData = {
       linkCode: code,
       timestamp: Date.now(),
-      ip: request.headers.get("CF-Connecting-IP") || "Unknown",
+      ip,
       country: getCountry(request),
       device: getDevice(request),
       referrer: getReferrer(request),
@@ -809,24 +953,28 @@ async function updateUserEarnings(uid, earned, cachedUser) {
 // ============ AD SESSION HANDLING ============
 
 async function handleGo(request, url, ctx) {
+  const ip = clientIp(request);
+  if (isRateLimited(ip)) {
+    return html(ERROR_PAGE("Too Many Requests", "You are moving too fast. Please wait a moment and try again."), 429);
+  }
   const token = url.searchParams.get("t") || "";
   if (!token || token.length > 64 || /[^a-zA-Z0-9_-]/.test(token)) {
-    return html(ERROR_PAGE("Invalid Session", "This redirect session is invalid or has expired. Please open the short link again."), 400);
+    return html(ERROR_PAGE("Invalid Session", "This redirect session is invalid or has expired. Please open the short link again."), 400, { noStore: true });
   }
 
   const session = await dbGet(`adsessions/${token}`);
   if (!session || !session.code) {
-    return html(ERROR_PAGE("Session Expired", "This redirect session is invalid or has expired. Please open the short link again."), 400);
+    return html(ERROR_PAGE("Session Expired", "This redirect session is invalid or has expired. Please open the short link again."), 400, { noStore: true });
   }
   if (Date.now() > (session.expiresAt || 0)) {
     await dbDelete(`adsessions/${token}`).catch(() => {});
-    return html(ERROR_PAGE("Session Expired", "This redirect session has expired. Please open the short link again."), 400);
+    return html(ERROR_PAGE("Session Expired", "This redirect session has expired. Please open the short link again."), 400, { noStore: true });
   }
 
   const link = await dbGet(`links/${session.code}`);
   if (!link) {
     await dbDelete(`adsessions/${token}`).catch(() => {});
-    return html(ERROR_PAGE("Link Not Found", "This short link doesn't exist. It may have been deleted or the URL is incorrect."), 404);
+    return html(ERROR_PAGE("Link Not Found", "This short link doesn't exist. It may have been deleted or the URL is incorrect."), 404, { noStore: true });
   }
   if (link.disabled || link.status === "disabled") {
     return html(ERROR_PAGE("Link Disabled", "This link has been disabled by the administrator."), 403);
@@ -836,8 +984,8 @@ async function handleGo(request, url, ctx) {
   }
 
   const longUrl = link.longUrl || link.url || link.destination;
-  if (!longUrl) {
-    return html(ERROR_PAGE("Error", "This link has no destination URL configured."), 500);
+  if (!longUrl || !safeUrl(longUrl)) {
+    return html(ERROR_PAGE("Error", "This link has no valid destination URL configured."), 500);
   }
 
   const ads = await getAdsConfig();
@@ -855,30 +1003,48 @@ async function handleGo(request, url, ctx) {
   const nextStep = session.step + 1;
   await dbUpdate(`adsessions/${token}`, { step: nextStep }).catch(() => {});
   if (nextStep <= adPages) trackAdView(session.code, request, nextStep, ctx);
-  return html(renderStepPage(nextStep, adPages, totalPages, ads, promo, token));
+  return html(renderStepPage(nextStep, adPages, totalPages, ads, promo, token), 200, { csp: false, noStore: true });
 }
 
 // ============ ROUTER ============
 
 async function scheduled(event, env) {
   setEnv(env);
-  const sessions = await dbGet("adsessions");
-  if (!sessions) return;
   const now = Date.now();
   const tasks = [];
-  for (const [token, s] of Object.entries(sessions)) {
-    if (!s || !s.expiresAt || now > s.expiresAt) tasks.push(dbDelete("adsessions/" + token));
+
+  const sessions = await dbGet("adsessions");
+  if (sessions) {
+    for (const [token, s] of Object.entries(sessions)) {
+      if (!s || !s.expiresAt || now > s.expiresAt) tasks.push(dbDelete("adsessions/" + token));
+    }
   }
+
+  const RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
+  for (const node of ["clicks", "adviews"]) {
+    const all = await dbGet(node);
+    if (!all) continue;
+    for (const [code, entries] of Object.entries(all)) {
+      if (!entries || typeof entries !== "object") continue;
+      for (const [id, e] of Object.entries(entries)) {
+        if (e && e.timestamp && now - e.timestamp > RETENTION_MS) {
+          tasks.push(dbDelete(`${node}/${code}/${id}`));
+        }
+      }
+    }
+  }
+
   await Promise.all(tasks);
 }
 
 // ---- Frontend proxy (GitHub Pages) ----
 // linkbaba.online par user panel (GitHub Pages frontend) serve karta hai.
-async function serveFrontend(pathname) {
+async function serveFrontend(pathname, request) {
   const target = FRONTEND_ORIGIN + (pathname === "/" ? "/" : pathname);
   const res = await fetch(target);
   const headers = new Headers(res.headers);
-  headers.set("Access-Control-Allow-Origin", "*");
+  const cors = corsHeader(request);
+  for (const [k, v] of Object.entries(cors)) headers.set(k, v);
   headers.set("Cache-Control", "public, max-age=300");
   return new Response(res.body, { status: res.status, headers });
 }
@@ -890,11 +1056,14 @@ export default {
     const path = url.pathname;
     const method = request.method;
 
+    const httpsRes = httpsRedirect(url);
+    if (httpsRes) return httpsRes;
+
     // CORS preflight
     if (method === "OPTIONS") {
       return new Response(null, {
         headers: {
-          "Access-Control-Allow-Origin": "*",
+          ...corsHeader(request),
           "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type",
         },
@@ -904,7 +1073,7 @@ export default {
     // ---- Root: user panel (frontend) with worker landing fallback ----
     if (path === "/" || path === "") {
       try {
-        return await serveFrontend("/");
+        return await serveFrontend("/", request);
       } catch (e) {
         return html(landingPage(env.WEBSITE_BASE_URL));
       }
@@ -919,7 +1088,7 @@ export default {
 
     if (isFrontendPath) {
       try {
-        return await serveFrontend(path);
+        return await serveFrontend(path, request);
       } catch (e) {
         return html(ERROR_PAGE("Error", "Frontend temporarily unavailable. Please try again later."), 502);
       }
@@ -930,15 +1099,20 @@ export default {
       return new Response(null, { status: 204 });
     }
 
-    // ---- Ad session continue route ----
+    // ---- Ad session continue route (rate limited) ----
     if (path === "/go") {
       return handleGo(request, url, ctx);
+    }
+
+    // ---- Short-code routes: rate limited to stop abuse ----
+    if (isRateLimited(clientIp(request))) {
+      return html(ERROR_PAGE("Too Many Requests", "You are moving too fast. Please wait a moment and try again."), 429);
     }
 
     // ---- Extract short code ----
     const code = path.replace(/^\//, "").replace(/\/$/, "");
 
-    // Basic validation â€” short codes are alphanumeric + hyphens/underscores
+    // Basic validation Ã¢â‚¬â€ short codes are alphanumeric + hyphens/underscores
     if (!code || code.length > 30 || /[^a-zA-Z0-9_-]/.test(code)) {
       return html(ERROR_PAGE("Not Found", "This link does not exist or has been removed."), 404);
     }
@@ -961,24 +1135,38 @@ export default {
     }
 
     const longUrl = link.longUrl || link.url || link.destination;
-    if (!longUrl) {
-      return html(ERROR_PAGE("Error", "This link has no destination URL configured."), 500);
+    if (!longUrl || !safeUrl(longUrl)) {
+      return html(ERROR_PAGE("Error", "This link has no valid destination URL configured."), 500);
     }
 
-    // ---- Password protection ----
+    // ---- Password protection (with brute-force lockout) ----
     if (link.password || link.passwordHash) {
       if (method === "GET") {
-        return html(PASSWORD_PAGE(code));
+        return html(PASSWORD_PAGE(code), 200, { noStore: true });
       }
       if (method === "POST") {
+        const now = Date.now();
+        if (link.passwordLockUntil && now < link.passwordLockUntil) {
+          return html(ERROR_PAGE("Too Many Attempts", "Too many wrong password attempts. This link is locked for 15 minutes."), 429);
+        }
         const formData = await request.formData();
         const enteredPassword = formData.get("password") || "";
-        if (!(await checkPassword(link, enteredPassword))) {
+        if (await checkPassword(link, enteredPassword)) {
+          await dbUpdate(`links/${code}`, { passwordAttempts: 0, passwordLockUntil: 0 }).catch(() => {});
+        } else {
+          const attempts = (link.passwordAttempts || 0) + 1;
+          if (attempts >= 5) {
+            await dbUpdate(`links/${code}`, { passwordAttempts: 0, passwordLockUntil: now + 15 * 60 * 1000 }).catch(() => {});
+            return html(ERROR_PAGE("Too Many Attempts", "Too many wrong password attempts. This link is locked for 15 minutes."), 429);
+          }
+          await dbUpdate(`links/${code}`, { passwordAttempts: attempts }).catch(() => {});
           return html(
             PASSWORD_PAGE(code).replace(
               '<div class="error" id="err">Wrong password. Try again.</div>',
               '<div class="error" id="err" style="display:block">Wrong password. Try again.</div>'
-            )
+            ),
+            200,
+            { noStore: true }
           );
         }
       }
@@ -1005,14 +1193,14 @@ export default {
         expiresAt: Date.now() + SESSION_TTL,
       }).catch(() => {});
       if (adsEnabled) trackAdView(code, request, 1, ctx);
-      return html(renderStepPage(1, adPages, totalPages, ads, promo, token));
+      return html(renderStepPage(1, adPages, totalPages, ads, promo, token), 200, { csp: false, noStore: true });
     }
 
-    // ---- Direct redirect (no ads) ----
+    // ---- Direct redirect (no ads, no promo) ----
     const clickData = {
       linkCode: code,
       timestamp: Date.now(),
-      ip: request.headers.get("CF-Connecting-IP") || "Unknown",
+      ip: clientIp(request),
       country: getCountry(request),
       device: getDevice(request),
       referrer: getReferrer(request),
