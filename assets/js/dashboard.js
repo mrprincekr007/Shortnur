@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur - Dashboard Page
+// LINK BABA - Dashboard Page
 // Self-contained — no shared dependencies
 // ============================================================
 
@@ -48,6 +48,8 @@ const ICONS = {
   close: `<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`,
   'chevron-left': `<polyline points="15 18 9 12 15 6"/>`,
   'chevron-right': `<polyline points="9 18 15 12 9 6"/>`,
+  'chevron-down': `<polyline points="6 9 12 15 18 9"/>`,
+  bell: `<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>`,
   'arrow-left': `<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>`,
   play: `<polygon points="6 3 20 12 6 21 6 3"/>`,
   pause: `<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>`,
@@ -218,7 +220,7 @@ function setupUI() {
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('pageSub').textContent = `${greeting}, ${name}!`;
+  const pageSub = document.getElementById('pageSub'); if (pageSub) pageSub.textContent = `${greeting}, ${name}!`;
   const welcomeEmoji = document.getElementById('welcomeEmoji');
   if (welcomeEmoji) {
     welcomeEmoji.textContent = hour < 12 ? '🌅' : hour < 17 ? '☀️' : '🌙';
@@ -269,15 +271,73 @@ function setupEventHandlers() {
     }
   });
 
-  document.getElementById('createLinkBtn').addEventListener('click', () => window.location.href = 'mylinks.html');
+  const clb = document.getElementById('createLinkBtn'); if (clb) clb.addEventListener('click', openCreateModal);
   const welcomeCreate = document.getElementById('welcomeCreateBtn');
-  if (welcomeCreate) welcomeCreate.addEventListener('click', () => window.location.href = 'mylinks.html');
+  if (welcomeCreate) welcomeCreate.addEventListener('click', openCreateModal);
 
-  document.getElementById('emptyCreateBtn').addEventListener('click', () => window.location.href = 'mylinks.html');
+  document.getElementById('emptyCreateBtn').addEventListener('click', openCreateModal);
 
   document.querySelectorAll('[data-close]').forEach((btn) => {
     btn.addEventListener('click', () => document.getElementById(btn.dataset.close).classList.remove('show'));
   });
+
+  const cCustom = document.getElementById('cCustomToggle');
+  if (cCustom) cCustom.addEventListener('change', (e) => {
+    document.getElementById('cAliasGroup').classList.toggle('hidden', !e.target.checked);
+  });
+
+  const cAds = document.getElementById('cAdsToggle');
+  if (cAds) cAds.addEventListener('change', (e) => {
+    document.getElementById('cAdsGroup').classList.toggle('hidden', !e.target.checked);
+  });
+
+  const createForm = document.getElementById('createLinkForm');
+  if (createForm) createForm.addEventListener('submit', handleCreateLink);
+}
+
+function openCreateModal() {
+  const errorEl = document.getElementById('createError'); if (errorEl) errorEl.classList.remove('show');
+  const form = document.getElementById('createLinkForm'); if (form) form.reset();
+  const aliasGroup = document.getElementById('cAliasGroup'); if (aliasGroup) aliasGroup.classList.add('hidden');
+  const cCustom = document.getElementById('cCustomToggle'); if (cCustom) cCustom.checked = false;
+  const cAds = document.getElementById('cAdsToggle'); if (cAds) cAds.checked = true;
+  const cAdsGroup = document.getElementById('cAdsGroup'); if (cAdsGroup) cAdsGroup.classList.remove('hidden');
+  document.getElementById('createModal').classList.add('show');
+}
+
+async function handleCreateLink(e) {
+  e.preventDefault();
+  const errorEl = document.getElementById('createError');
+  const url = normalizeUrl(document.getElementById('cLongUrl').value);
+  const title = document.getElementById('cTitle').value.trim();
+
+  if (!isValidUrl(url)) { errorEl.textContent = 'Please enter a valid URL.'; errorEl.classList.add('show'); return; }
+
+  let code = null;
+  if (document.getElementById('cCustomToggle').checked) {
+    code = document.getElementById('cAlias').value.trim();
+    if (!code) { errorEl.textContent = 'Please enter a custom alias.'; errorEl.classList.add('show'); return; }
+    if (!/^[A-Za-z0-9_-]+$/.test(code)) { errorEl.textContent = 'Alias: letters, numbers, - and _ only.'; errorEl.classList.add('show'); return; }
+    if ((await get(ref(db, 'links/' + code))).exists()) { errorEl.textContent = 'Alias already taken.'; errorEl.classList.add('show'); return; }
+  }
+
+  const btn = document.getElementById('createSubmitBtn');
+  btn.disabled = true;
+  document.getElementById('createSubmitText').textContent = 'Creating...';
+
+  try {
+    if (!code) { code = generateShortCode(6); if ((await get(ref(db, 'links/' + code))).exists()) code = generateShortCode(6); }
+    await set(ref(db, 'links/' + code), { code, longUrl: url, title: title || url, uid: currentUser.uid, createdBy: currentUser.email, createdAt: Date.now(), clicks: 0, earnings: 0, adViews: 0, adsEnabled: document.getElementById('cAdsToggle').checked, adPages: parseInt(document.getElementById('cAdPages').value) || 2, status: 'active', isCustom: !!document.getElementById('cCustomToggle').checked });
+    await update(ref(db, 'users/' + currentUser.uid), { linksCount: (userData.linksCount || 0) + 1 });
+    userData.linksCount = (userData.linksCount || 0) + 1;
+    showToast('Link created!', 'success');
+    document.getElementById('createModal').classList.remove('show');
+  } catch (err) {
+    errorEl.textContent = 'Failed to create link.'; errorEl.classList.add('show');
+  } finally {
+    btn.disabled = false;
+    document.getElementById('createSubmitText').textContent = 'Create Link';
+  }
 }
 
 function renderOverview() {
