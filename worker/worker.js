@@ -451,7 +451,7 @@ function adPage(o) {
       ? `<iframe class="ad-frame" src="${escapeAttr(o.banner3Url)}" loading="lazy" scrolling="no" frameborder="0" title="Advertisement"></iframe>`
       : "";
   const thirdAd = adSlot3
-    ? `<div class="ad-card"><div class="ad-tag">Advertisement</div><div class="ad-slot ad-slot-second">${adSlot3}</div></div>`
+    ? `<div class="ad-card ad-card-after-continue"><div class="ad-tag">Advertisement</div><div class="ad-slot ad-slot-second">${adSlot3}</div></div>`
     : "";
   const directUrls = [];
   if (o.directLinkUrl) directUrls.push(String(o.directLinkUrl).trim());
@@ -511,8 +511,8 @@ function adPage(o) {
     .ad-slot { width: 100%; min-height: 0; background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.12); border-radius: 14px; overflow: hidden; text-align: center; }
     .ad-slot iframe { margin: 0 auto; display: block; max-width: 100%; }
     .ad-slot-main { min-height: 520px; }
-    .ad-slot-second { min-height: 250px; }
-    .ad-frame { width: 100%; min-height: 250px; border: 0; display: block; }
+    .ad-slot-second { min-height: 60px; }
+    .ad-frame { width: 100%; border: 0; display: block; }
     .ad-slot iframe.ad-frame[src*="highperformanceformat"] { max-width: 320px; }
     .ad-placeholder { text-align: center; color: #8892A4; padding: 46px 20px; }
     .ad-placeholder span { display: block; font-size: 1rem; color: #fff; font-weight: 700; margin-top: 10px; }
@@ -535,6 +535,7 @@ function adPage(o) {
     .continue-btn.ready:active { transform: scale(.98); }
     .hint { display: flex; align-items: center; justify-content: center; gap: 6px; text-align: center; color: #5a6b8c; font-size: .8rem; margin-top: 14px; }
     .note { text-align: center; color: #5a6b8c; font-size: .73rem; margin-top: 20px; }
+    .ad-card-after-continue { margin-top: 12px; }
     @media (max-width: 480px) {
       .page { padding: 0 10px 24px; }
       .top { padding: 14px 2px 10px; }
@@ -543,8 +544,7 @@ function adPage(o) {
       .ad-card { padding: 7px; border-radius: 16px; margin-bottom: 12px; }
       .ad-tag { font-size: .62rem; margin: 4px 0 8px 6px; }
       .ad-slot-main { min-height: 380px; }
-      .ad-slot-second { min-height: 210px; }
-      .ad-frame { min-height: 210px; }
+      .ad-slot-second { min-height: 60px; }
       .timer-card { padding: 16px; border-radius: 16px; }
       .ring { width: 76px; height: 76px; }
       .ring-inner { width: 60px; height: 60px; font-size: 1.4rem; }
