@@ -1,5 +1,5 @@
-﻿// ============================================================
-// Shortnur Admin - Links Page
+// ============================================================
+// LINK BABA Admin - Links Page
 // Features: search, status/ads filters, copy URL, link detail,
 // bulk delete, pagination
 // ============================================================
