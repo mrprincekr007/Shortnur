@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur - Earnings Page
+// LINK BABA - Earnings Page
 // Self-contained — no shared dependencies
 // ============================================================
 
@@ -48,6 +48,8 @@ const ICONS = {
   close: `<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>`,
   'chevron-left': `<polyline points="15 18 9 12 15 6"/>`,
   'chevron-right': `<polyline points="9 18 15 12 9 6"/>`,
+  'chevron-down': `<polyline points="6 9 12 15 18 9"/>`,
+  bell: `<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>`,
   'arrow-left': `<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>`,
   play: `<polygon points="6 3 20 12 6 21 6 3"/>`,
   pause: `<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>`,
@@ -185,7 +187,7 @@ function animateCounter(el, target, opts = {}) {
 }
 
 // ============ PAGE CODE ============
-// Shortnur - Earnings page logic
+// LINK BABA - Earnings page logic
 initMotion();
 
 let currentUser = null;
