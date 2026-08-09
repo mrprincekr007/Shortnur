@@ -23,3 +23,8 @@
 .btn-edit:hover { background: var(--primary-light); color: #050A18; }
 .btn-delete { background: rgba(255, 94, 138, 0.12); border: 1px solid rgba(255, 94, 138, 0.35); color: var(--danger); }
 .btn-delete:hover { background: var(--danger); color: #fff; }
+
+/* Remove tap focus glow on phones */
+:focus, :focus-visible { outline: none !important; }
+* { -webkit-tap-highlight-color: transparent; }
+
