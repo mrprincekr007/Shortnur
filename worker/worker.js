@@ -385,7 +385,7 @@ function adPage(o) {
     .glow { position: fixed; border-radius: 50%; filter: blur(110px); z-index: 0; pointer-events: none; }
     .g1 { width: 320px; height: 320px; top: -70px; left: -60px; background: #18CBF0; opacity: .16; animation: drift 9s ease-in-out infinite; }
     .g2 { width: 380px; height: 380px; bottom: -90px; right: -70px; background: #00E5C7; opacity: .14; animation: drift 11s ease-in-out infinite reverse; }
-    .g3 { width: 300px; height: 300px; top: 45%; left: 50%; margin-left: -150px; margin-top: -150px; background: #7B5CFF; opacity: .09; }
+    .g3 { width: 300px; height: 300px; top: 45%; left: 50%; margin-left: -150px; margin-top: -150px; background: #3B82F6; opacity: .09; }
     @keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20px, 16px); } }
     .lock-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(7, 11, 22, .94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: grid; place-items: center; text-align: center; transition: opacity .5s ease, visibility .5s ease; }
     .lock-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
