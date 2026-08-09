@@ -13,7 +13,7 @@
 // ============================================================
 
 const DEFAULT_DB = "https://link-shortnur-default-rtdb.firebaseio.com";
-const FRONTEND_ORIGIN = "https://mrprincekr007.github.io/LINK BABA";
+const FRONTEND_ORIGIN = "https://mrprincekr007.github.io/Shortnur";
 
 let serviceAccount = null;
 let firebaseDbUrl = DEFAULT_DB;
@@ -222,7 +222,7 @@ async function getAdsConfig() {
 // ============ PAGES ============
 
 function landingPage(siteUrl) {
-  const base = String(siteUrl || "https://mrprincekr007.github.io/LINK BABA").replace(/\/+$/, "");
+  const base = String(siteUrl || "https://mrprincekr007.github.io/Shortnur").replace(/\/+$/, "");
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -534,8 +534,8 @@ function adPage(o) {
 
 // ============ TRACKING ============
 
-function trackAdView(code, request, step) {
-  dbPush(`adviews/${code}`, {
+function trackAdView(code, request, step, ctx) {
+  ctx.waitUntil(dbPush(`adviews/${code}`, {
     linkCode: code,
     timestamp: Date.now(),
     step,
@@ -543,10 +543,10 @@ function trackAdView(code, request, step) {
     country: getCountry(request),
     device: getDevice(request),
     referrer: getReferrer(request),
-  }).catch(() => {});
+  }).catch(() => {}));
 }
 
-async function trackConversion(code, link, request, ads, totalPages) {
+async function trackConversion(code, link, request, ads, totalPages, ctx) {
   let user = null;
   let ratePer1000 = parseFloat(ads.ratePer1000) || 0;
 
@@ -572,7 +572,7 @@ async function trackConversion(code, link, request, ads, totalPages) {
   };
   const currentClicks = link.clicks || 0;
   const currentEarnings = link.earnings || 0;
-  Promise.all([
+  ctx.waitUntil(Promise.all([
     dbUpdate(`links/${code}`, {
       clicks: currentClicks + 1,
       earnings: currentEarnings + earned,
@@ -580,7 +580,7 @@ async function trackConversion(code, link, request, ads, totalPages) {
     }),
     dbPush(`clicks/${code}`, clickData),
     updateUserEarnings(link.uid, earned, user),
-  ]).catch(() => {});
+  ]).catch(() => {}));
 }
 
 async function updateUserEarnings(uid, earned, cachedUser) {
@@ -597,7 +597,7 @@ async function updateUserEarnings(uid, earned, cachedUser) {
 
 // ============ AD SESSION HANDLING ============
 
-async function handleGo(request, url) {
+async function handleGo(request, url, ctx) {
   const token = url.searchParams.get("t") || "";
   if (!token || token.length > 64 || /[^a-zA-Z0-9_-]/.test(token)) {
     return html(ERROR_PAGE("Invalid Session", "This redirect session is invalid or has expired. Please open the short link again."), 400);
@@ -634,13 +634,13 @@ async function handleGo(request, url) {
 
   if (session.step >= totalPages) {
     await dbDelete(`adsessions/${token}`).catch(() => {});
-    trackConversion(session.code, link, request, ads, totalPages);
+    trackConversion(session.code, link, request, ads, totalPages, ctx);
     return redirect(longUrl);
   }
 
   const nextStep = session.step + 1;
   await dbUpdate(`adsessions/${token}`, { step: nextStep }).catch(() => {});
-  trackAdView(session.code, request, nextStep);
+  trackAdView(session.code, request, nextStep, ctx);
   return html(adPage({ step: nextStep, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, banner3Url: ads.banner3Url, banner3Html: ads.banner3Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, pushCode: ads.pushCode, inPagePushCode: ads.inPagePushCode, vignetteCode: ads.vignetteCode, directLinkUrl: ads.directLinkUrl, directList: ads.directList, token }));
 }
 
@@ -670,7 +670,7 @@ async function serveFrontend(pathname) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     setEnv(env);
     const url = new URL(request.url);
     const path = url.pathname;
@@ -718,7 +718,7 @@ export default {
 
     // ---- Ad session continue route ----
     if (path === "/go") {
-      return handleGo(request, url);
+      return handleGo(request, url, ctx);
     }
 
     // ---- Extract short code ----
@@ -784,7 +784,7 @@ export default {
         createdAt: Date.now(),
         expiresAt: Date.now() + SESSION_TTL,
       }).catch(() => {});
-      trackAdView(code, request, 1);
+      trackAdView(code, request, 1, ctx);
       return html(adPage({ step: 1, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, banner3Url: ads.banner3Url, banner3Html: ads.banner3Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, pushCode: ads.pushCode, inPagePushCode: ads.inPagePushCode, vignetteCode: ads.vignetteCode, directLinkUrl: ads.directLinkUrl, directList: ads.directList, token }));
     }
 
