@@ -1,5 +1,5 @@
-﻿// ============================================================
-// Shortnur â€” Cloudflare Worker
+// ============================================================
+// LINK BABA â€” Cloudflare Worker
 // Redirects short URLs, tracks clicks, serves password page,
 // and runs the ADVANCED interstitial ad system.
 //
@@ -13,7 +13,7 @@
 // ============================================================
 
 const DEFAULT_DB = "https://link-shortnur-default-rtdb.firebaseio.com";
-const FRONTEND_ORIGIN = "https://mrprincekr007.github.io/Shortnur";
+const FRONTEND_ORIGIN = "https://mrprincekr007.github.io/LINK BABA";
 
 let serviceAccount = null;
 let firebaseDbUrl = DEFAULT_DB;
@@ -222,13 +222,13 @@ async function getAdsConfig() {
 // ============ PAGES ============
 
 function landingPage(siteUrl) {
-  const base = String(siteUrl || "https://mrprincekr007.github.io/Shortnur").replace(/\/+$/, "");
+  const base = String(siteUrl || "https://mrprincekr007.github.io/LINK BABA").replace(/\/+$/, "");
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shortnur â€” Shorten Your Links</title>
+  <title>LINK BABA â€” Shorten Your Links</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; overflow: hidden; }
@@ -250,7 +250,7 @@ function landingPage(siteUrl) {
   <div class="bg-glow glow-2"></div>
   <div class="bg-glow glow-3"></div>
   <div class="container">
-    <h1><span>Shortnur</span></h1>
+    <h1><span>LINK BABA</span></h1>
     <p>Shorten your links, track every click, and earn from every share.</p>
     <a href="${escapeAttr(base)}/user/login.html" class="cta">Get Started Free â†’</a>
   </div>
@@ -263,7 +263,7 @@ const PASSWORD_PAGE = (code) => `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Password Protected â€” Shortnur</title>
+  <title>Password Protected â€” LINK BABA</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; }
@@ -303,7 +303,7 @@ const ERROR_PAGE = (title, message) => `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title} â€” Shortnur</title>
+  <title>${title} â€” LINK BABA</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; }
@@ -320,7 +320,7 @@ const ERROR_PAGE = (title, message) => `<!DOCTYPE html>
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
     <h2>${title}</h2>
     <p>${message}</p>
-    <a href="/">â† Back to Shortnur</a>
+    <a href="/">â† Back to LINK BABA</a>
   </div>
 </body>
 </html>`;
@@ -374,7 +374,7 @@ function adPage(o) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
-  <title>Redirecting... &#8212; Shortnur</title>
+  <title>Redirecting... &#8212; LINK BABA</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :focus, :focus-visible { outline: none !important; }
@@ -438,7 +438,7 @@ function adPage(o) {
   <div class="glow g3"></div>
   <div class="page">
     <div class="top">
-      <div class="logo">Short<span>nur</span></div>
+      <div class="logo">LINK<span>BABA</span></div>
       <div class="steps"><span class="steps-dots">STEPDOTS</span> STEPNUM / TOTALPAGES</div>
     </div>
     <div class="ad-card">
@@ -459,7 +459,7 @@ function adPage(o) {
     <a class="continue-btn" id="continueBtn" href="HREF">Continue <span>&#8594;</span></a>
     <div class="hint" id="bottomHint" style="display:none"><span>&#8595;</span> Scroll down to continue</div>
     THIRDAD
-    <div class="note">Shortnur helps creators earn from every click</div>
+    <div class="note">LINK BABA helps creators earn from every click</div>
   </div>
   EXTRASCRIPTS
   <script>
