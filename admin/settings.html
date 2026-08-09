@@ -209,6 +209,62 @@
 
       <div class="card mb-3">
         <div class="card-header">
+          <h3><span data-icon="gift"></span> Final Promotion Page</h3>
+        </div>
+        <p class="text-muted mb-2">Sab ad pages ke <b>baad ek aakhri promotion page</b> dikhta hai (destination pe jaane se pehle). Isse aap apna khud ka offer/affiliate link dikha sakte ho. Is page ko kholne ke liye "Enable" on karo.</p>
+        <form id="promoForm">
+          <label class="option-toggle mb-2">
+            <span class="switch">
+              <input type="checkbox" id="promoEnabled">
+              <span class="slider"></span>
+            </span>
+            Enable final promotion page
+          </label>
+          <small class="text-muted d-block mb-3">On karne par har link ke end me (ad pages ke baad) ek promotion page aayega. Off karne par sirf ad pages dikhenge.</small>
+
+          <div class="ad-grid">
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" id="promoTitle" class="form-control form-control-plain" placeholder="Special Offer" value="Special Offer">
+            </div>
+            <div class="form-group">
+              <label>Button Text</label>
+              <input type="text" id="promoButtonText" class="form-control form-control-plain" placeholder="Visit Now" value="Visit Now">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="promoDescription" class="form-control form-control-plain" rows="2" placeholder="Check out this exclusive offer before you continue."></textarea>
+          </div>
+
+          <div class="ad-grid">
+            <div class="form-group">
+              <label>Promotion Link (URL)</label>
+              <input type="url" id="promoUrl" class="form-control form-control-plain" placeholder="https://your-affiliate-or-offer-link">
+              <small class="text-muted">"Visit" button yahi link kholega. Khali rakhne par promotion page nahi dikhega.</small>
+            </div>
+            <div class="form-group">
+              <label>Image URL (optional)</label>
+              <input type="url" id="promoImageUrl" class="form-control form-control-plain" placeholder="https://your-image-url">
+              <small class="text-muted">Khali rakhne par gift emoji 🎁 dikhega.</small>
+            </div>
+          </div>
+
+          <div class="ad-grid">
+            <div class="form-group">
+              <label>Timer (seconds)</label>
+              <input type="number" id="promoTimer" class="form-control form-control-plain" value="5" min="3" max="60">
+              <small class="text-muted">Visitor promotion page pe kitni der rukega, phir Continue unlock hota hai.</small>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary"><span data-icon="check"></span> Save Promotion Settings</button>
+        </form>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
           <h3><span data-icon="shield"></span> Admin Access</h3>
         </div>
         <p class="text-muted mb-2">Admin access is configured in <code>firebase/firebase-config.js</code> (<code>ADMIN_UIDS</code> array). Add your Firebase UID there to grant access.</p>
