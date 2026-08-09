@@ -51,3 +51,8 @@
 }
 .selected-user .btn { margin-left: auto; }
 .cpm-rate-info { margin-top: 10px; font-size: 0.85rem; }
+
+/* Remove tap focus glow on phones */
+:focus, :focus-visible { outline: none !important; }
+* { -webkit-tap-highlight-color: transparent; }
+
