@@ -1,5 +1,5 @@
-﻿// ============================================================
-// Shortnur Admin - Firebase Configuration (SHARED)
+// ============================================================
+// LINK BABA Admin - Firebase Configuration (SHARED)
 // Change your Firebase credentials here â€” all admin pages use this.
 // ============================================================
 
