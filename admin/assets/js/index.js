@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur Admin - Login Page (Independent)
+// LINK BABA Admin - Login Page (Independent)
 // ============================================================
 
 import { auth, signInWithEmailAndPassword, onAuthStateChanged, ensureAdmins, isAdminUser } from "../../firebase/firebase-config.js";
