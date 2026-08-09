@@ -295,6 +295,7 @@ const DEFAULT_ADS = {
   enabled: true,
   timerSeconds: 8,
   fakeTimerSeconds: 0,
+  continueWaitSeconds: 0,
   adPages: 4,
   bannerUrl: "",
   bannerHtml: "",
@@ -432,6 +433,7 @@ function adPage(o) {
   const timer = Math.max(3, parseInt(o.timerSeconds) || 8);
   const fakeTimer = Math.max(0, parseInt(o.fakeTimerSeconds) || 0);
   const totalWait = timer + fakeTimer;
+  const continueWait = Math.max(0, parseInt(o.continueWaitSeconds) || 0);
   const adSlot = o.bannerHtml
     ? o.bannerHtml
     : o.bannerUrl
@@ -526,6 +528,8 @@ function adPage(o) {
     .ring-inner { width: 74px; height: 74px; border-radius: 50%; background: #0b1222; display: grid; place-items: center; font-size: 1.7rem; font-weight: 800; }
     .ring.done { background: conic-gradient(#00E5C7 360deg, #16233f 0deg); box-shadow: 0 0 44px rgba(0,229,199,.4); }
     .ring.done .ring-inner { color: #00E5C7; }
+    @keyframes breathe { 0%,100% { transform: scale(1); box-shadow: 0 0 44px rgba(0,229,199,.4); } 50% { transform: scale(1.07); box-shadow: 0 0 66px rgba(0,229,199,.7); } }
+    .ring.done.wait { animation: breathe 1.1s ease-in-out infinite; }
     .timer-label { color: #8892A4; font-size: .85rem; margin-top: 14px; }
     .progress-track { height: 5px; background: rgba(255,255,255,.08); border-radius: 99px; overflow: hidden; margin-top: 18px; }
     .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#18CBF0,#00E5C7); border-radius: 99px; transition: width 1s linear; }
@@ -593,6 +597,7 @@ function adPage(o) {
     (function () {
       var total = TIMER;
       var waitMs = TOTALWAIT * 1000;
+      var continueMs = CONTINUEWAIT * 1000;
       var count = document.getElementById('count');
       var ring = document.getElementById('ring');
       var prog = document.getElementById('prog');
@@ -633,14 +638,25 @@ function adPage(o) {
         if (left > 0) {
           render(left, elapsed);
         } else if (!done) {
-          done = true;
-          clearInterval(iv);
-          render(0, total);
-          count.textContent = '\u2713';
-          ring.classList.add('done');
-          timerLabel.textContent = 'Scroll down and tap Continue';
-          bottomHint.style.display = 'flex';
-          btn.classList.add('ready');
+          // Countdown finished. If a continue-wait is configured, keep the
+          // button locked with a wait animation until continueMs has passed.
+          var waited = Date.now() - (t0 + waitMs);
+          if (waited < continueMs) {
+            render(0, total);
+            count.textContent = '\u2713';
+            ring.classList.add('done', 'wait');
+            timerLabel.textContent = 'Please wait\u2026';
+          } else {
+            done = true;
+            clearInterval(iv);
+            render(0, total);
+            count.textContent = '\u2713';
+            ring.classList.add('done');
+            ring.classList.remove('wait');
+            timerLabel.textContent = 'Scroll down and tap Continue';
+            bottomHint.style.display = 'flex';
+            btn.classList.add('ready');
+          }
         }
       }
       function render(left, doneSec) {
@@ -663,6 +679,7 @@ function adPage(o) {
     .replace(/STEPDOTS/g, () => stepDots)
     .replace(/TIMER/g, () => timer)
     .replace(/TOTALWAIT/g, () => totalWait)
+    .replace(/CONTINUEWAIT/g, () => continueWait)
     .replace(/HREF/g, () => href)
     .replace(/PROOF/g, () => o.proof || "")
     .replace(/ADSLOT/g, () => adSlot)
@@ -873,6 +890,7 @@ function renderStepPage(step, adPages, totalPages, ads, promo, token, proof) {
     dotPages: adPages,
     timerSeconds: ads.timerSeconds,
     fakeTimerSeconds: ads.fakeTimerSeconds,
+    continueWaitSeconds: ads.continueWaitSeconds,
     bannerUrl: ads.bannerUrl,
     bannerHtml: ads.bannerHtml,
     banner2Url: ads.banner2Url,
@@ -1038,7 +1056,7 @@ async function handleGo(request, url, ctx) {
 
   const gateSeconds = session.step > adPages
     ? promo.timerSeconds
-    : ((parseInt(ads.timerSeconds) || 0) + (parseInt(ads.fakeTimerSeconds) || 0));
+    : ((parseInt(ads.timerSeconds) || 0) + (parseInt(ads.fakeTimerSeconds) || 0) + (parseInt(ads.continueWaitSeconds) || 0));
   const minWaitMs = Math.max(0, parseInt(gateSeconds) || 0) * 1000;
   const sinceRender = Date.now() - (session.pageAt || 0);
   if (minWaitMs > 0 && sinceRender < minWaitMs) {
