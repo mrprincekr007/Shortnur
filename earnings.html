@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Earnings — Shortnur</title>
+  <title>Earnings — LINK BABA</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,8 +20,8 @@
   <div class="dash-layout" id="appRoot">
     <aside class="sidebar" id="sidebar">
       <a href="index.html" class="logo">
-        <div class="logo-icon">🔗</div>
-        <span>Short<b>nur</b></span>
+        <img src="assets/img/logo.png" class="logo-img" alt="LINK BABA">
+        <span>LINK <b>BABA</b></span>
       </a>
       <nav class="sidebar-nav">
         <a href="dashboard.html" class="nav-item" data-page="overview"><span class="nav-icon" data-icon="dashboard"></span><span>Overview</span></a>
@@ -45,10 +45,29 @@
       <div class="dash-topbar">
         <div class="flex">
           <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
-          <span class="page-icon c-green" data-icon="wallet"></span>
-          <div>
-            <h1>Earnings</h1>
-            <div class="sub">Track your click earnings</div>
+        </div>
+        <div class="flex topbar-right">
+          <div class="balance-chip" title="Balance"><span data-icon="money"></span><b id="topBalanceVal">$0.00</b></div>
+          <div class="notif-wrap">
+            <button class="icon-btn" id="notifBtn" title="Notifications"><span data-icon="bell"></span><i class="notif-dot hidden" id="notifDot"></i></button>
+            <div class="notif-panel hidden" id="notifPanel">
+              <div class="np-head">Notifications</div>
+              <div class="np-empty"><span data-icon="bell"></span><p>No notifications yet</p></div>
+            </div>
+          </div>
+          <div class="profile-menu">
+            <button class="profile-btn" id="profileBtn"><span class="avatar avatar-sm" id="topAvatar">?</span><span class="p-chev" data-icon="chevron-down"></span></button>
+            <div class="profile-dropdown hidden" id="profileDropdown">
+              <div class="pd-user">
+                <span class="avatar avatar-sm" id="pdAvatar">?</span>
+                <div class="pd-meta">
+                  <b id="pdName">User</b>
+                  <span id="pdEmail">user@email.com</span>
+                </div>
+              </div>
+              <a href="settings.html" class="pd-item"><span data-icon="user"></span> Profile</a>
+              <button class="pd-item pd-logout" id="pdLogoutBtn"><span data-icon="log-out"></span> Logout</button>
+            </div>
           </div>
         </div>
       </div>
@@ -141,5 +160,6 @@
   </div>
 
   <script type="module" src="assets/js/earnings.js"></script>
+  <script type="module" src="assets/js/topbar.js"></script>
 </body>
 </html>
