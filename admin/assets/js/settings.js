@@ -20,6 +20,7 @@ const ICONS = {
   activity: `<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>`,
   wallet: `<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/>`,
   money: `<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>`,
+  gift: `<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>`,
 };
 
 function icon(name) {
@@ -111,6 +112,16 @@ async function loadSettings() {
         ? ads.directList.join('\n')
         : (ads.directLinkUrl || '');
       document.getElementById('adsDirectList').value = directList;
+
+      // Promotion page settings (settings/ads/promo)
+      const promo = ads.promo || {};
+      document.getElementById('promoEnabled').checked = promo.enabled !== false;
+      document.getElementById('promoTitle').value = promo.title || 'Special Offer';
+      document.getElementById('promoButtonText').value = promo.buttonText || 'Visit Now';
+      document.getElementById('promoDescription').value = promo.description || '';
+      document.getElementById('promoUrl').value = promo.url || '';
+      document.getElementById('promoImageUrl').value = promo.imageUrl || '';
+      document.getElementById('promoTimer').value = promo.timerSeconds || 5;
     }
   } catch (err) {
     console.error(err);
@@ -152,9 +163,11 @@ document.getElementById('adsForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   try {
     const existing = (await get(ref(db, 'settings'))).val() || {};
+    const existingAds = existing.ads || {};
     await set(ref(db, 'settings'), {
       ...existing,
       ads: {
+        ...existingAds,
         enabled: document.getElementById('adsEnabled').checked,
         timerSeconds: parseInt(document.getElementById('adsTimer').value) || 8,
         adPages: parseInt(document.getElementById('adsPages').value) || 2,
@@ -177,6 +190,33 @@ document.getElementById('adsForm').addEventListener('submit', async (e) => {
     showToast('Ad settings saved successfully.', 'success');
   } catch (err) {
     showToast('Failed to save ad settings.', 'error');
+  }
+});
+
+// ============ PROMO FORM ============
+document.getElementById('promoForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    const existing = (await get(ref(db, 'settings'))).val() || {};
+    const existingAds = existing.ads || {};
+    await set(ref(db, 'settings'), {
+      ...existing,
+      ads: {
+        ...existingAds,
+        promo: {
+          enabled: document.getElementById('promoEnabled').checked,
+          title: document.getElementById('promoTitle').value.trim() || 'Special Offer',
+          buttonText: document.getElementById('promoButtonText').value.trim() || 'Visit Now',
+          description: document.getElementById('promoDescription').value.trim(),
+          url: document.getElementById('promoUrl').value.trim(),
+          imageUrl: document.getElementById('promoImageUrl').value.trim(),
+          timerSeconds: parseInt(document.getElementById('promoTimer').value) || 5,
+        },
+      },
+    });
+    showToast('Promotion settings saved successfully.', 'success');
+  } catch (err) {
+    showToast('Failed to save promotion settings.', 'error');
   }
 });
 
