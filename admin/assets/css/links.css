@@ -491,3 +491,8 @@ body { font-family: var(--font); }
 .detail-expiry .text-muted { font-size: 0.82rem; }
 .expiry-controls { display: flex; align-items: center; gap: 8px; }
 .expiry-controls input { max-width: 230px; }
+
+/* Remove tap focus glow on phones */
+:focus, :focus-visible { outline: none !important; }
+* { -webkit-tap-highlight-color: transparent; }
+
