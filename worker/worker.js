@@ -429,7 +429,34 @@ const ERROR_PAGE = (title, message) => `<!DOCTYPE html>
 
 // ============ AD INTERSTITIAL PAGE ============
 
-function adPage(o) {
+// Direct-link ads are rendered as iframes only when the destination is
+// reachable and frame-able; broken/blocked URLs fall back to a visible
+// "Open Sponsored Offer" button. Results are cached for a short TTL so the
+// check does not run on every page load.
+const directUrlCache = new Map();
+const DIRECT_URL_TTL_MS = 15 * 60 * 1000;
+const DIRECT_URL_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+async function directUrlOk(url) {
+  const hit = directUrlCache.get(url);
+  if (hit && Date.now() - hit.ts < DIRECT_URL_TTL_MS) return hit.ok;
+  let ok = false;
+  try {
+    const res = await fetch(url, {
+      redirect: "follow",
+      headers: { "User-Agent": DIRECT_URL_UA, Referer: "https://linkbaba.online/" },
+    });
+    ok = res.status === 200 && !res.headers.get("x-frame-options");
+    if (res.body) await res.body.cancel();
+  } catch (e) {
+    ok = false;
+  }
+  directUrlCache.set(url, { ok, ts: Date.now() });
+  return ok;
+}
+
+async function adPage(o) {
   const timer = Math.max(3, parseInt(o.timerSeconds) || 8);
   const fakeTimer = Math.max(0, parseInt(o.fakeTimerSeconds) || 0);
   const totalWait = timer + fakeTimer;
@@ -444,8 +471,25 @@ function adPage(o) {
     : o.banner2Url
       ? `<iframe class="ad-frame" src="${escapeAttr(o.banner2Url)}" loading="lazy" scrolling="no" frameborder="0" title="Advertisement"></iframe>`
       : "";
+  const directUrls = [];
+  if (o.directLinkUrl) directUrls.push(String(o.directLinkUrl).trim());
+  if (Array.isArray(o.directList)) {
+    for (const u of o.directList) {
+      const t = String(u || "").trim();
+      if (t) directUrls.push(t);
+    }
+  }
+  const fallbackUrl = directUrls[0] || "";
+  const fallbackMainHtml =
+    o.bannerUrl || fallbackUrl
+      ? `<a class="sponsored-link ad-fallback" id="adFallbackMain" href="${escapeAttr(o.bannerUrl || fallbackUrl)}" target="_blank" rel="nofollow noopener sponsored" style="display:none">Open Sponsored Offer <span>&#8599;</span></a>`
+      : "";
+  const fallbackSecondHtml =
+    o.banner2Url || fallbackUrl
+      ? `<a class="sponsored-link ad-fallback" id="adFallbackSecond" href="${escapeAttr(o.banner2Url || fallbackUrl)}" target="_blank" rel="nofollow noopener sponsored" style="display:none">Open Sponsored Offer <span>&#8599;</span></a>`
+      : "";
   const secondAd = adSlot2
-    ? `<div class="ad-card"><div class="ad-tag">Advertisement</div><div class="ad-slot ad-slot-second">${adSlot2}</div></div>`
+    ? `<div class="ad-card"><div class="ad-tag">Advertisement</div><div class="ad-slot ad-slot-second" id="adBoxSecond">${adSlot2}${fallbackSecondHtml}</div></div>`
     : "";
   const adSlot3 = o.banner3Html
     ? o.banner3Html
@@ -455,17 +499,17 @@ function adPage(o) {
   const thirdAd = adSlot3
     ? `<div class="ad-card ad-card-after-continue"><div class="ad-tag">Advertisement</div><div class="ad-slot ad-slot-second">${adSlot3}</div></div>`
     : "";
-  const directUrls = [];
-  if (o.directLinkUrl) directUrls.push(String(o.directLinkUrl).trim());
-  if (Array.isArray(o.directList)) {
-    for (const u of o.directList) {
-      const t = String(u || "").trim();
-      if (t) directUrls.push(t);
-    }
-  }
-  const directBoxes = directUrls
-    .map(u => `<div class="ad-card"><div class="ad-tag">Sponsored</div><a class="sponsored-link" href="${escapeAttr(u)}" target="_blank" rel="nofollow noopener sponsored" data-prev="direct">Open Sponsored Offer <span>&#8599;</span></a></div>`)
-    .join("\n");
+      const directChecks = await Promise.all(
+        directUrls.map(async (u) => ({ u, ok: await directUrlOk(u) }))
+      );
+      const directBoxes = directChecks
+        .map(
+          ({ u, ok }) =>
+            ok
+              ? `<div class="ad-card"><div class="ad-tag">Sponsored</div><div class="ad-slot ad-slot-direct"><iframe class="ad-frame ad-frame-direct" src="${escapeAttr(u)}" data-fallback-href="${escapeAttr(u)}" loading="lazy" scrolling="auto" frameborder="0" title="Sponsored offer"></iframe></div></div>`
+              : `<div class="ad-card"><div class="ad-tag">Sponsored</div><a class="sponsored-link" href="${escapeAttr(u)}" target="_blank" rel="nofollow noopener sponsored" data-prev="direct">Open Sponsored Offer <span>&#8599;</span></a></div>`
+        )
+        .join("\n");
   const dotCount = Math.max(1, parseInt(o.dotPages) || parseInt(o.totalPages) || 1);
   const stepDots = Array.from({ length: dotCount }, (_, i) =>
     `<span class="step-dot${i + 1 === parseInt(o.step) ? " active" : ""}"></span>`
@@ -514,7 +558,11 @@ function adPage(o) {
     .ad-slot iframe { margin: 0 auto; display: block; max-width: 100%; }
     .ad-slot-main { min-height: 520px; }
     .ad-slot-second { min-height: 60px; }
+    .ad-slot-direct { min-height: 220px; }
     .ad-frame { width: 100%; border: 0; display: block; }
+    .ad-frame-direct { width: 100%; height: 220px; border: 0; display: block; background: #fff; border-radius: 10px; overflow: hidden; }
+    .ad-fallback { display: none; }
+    .ad-slot-main .ad-fallback, .ad-slot-second .ad-fallback { margin-top: 10px; }
     .ad-slot iframe.ad-frame[src*="highperformanceformat"] { max-width: 320px; }
     .ad-placeholder { text-align: center; color: #8892A4; padding: 46px 20px; }
     .ad-placeholder span { display: block; font-size: 1rem; color: #fff; font-weight: 700; margin-top: 10px; }
@@ -574,7 +622,10 @@ function adPage(o) {
     </div>
     <div class="ad-card">
       <div class="ad-tag"><i></i> Advertisement</div>
-      <div class="ad-slot ad-slot-main">ADSLOT</div>
+      <div class="ad-slot ad-slot-main">
+        <div id="adBoxMain">ADSLOT</div>
+        MAINFALLBACK
+      </div>
       <div class="earn-note"><span class="pulse"></span> You earn only if you stay until the timer finishes</div>
     </div>
     <div class="timer-card">
@@ -676,6 +727,55 @@ function adPage(o) {
       if (continueForm) continueForm.addEventListener('submit', function (e) {
         if (!btn.classList.contains('ready')) e.preventDefault();
       });
+      // Ad fill fallback: if a script-injected ad box is still empty after
+      // ~10s, show the "Open Sponsored Offer" button instead of a blank box.
+      // If the ad network fills the box later, the button hides again.
+      function watchSlot(boxId, fbId) {
+        var box = document.getElementById(boxId);
+        var fb = document.getElementById(fbId);
+        if (!box || !fb) return;
+        var n = 0;
+        var iv = setInterval(function () {
+          n++;
+          var hasAd = box.querySelector('iframe, img, embed, object, canvas, video');
+          if (hasAd) {
+            fb.style.display = 'none';
+            clearInterval(iv);
+          } else if (n * 800 >= 10000) {
+            fb.style.display = 'flex';
+            clearInterval(iv);
+          }
+        }, 800);
+      }
+      watchSlot('adBoxMain', 'adFallbackMain');
+      watchSlot('adBoxSecond', 'adFallbackSecond');
+      // Direct-link iframes: if the frame never loads (network error, blocked,
+      // connection refused) swap it for the "Open Sponsored Offer" button.
+      function watchDirect(iframe) {
+        var done = false;
+        var fallbackHref = iframe.getAttribute('data-fallback-href') || '';
+        function swap() {
+          if (done) return;
+          done = true;
+          if (!fallbackHref) return;
+          var fb = document.createElement('a');
+          fb.className = 'sponsored-link ad-fallback';
+          fb.href = fallbackHref;
+          fb.target = '_blank';
+          fb.rel = 'nofollow noopener sponsored';
+          fb.innerHTML = 'Open Sponsored Offer <span>&#8599;</span>';
+          fb.style.display = 'flex';
+          var box = iframe.parentNode;
+          if (!box) return;
+          box.innerHTML = '';
+          box.appendChild(fb);
+        }
+        iframe.addEventListener('load', function () { done = true; });
+        iframe.addEventListener('error', swap);
+        setTimeout(function () { if (!done) swap(); }, 10000);
+      }
+      var dirFrames = document.querySelectorAll('.ad-frame-direct');
+      for (var di = 0; di < dirFrames.length; di++) watchDirect(dirFrames[di]);
     })();
   </script>
 </body>
@@ -689,6 +789,7 @@ function adPage(o) {
     .replace(/HREF/g, () => href)
     .replace(/PROOF/g, () => o.proof || "")
     .replace(/ADSLOT/g, () => adSlot)
+    .replace(/MAINFALLBACK/g, () => fallbackMainHtml)
     .replace(/SECONDAD/g, () => secondAd)
     .replace(/THIRDAD/g, () => thirdAd)
     .replace(/DIRECTBOX/g, () => directBoxes)
@@ -873,7 +974,7 @@ function promoPage(o) {
 
 // ============ STEP PAGE RENDERER ============
 
-function renderStepPage(step, adPages, totalPages, ads, promo, token, proof) {
+async function renderStepPage(step, adPages, totalPages, ads, promo, token, proof) {
   if (step > adPages) {
     return promoPage({
       step,
@@ -1032,8 +1133,8 @@ async function handleGo(request, url, ctx) {
   const promo = ads.promo || {};
   const method = request.method;
 
-  const renderCurrent = () =>
-    html(renderStepPage(session.step, adPages, totalPages, ads, promo, token, session.proof), 200, { csp: false, noStore: true });
+  const renderCurrent = async () =>
+    html(await renderStepPage(session.step, adPages, totalPages, ads, promo, token, session.proof), 200, { csp: false, noStore: true });
 
   if (method !== "POST") {
     // A direct visit to any step page (including the final page) can never
@@ -1074,7 +1175,7 @@ async function handleGo(request, url, ctx) {
   const newProof = randomToken(16);
   await dbUpdate(`adsessions/${token}`, { step: nextStep, proof: newProof, pageAt: Date.now() }).catch(() => {});
   if (nextStep <= adPages) trackAdView(session.code, request, nextStep, ctx);
-  return html(renderStepPage(nextStep, adPages, totalPages, ads, promo, token, newProof), 200, { csp: false, noStore: true });
+  return html(await renderStepPage(nextStep, adPages, totalPages, ads, promo, token, newProof), 200, { csp: false, noStore: true });
 }
 
 // ============ ROUTER ============
@@ -1266,7 +1367,7 @@ export default {
       expiresAt: Date.now() + SESSION_TTL,
     }).catch(() => {});
     trackAdView(code, request, 1, ctx);
-    return html(renderStepPage(1, adPages, totalPages, ads, promo, token, proof), 200, { csp: false, noStore: true });
+    return html(await renderStepPage(1, adPages, totalPages, ads, promo, token, proof), 200, { csp: false, noStore: true });
   },
   scheduled,
 };
