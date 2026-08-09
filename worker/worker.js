@@ -1,5 +1,5 @@
 // ============================================================
-// LINK BABA Ã¢â‚¬â€ Cloudflare Worker
+// LINK BABA â€” Cloudflare Worker
 // Redirects short URLs, tracks clicks, serves password page,
 // and runs the ADVANCED interstitial ad system.
 //
@@ -287,7 +287,7 @@ const DEFAULT_PROMO = {
   buttonText: "Visit Now",
   url: "",
   imageUrl: "",
-  emoji: "ðŸŽ",
+  emoji: "🎁",
   timerSeconds: 5,
 };
 
@@ -329,7 +329,7 @@ function landingPage(siteUrl) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LINK BABA Ã¢â‚¬â€ Shorten Your Links</title>
+  <title>LINK BABA â€” Shorten Your Links</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; overflow: hidden; }
@@ -353,7 +353,7 @@ function landingPage(siteUrl) {
   <div class="container">
     <h1><span>LINK BABA</span></h1>
     <p>Shorten your links, track every click, and earn from every share.</p>
-    <a href="${escapeAttr(base)}/user/login.html" class="cta">Get Started Free Ã¢â€ â€™</a>
+    <a href="${escapeAttr(base)}/user/login.html" class="cta">Get Started Free â†’</a>
   </div>
 </body>
 </html>`;
@@ -364,7 +364,7 @@ const PASSWORD_PAGE = (code) => `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Password Protected Ã¢â‚¬â€ LINK BABA</title>
+  <title>Password Protected â€” LINK BABA</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; }
@@ -387,7 +387,7 @@ const PASSWORD_PAGE = (code) => `<!DOCTYPE html>
     <p>This link is password protected. Enter the password to continue.</p>
     <form method="POST" action="/${code}">
       <input type="password" name="password" placeholder="Enter password" required autofocus>
-      <button type="submit">Continue Ã¢â€ â€™</button>
+      <button type="submit">Continue â†’</button>
     </form>
     <div class="error" id="err">Wrong password. Try again.</div>
   </div>
@@ -404,7 +404,7 @@ const ERROR_PAGE = (title, message) => `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title} Ã¢â‚¬â€ LINK BABA</title>
+  <title>${title} â€” LINK BABA</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; }
@@ -421,7 +421,7 @@ const ERROR_PAGE = (title, message) => `<!DOCTYPE html>
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
     <h2>${title}</h2>
     <p>${message}</p>
-    <a href="/">Ã¢â€ Â Back to LINK BABA</a>
+    <a href="/">â† Back to LINK BABA</a>
   </div>
 </body>
 </html>`;
@@ -464,7 +464,8 @@ function adPage(o) {
   const directBoxes = directUrls
     .map(u => `<div class="ad-card"><div class="ad-tag">Sponsored</div><div class="ad-slot ad-slot-second"><iframe class="ad-frame" src="${escapeAttr(u)}" loading="lazy" scrolling="no" frameborder="0" title="Advertisement"></iframe></div></div>`)
     .join("\n");
-  const stepDots = Array.from({ length: Math.max(1, parseInt(o.totalPages) || 1) }, (_, i) =>
+  const dotCount = Math.max(1, parseInt(o.dotPages) || parseInt(o.totalPages) || 1);
+  const stepDots = Array.from({ length: dotCount }, (_, i) =>
     `<span class="step-dot${i + 1 === parseInt(o.step) ? " active" : ""}"></span>`
   ).join("");
   const popUrl = JSON.stringify(o.popunderUrl || "").replace(/</g, "\\u003c");
@@ -562,7 +563,7 @@ function adPage(o) {
   <div class="page">
     <div class="top">
       <div class="logo">LINK<span>BABA</span></div>
-      <div class="steps"><span class="steps-dots">STEPDOTS</span> STEPNUM / TOTALPAGES</div>
+      <div class="steps"><span class="steps-dots">STEPDOTS</span> STEPNUM / DOTPAGES</div>
     </div>
     <div class="ad-card">
       <div class="ad-tag"><i></i> Advertisement</div>
@@ -652,7 +653,7 @@ function adPage(o) {
 </body>
 </html>`
     .replace(/STEPNUM/g, () => o.step)
-    .replace(/TOTALPAGES/g, () => o.totalPages)
+    .replace(/DOTPAGES/g, () => Math.max(1, parseInt(o.dotPages) || parseInt(o.totalPages) || 1))
     .replace(/STEPDOTS/g, () => stepDots)
     .replace(/TIMER/g, () => timer)
     .replace(/TOTALWAIT/g, () => totalWait)
@@ -671,13 +672,10 @@ function promoPage(o) {
   const timer = Math.max(3, parseInt(o.timerSeconds) || 5);
   const image = o.imageUrl
     ? `<div class="promo-img"><img src="${escapeAttr(o.imageUrl)}" alt="" onerror="this.parentNode.style.display='none'"></div>`
-    : `<div class="promo-icon">${o.emoji || "ðŸŽ"}</div>`;
+    : `<div class="promo-icon">${o.emoji || "🎁"}</div>`;
   const visitBtn = o.url
     ? `<a class="visit-btn" href="${escapeAttr(o.url)}" target="_blank" rel="nofollow noopener">${escapeAttr(o.buttonText || "Visit Now")} <span>&#8599;</span></a>`
     : "";
-  const stepDots = Array.from({ length: Math.max(1, parseInt(o.totalPages) || 1) }, (_, i) =>
-    `<span class="step-dot${i + 1 === parseInt(o.step) ? " active" : ""}"></span>`
-  ).join("");
   const href = `/go?t=${o.token}`;
 
   return `<!DOCTYPE html>
@@ -761,7 +759,6 @@ function promoPage(o) {
   <div class="page">
     <div class="top">
       <div class="logo">LINK<span>BABA</span></div>
-      <div class="steps"><span class="steps-dots">STEPDOTS</span> STEPNUM / TOTALPAGES</div>
     </div>
     <div class="promo-card">
       IMAGE
@@ -828,9 +825,6 @@ function promoPage(o) {
   </script>
 </body>
 </html>`
-    .replace(/STEPNUM/g, () => o.step)
-    .replace(/TOTALPAGES/g, () => o.totalPages)
-    .replace(/STEPDOTS/g, () => stepDots)
     .replace(/TIMER/g, () => timer)
     .replace(/HREF/g, () => href)
     .replace(/IMAGE/g, () => image)
@@ -846,6 +840,7 @@ function renderStepPage(step, adPages, totalPages, ads, promo, token) {
     return promoPage({
       step,
       totalPages,
+      dotPages: adPages,
       timerSeconds: promo.timerSeconds,
       title: promo.title,
       description: promo.description,
@@ -859,6 +854,7 @@ function renderStepPage(step, adPages, totalPages, ads, promo, token) {
   return adPage({
     step,
     totalPages,
+    dotPages: adPages,
     timerSeconds: ads.timerSeconds,
     fakeTimerSeconds: ads.fakeTimerSeconds,
     bannerUrl: ads.bannerUrl,
@@ -1112,7 +1108,7 @@ export default {
     // ---- Extract short code ----
     const code = path.replace(/^\//, "").replace(/\/$/, "");
 
-    // Basic validation Ã¢â‚¬â€ short codes are alphanumeric + hyphens/underscores
+    // Basic validation â€” short codes are alphanumeric + hyphens/underscores
     if (!code || code.length > 30 || /[^a-zA-Z0-9_-]/.test(code)) {
       return html(ERROR_PAGE("Not Found", "This link does not exist or has been removed."), 404);
     }
