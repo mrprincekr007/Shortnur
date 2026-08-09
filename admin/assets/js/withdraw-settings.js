@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur Admin - Withdraw Settings Page
+// LINK BABA Admin - Withdraw Settings Page
 // ============================================================
 
 import { auth, db, ref, get, update, push, remove, onAuthStateChanged, signOut, ensureAdmins, isAdminUser } from "../../firebase/firebase-config.js";
