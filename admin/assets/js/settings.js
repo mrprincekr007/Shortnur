@@ -296,15 +296,11 @@ function buildRealPage(key) {
         iv = setInterval(tick, 250);
       }
       function tick() {
-        var elapsed = Math.floor((Date.now() - t0) / 1000);
+        var rate = waitMs / total;
+        var elapsed = Math.floor((Date.now() - t0) / rate);
         var left = total - elapsed;
         if (left > 0) {
-          render(left, Math.min(elapsed, total));
-        } else if (!done && Date.now() - t0 < waitMs) {
-          render(0, total);
-          count.textContent = '\\u2713';
-          ring.classList.add('done');
-          timerLabel.textContent = 'Almost there, please wait\\u2026';
+          render(left, elapsed);
         } else if (!done) {
           done = true;
           clearInterval(iv);
