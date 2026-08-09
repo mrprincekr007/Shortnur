@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur - Login Page
+// LINK BABA - Login Page
 // Self-contained — no shared dependencies
 // ============================================================
 
@@ -230,7 +230,7 @@ function animateCounter(el, target, opts = {}) {
 }
 
 // ============ PAGE CODE ============
-// Shortnur - Combined auth page logic (Login + Signup tabs)
+// LINK BABA - Login page logic (Login + Forgot password)
 initMotion();
 
 // If already logged in, redirect to dashboard
@@ -243,29 +243,20 @@ onAuthStateChanged(auth, (user) => {
 // ---------- Panel switching ----------
 function switchTab(tab) {
   document.querySelectorAll('.auth-tab').forEach((t) => {
-    t.classList.toggle('active', t.dataset.tab === tab);
+    if (t.dataset && t.dataset.tab) t.classList.toggle('active', t.dataset.tab === tab);
   });
   document.querySelectorAll('.auth-panel').forEach((p) => {
     p.classList.toggle('active', p.id === 'panel-' + tab);
   });
-  document.querySelector('.auth-tabs').classList.toggle('hidden', tab === 'forgot');
+  const tabs = document.querySelector('.auth-tabs');
+  if (tabs) tabs.classList.toggle('hidden', tab === 'forgot');
   document.getElementById('errorAlert').classList.remove('show');
   document.getElementById('forgotError').classList.remove('show');
   document.getElementById('forgotSuccess').classList.remove('show');
 }
 
-document.querySelectorAll('.auth-tab').forEach((tabBtn) => {
+document.querySelectorAll('.auth-tab[data-tab]').forEach((tabBtn) => {
   tabBtn.addEventListener('click', () => switchTab(tabBtn.dataset.tab));
-});
-
-document.getElementById('goSignup').addEventListener('click', (e) => {
-  e.preventDefault();
-  switchTab('signup');
-});
-
-document.getElementById('goLogin').addEventListener('click', (e) => {
-  e.preventDefault();
-  switchTab('login');
 });
 
 document.getElementById('goForgot').addEventListener('click', (e) => {
@@ -278,14 +269,6 @@ document.getElementById('goBackLogin').addEventListener('click', (e) => {
   switchTab('login');
 });
 
-// Open the signup tab directly when URL contains ?tab=signup
-if (new URLSearchParams(window.location.search).get('tab') === 'signup') {
-  switchTab('signup');
-}
-
-// Referral attribution: ?ref=<username or referral code> captured from URL
-const REF_PARAM = (new URLSearchParams(window.location.search).get('ref') || '').trim();
-
 // ---------- Password visibility toggles ----------
 function togglePassword(inputId, btnId) {
   const pass = document.getElementById(inputId);
@@ -296,38 +279,6 @@ function togglePassword(inputId, btnId) {
 
 document.getElementById('togglePass').addEventListener('click', () => {
   togglePassword('password', 'togglePass');
-});
-
-document.getElementById('togglePass2').addEventListener('click', () => {
-  togglePassword('sPassword', 'togglePass2');
-});
-
-// ---------- Password strength meter ----------
-const sPasswordInput = document.getElementById('sPassword');
-const pwStrength = document.getElementById('pwStrength');
-const pwLabel = document.getElementById('pwLabel');
-const PW_LABELS = { 1: 'Weak', 2: 'Fair', 3: 'Good', 4: 'Strong' };
-
-function passwordScore(pw) {
-  let score = 0;
-  if (!pw) return 0;
-  if (pw.length >= 8) score++;
-  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
-  if (/\d/.test(pw)) score++;
-  if (/[^a-zA-Z0-9]/.test(pw)) score++;
-  return score;
-}
-
-sPasswordInput.addEventListener('input', () => {
-  const pw = sPasswordInput.value;
-  if (!pw) {
-    pwStrength.classList.add('hidden');
-    return;
-  }
-  const level = Math.max(1, passwordScore(pw));
-  pwStrength.classList.remove('hidden');
-  pwStrength.dataset.level = level;
-  pwLabel.textContent = PW_LABELS[level];
 });
 
 // ---------- Caps lock hint ----------
@@ -348,7 +299,6 @@ function initCapsLock(inputId) {
 }
 
 initCapsLock('password');
-initCapsLock('sPassword');
 
 // ---------- Error alert ----------
 const errorAlert = document.getElementById('errorAlert');
@@ -358,6 +308,9 @@ function showError(msg) {
   setTimeout(() => errorAlert.classList.remove('show'), 4000);
   shakeCard();
 }
+
+// Referral attribution: ?ref=<username or referral code> captured from URL
+const REF_PARAM = (new URLSearchParams(window.location.search).get('ref') || '').trim();
 
 // ================= LOGIN =================
 const loginForm = document.getElementById('loginForm');
@@ -549,154 +502,6 @@ function getGoogleError(err) {
 document.getElementById('googleLoginBtn').addEventListener('click', () => {
   handleGoogleLogin(document.getElementById('googleLoginBtn'));
 });
-
-// ================= USERNAME =================
-function validateUsername(raw) {
-  const u = (raw || '').toLowerCase().trim();
-  if (!u) return { ok: false, empty: true };
-  if (!/^[a-z][a-z0-9_]{2,19}$/.test(u)) return { ok: false, empty: false };
-  return { ok: true, value: u };
-}
-
-const sUsernameInput = document.getElementById('sUsername');
-const sUsernameHint = document.getElementById('sUsernameHint');
-let sUsernameTimer = null;
-
-sUsernameInput.addEventListener('input', () => {
-  clearTimeout(sUsernameTimer);
-  sUsernameTimer = setTimeout(checkSignupUsername, 400);
-});
-
-async function checkSignupUsername() {
-  const raw = sUsernameInput.value;
-  if (!raw.trim()) {
-    sUsernameHint.textContent = '';
-    sUsernameHint.className = 'input-hint';
-    return;
-  }
-  const v = validateUsername(raw);
-  if (!v.ok) {
-    sUsernameHint.textContent = 'Use 3-20 characters: letters, numbers, _ (must start with a letter).';
-    sUsernameHint.className = 'input-hint invalid';
-    return;
-  }
-  try {
-    const snap = await get(ref(db, 'usernames/' + v.value));
-    if (snap.exists()) {
-      sUsernameHint.textContent = '@' + v.value + ' is already taken.';
-      sUsernameHint.className = 'input-hint invalid';
-    } else {
-      sUsernameHint.textContent = '@' + v.value + ' is available!';
-      sUsernameHint.className = 'input-hint valid';
-    }
-  } catch (_) {
-    sUsernameHint.textContent = '';
-    sUsernameHint.className = 'input-hint';
-  }
-}
-
-// ================= SIGNUP =================
-const signupForm = document.getElementById('signupForm');
-const signupBtn = document.getElementById('signupBtn');
-const signupBtnText = document.getElementById('signupBtnText');
-
-signupForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const name = document.getElementById('name').value.trim();
-  const email = document.getElementById('sEmail').value.trim();
-  const password = document.getElementById('sPassword').value;
-  const confirmPassword = document.getElementById('confirmPassword').value;
-
-  if (name.length < 2) {
-    showError('Please enter your full name.');
-    return;
-  }
-  const username = validateUsername(document.getElementById('sUsername').value);
-  if (!username.ok) {
-    showError('Username must be 3-20 characters (letters, numbers, _) and start with a letter.');
-    return;
-  }
-  if (password.length < 6) {
-    showError('Password must be at least 6 characters.');
-    return;
-  }
-  if (password !== confirmPassword) {
-    showError('Passwords do not match.');
-    return;
-  }
-
-  signupBtn.disabled = true;
-  signupBtnText.textContent = 'Creating account...';
-
-  try {
-    const unameSnap = await get(ref(db, 'usernames/' + username.value));
-    if (unameSnap.exists()) {
-      throw { code: 'username-taken' };
-    }
-
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    try {
-      await updateProfile(user, { displayName: name });
-    } catch (_) {}
-
-    const referralCode = generateShortCode(8);
-    await set(ref(db, 'users/' + user.uid), {
-      name: name,
-      username: username.value,
-      email: email,
-      referredBy: REF_PARAM || null,
-      createdAt: Date.now(),
-      lastLogin: Date.now(),
-      linksCount: 0,
-      totalClicks: 0,
-      totalEarnings: 0,
-      plan: 'free',
-      role: 'user',
-      status: 'active',
-      referralCode: referralCode,
-      avatarUrl: '',
-    });
-    await set(ref(db, 'usernames/' + username.value), user.uid);
-
-    // Save pending guest link
-    const pendingLink = sessionStorage.getItem('pendingLink');
-    if (pendingLink) {
-      try {
-        const link = JSON.parse(pendingLink);
-        const linkRef = ref(db, 'links/' + link.code);
-        await update(linkRef, { uid: user.uid, createdBy: user.email, savedAt: Date.now() });
-        sessionStorage.removeItem('pendingLink');
-      } catch (_) {}
-    }
-
-    await morphSuccess(signupBtn, signupBtnText, 'Account created successfully! Welcome to Shortnur.', 'dashboard.html', 1100);
-  } catch (err) {
-    showError(getSignupError(err));
-    signupBtn.disabled = false;
-    signupBtnText.textContent = 'Create Account';
-  }
-});
-
-function getSignupError(err) {
-  switch (err.code) {
-    case 'username-taken':
-      return 'This username is already taken. Choose another username.';
-    case 'auth/email-already-in-use':
-      return 'This email is already registered. Please login instead.';
-    case 'auth/invalid-email':
-      return 'Please enter a valid email address.';
-    case 'auth/weak-password':
-      return 'Password is too weak. Use at least 6 characters.';
-    case 'auth/network-request-failed':
-      return 'Network error. Please check your internet connection.';
-    case 'auth/operation-not-allowed':
-      return 'Email/Password sign up is disabled. Contact support.';
-    default:
-      return err.message || 'Failed to create account. Please try again.';
-  }
-}
 
 // ================= FORGOT PASSWORD =================
 const forgotForm = document.getElementById('forgotForm');
