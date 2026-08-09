@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login or Sign Up — Shortnur</title>
+  <title>Login or Sign Up — LINK BABA</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,8 +22,8 @@
     <div class="auth-left">
       <div class="content">
         <a href="index.html" class="logo">
-          <div class="logo-icon">🔗</div>
-          <span>Short<b>nur</b></span>
+          <img src="assets/img/logo.png" class="logo-img" alt="LINK BABA">
+          <span>LINK <b>BABA</b></span>
         </a>
         <h2>The fastest URL shortener where you earn from every click.</h2>
         <p>Manage your links, track analytics and keep earning — all in one place.</p>
@@ -45,12 +45,12 @@
     <div class="auth-right">
       <div class="auth-card">
         <a href="index.html" class="auth-mobile-logo">
-          <div class="logo-icon">🔗</div>
-          <span>Short<b>nur</b></span>
+          <img src="assets/img/logo.png" class="logo-img" alt="LINK BABA">
+          <span>LINK <b>BABA</b></span>
         </a>
         <div class="auth-tabs">
           <button type="button" class="auth-tab active" data-tab="login">Login</button>
-          <button type="button" class="auth-tab" data-tab="signup">Sign Up</button>
+          <a href="register.html" class="auth-tab">Sign Up</a>
         </div>
 
         <div class="alert alert-error" id="errorAlert"></div>
@@ -101,68 +101,7 @@
           </form>
 
           <div class="auth-switch">
-            New here? <a href="#" id="goSignup">Create a free account</a>
-          </div>
-        </div>
-
-        <!-- ======= SIGNUP PANEL ======= -->
-        <div class="auth-panel" id="panel-signup">
-          <h3>Create account</h3>
-          <p class="subtitle">Start shortening &amp; earning today.</p>
-
-          <form id="signupForm">
-            <div class="form-group">
-              <div class="input-wrap">
-                <span class="input-icon"><span data-icon="user"></span></span>
-                <input type="text" id="name" class="form-control" placeholder="Full name" aria-label="Full name" required autocomplete="name">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <div class="input-wrap">
-                <span class="input-icon"><span data-icon="at-sign"></span></span>
-                <input type="text" id="sUsername" class="form-control" placeholder="Username" aria-label="Username" required minlength="3" maxlength="20" autocomplete="username">
-              </div>
-              <div class="input-hint" id="sUsernameHint"></div>
-            </div>
-
-            <div class="form-group">
-              <div class="input-wrap">
-                <span class="input-icon"><span data-icon="mail"></span></span>
-                <input type="email" id="sEmail" class="form-control" placeholder="Email" aria-label="Email" required autocomplete="email">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <div class="input-wrap">
-                <span class="input-icon"><span data-icon="lock"></span></span>
-                <input type="password" id="sPassword" class="form-control" placeholder="Password" aria-label="Password" required minlength="6" autocomplete="new-password">
-                <button type="button" class="password-toggle" id="togglePass2" aria-label="Toggle password"><span data-icon="eye"></span></button>
-              </div>
-              <div class="pw-strength hidden" id="pwStrength">
-                <div class="pw-meter"><span id="pwMeterFill"></span></div>
-                <span class="pw-label" id="pwLabel"></span>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <div class="input-wrap">
-                <span class="input-icon"><span data-icon="lock"></span></span>
-                <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm password" aria-label="Confirm password" required minlength="6" autocomplete="new-password">
-              </div>
-            </div>
-
-            <label class="checkbox-label mb-2">
-              <input type="checkbox" id="terms" required> I agree to the <a href="#" style="color:var(--primary-light);">Terms &amp; Privacy Policy</a>
-            </label>
-
-            <button type="submit" class="btn btn-primary btn-block btn-lg" id="signupBtn">
-              <span id="signupBtnText">Create Account</span>
-            </button>
-          </form>
-
-          <div class="auth-switch">
-            Already have an account? <a href="#" id="goLogin">Login</a>
+            New here? <a href="register.html">Create a free account</a>
           </div>
         </div>
 
