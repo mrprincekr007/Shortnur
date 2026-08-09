@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur - Index Page
+// LINK BABA - Index Page
 // Self-contained — no shared dependencies
 // ============================================================
 
@@ -185,7 +185,7 @@ function animateCounter(el, target, opts = {}) {
 }
 
 // ============ PAGE CODE ============
-// Shortnur - Landing page logic
+// LINK BABA - Landing page logic
 initMotion();
 
 getShortBaseUrl().then((v) => {
@@ -232,7 +232,7 @@ function renderNavAuth() {
   } else {
     container.innerHTML = `
       <a href="login.html" class="btn btn-ghost btn-sm">Login</a>
-      <a href="login.html?tab=signup" class="btn btn-primary btn-sm">Sign Up Free</a>
+      <a href="register.html" class="btn btn-primary btn-sm">Sign Up Free</a>
     `;
   }
 }
