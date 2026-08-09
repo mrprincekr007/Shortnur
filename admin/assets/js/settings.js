@@ -1,5 +1,5 @@
-﻿// ============================================================
-// Shortnur Admin - Settings Page
+// ============================================================
+// LINK BABA Admin - Settings Page
 // ============================================================
 
 import { auth, db, ref, get, set, update, remove, onAuthStateChanged, signOut, ensureAdmins, isAdminUser } from "../../firebase/firebase-config.js";
@@ -86,7 +86,7 @@ async function loadSettings() {
     const snap = await get(ref(db, 'settings'));
     if (snap.exists()) {
       const s = snap.val();
-      document.getElementById('siteName').value = s.siteName || 'Shortnur';
+      document.getElementById('siteName').value = s.siteName || 'LINK BABA';
       document.getElementById('shortUrl').value = s.shortBaseUrl || 'https://linkbaba.online';
       document.getElementById('linksPerPage').value = s.linksPerPage || 10;
 
