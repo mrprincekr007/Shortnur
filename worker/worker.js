@@ -624,15 +624,14 @@ function adPage(o) {
         iv = setInterval(tick, 250);
       }
       function tick() {
-        var elapsed = Math.floor((Date.now() - t0) / 1000);
+        // Fake timer: the countdown is slowed down so it takes waitMs real time
+        // to reach 0. Each displayed second = waitMs/total real ms. With fake=0
+        // it behaves exactly like a normal 1-second-per-tick countdown.
+        var rate = waitMs / total;
+        var elapsed = Math.floor((Date.now() - t0) / rate);
         var left = total - elapsed;
         if (left > 0) {
-          render(left, Math.min(elapsed, total));
-        } else if (!done && Date.now() - t0 < waitMs) {
-          render(0, total);
-          count.textContent = '\u2713';
-          ring.classList.add('done');
-          timerLabel.textContent = 'Almost there, please wait\u2026';
+          render(left, elapsed);
         } else if (!done) {
           done = true;
           clearInterval(iv);
@@ -1037,7 +1036,9 @@ async function handleGo(request, url, ctx) {
     return redirect(longUrl);
   }
 
-  const gateSeconds = session.step > adPages ? promo.timerSeconds : ads.timerSeconds;
+  const gateSeconds = session.step > adPages
+    ? promo.timerSeconds
+    : ((parseInt(ads.timerSeconds) || 0) + (parseInt(ads.fakeTimerSeconds) || 0));
   const minWaitMs = Math.max(0, parseInt(gateSeconds) || 0) * 1000;
   const sinceRender = Date.now() - (session.pageAt || 0);
   if (minWaitMs > 0 && sinceRender < minWaitMs) {
