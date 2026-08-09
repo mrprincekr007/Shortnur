@@ -1106,3 +1106,7 @@ input, select, textarea { font-family: var(--font); }
       linear-gradient(90deg, rgba(24, 203, 240, 0.02) 1px, transparent 1px);
   }
 }
+/* Remove tap focus glow on phones */
+:focus, :focus-visible { outline: none !important; }
+* { -webkit-tap-highlight-color: transparent; }
+
