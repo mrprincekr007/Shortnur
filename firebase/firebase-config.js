@@ -1,5 +1,5 @@
-﻿// ============================================================
-// Shortnur - Firebase Configuration (SHARED)
+// ============================================================
+// LINK BABA - Firebase Configuration (SHARED)
 // Change your Firebase credentials here â€” all pages use this.
 // ============================================================
 
@@ -26,8 +26,8 @@ const db = getDatabase(app);
 
 const SITE_CONFIG = {
   shortBaseUrl: "https://linkbaba.online",
-  websiteBaseUrl: "https://mrprincekr007.github.io/Shortnur",
-  appName: "Shortnur",
+  websiteBaseUrl: "https://linkbaba.online",
+  appName: "LINK BABA",
   linksPerPage: 10,
 };
 
