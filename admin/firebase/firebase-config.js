@@ -1,6 +1,6 @@
 // ============================================================
 // LINK BABA Admin - Firebase Configuration (SHARED)
-// Change your Firebase credentials here â€” all admin pages use this.
+// Change your Firebase credentials here — all admin pages use this.
 // ============================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";

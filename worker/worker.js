@@ -1,5 +1,5 @@
 // ============================================================
-// LINK BABA â€” Cloudflare Worker
+// LINK BABA — Cloudflare Worker
 // Redirects short URLs, tracks clicks, serves password page,
 // and runs the ADVANCED interstitial ad system.
 //
@@ -329,7 +329,7 @@ function landingPage(siteUrl) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LINK BABA â€” Shorten Your Links</title>
+  <title>LINK BABA — Shorten Your Links</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; overflow: hidden; }
@@ -353,7 +353,7 @@ function landingPage(siteUrl) {
   <div class="container">
     <h1><span>LINK BABA</span></h1>
     <p>Shorten your links, track every click, and earn from every share.</p>
-    <a href="${escapeAttr(base)}/user/login.html" class="cta">Get Started Free â†’</a>
+    <a href="${escapeAttr(base)}/user/login.html" class="cta">Get Started Free →</a>
   </div>
 </body>
 </html>`;
@@ -364,7 +364,7 @@ const PASSWORD_PAGE = (code) => `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Password Protected â€” LINK BABA</title>
+  <title>Password Protected — LINK BABA</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; }
@@ -387,7 +387,7 @@ const PASSWORD_PAGE = (code) => `<!DOCTYPE html>
     <p>This link is password protected. Enter the password to continue.</p>
     <form method="POST" action="/${code}">
       <input type="password" name="password" placeholder="Enter password" required autofocus>
-      <button type="submit">Continue â†’</button>
+      <button type="submit">Continue →</button>
     </form>
     <div class="error" id="err">Wrong password. Try again.</div>
   </div>
@@ -404,7 +404,7 @@ const ERROR_PAGE = (title, message) => `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title} â€” LINK BABA</title>
+  <title>${title} — LINK BABA</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #060B18; color: #fff; }
@@ -421,7 +421,7 @@ const ERROR_PAGE = (title, message) => `<!DOCTYPE html>
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
     <h2>${title}</h2>
     <p>${message}</p>
-    <a href="/">â† Back to LINK BABA</a>
+    <a href="/">← Back to LINK BABA</a>
   </div>
 </body>
 </html>`;
@@ -1160,7 +1160,7 @@ export default {
     // ---- Extract short code ----
     const code = path.replace(/^\//, "").replace(/\/$/, "");
 
-    // Basic validation â€” short codes are alphanumeric + hyphens/underscores
+    // Basic validation — short codes are alphanumeric + hyphens/underscores
     if (!code || code.length > 30 || /[^a-zA-Z0-9_-]/.test(code)) {
       return html(ERROR_PAGE("Not Found", "This link does not exist or has been removed."), 404);
     }

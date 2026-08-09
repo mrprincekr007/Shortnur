@@ -61,7 +61,7 @@ function showToast(message, type = 'info', duration = 3000) {
 }
 
 function formatDate(ts) {
-  if (!ts) return 'â€”';
+  if (!ts) return '—';
   return new Date(ts).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
@@ -235,7 +235,7 @@ function renderPage() {
     const favicon = getFavicon(dest);
     const adsOn = !!l.adsEnabled;
     const owner = ownerFor(l);
-    const ownerName = owner.name || owner.email || shortenDisplay(l.createdBy || l.uid || 'â€”', 16);
+    const ownerName = owner.name || owner.email || shortenDisplay(l.createdBy || l.uid || '—', 16);
     const ownerHandle = owner.username ? '@' + owner.username : '';
     return `
       <tr>
@@ -413,8 +413,8 @@ window.__viewLink = (code) => {
   const dest = link.url || link.destination || '';
   const favicon = getFavicon(dest);
 
-  document.getElementById('detailTitle').textContent = link.title || shortenDisplay(dest, 50) || 'â€”';
-  document.getElementById('detailUrl').textContent = dest || 'â€”';
+  document.getElementById('detailTitle').textContent = link.title || shortenDisplay(dest, 50) || '—';
+  document.getElementById('detailUrl').textContent = dest || '—';
   document.getElementById('detailStatus').textContent = link.disabled ? 'DISABLED' : 'ACTIVE';
   document.getElementById('detailStatus').className = 'status-badge ' + (link.disabled ? 'status-disabled' : 'status-active');
   document.getElementById('detailAds').textContent = link.adsEnabled ? 'ADS ON' : 'ADS OFF';
@@ -424,11 +424,11 @@ window.__viewLink = (code) => {
   document.getElementById('detailAdViews').textContent = formatNumber(link.adViews || 0);
   document.getElementById('detailEarnings').textContent = '$' + (link.earnings || 0).toFixed(2);
   const owner = ownerFor(link);
-  const ownerName = owner.name || owner.email || link.createdBy || link.uid || 'â€”';
+  const ownerName = owner.name || owner.email || link.createdBy || link.uid || '—';
   document.getElementById('detailOwner').innerHTML = escapeHtml(ownerName)
     + (owner.username ? `<br><span class="detail-handle">@${escapeHtml(owner.username)}</span>` : '');
   document.getElementById('detailCreated').textContent = formatDate(link.createdAt);
-  document.getElementById('detailAdsPages').textContent = link.adsEnabled ? (link.adPages || 1) : 'â€”';
+  document.getElementById('detailAdsPages').textContent = link.adsEnabled ? (link.adPages || 1) : '—';
 
   const expiryInput = document.getElementById('expiryInput');
   const expiryStatus = document.getElementById('expiryStatus');
@@ -437,7 +437,7 @@ window.__viewLink = (code) => {
     expiryStatus.textContent = 'Expires ' + new Date(link.expiresAt).toLocaleString();
   } else {
     expiryInput.value = '';
-    expiryStatus.textContent = 'No expiry â€” link works forever';
+    expiryStatus.textContent = 'No expiry — link works forever';
   }
 
   const favEl = document.getElementById('detailFavicon');
@@ -481,7 +481,7 @@ document.getElementById('clearExpiryBtn').addEventListener('click', async () => 
     await update(ref(db, 'links/' + detailCode), { expiresAt: null });
     showToast('Link expiry cleared.', 'success');
     document.getElementById('expiryInput').value = '';
-    document.getElementById('expiryStatus').textContent = 'No expiry â€” link works forever';
+    document.getElementById('expiryStatus').textContent = 'No expiry — link works forever';
     loadLinks();
   } catch (err) {
     showToast('Failed to clear expiry.', 'error');

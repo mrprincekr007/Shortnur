@@ -1,6 +1,6 @@
 // ============================================================
 // LINK BABA - Support Page
-// Self-contained â€” no shared dependencies
+// Self-contained — no shared dependencies
 // ============================================================
 
 import { auth, db, ref, push, set, update, remove, get, onValue, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence, SITE_CONFIG } from "../../firebase/firebase-config.js";
@@ -104,9 +104,9 @@ function generateShortCode(len = 6) {
 }
 function escapeHtml(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function formatNumber(n) { if (n == null) return '0'; if (n >= 1e9) return (n/1e9).toFixed(1).replace(/\.0$/,'')+'B'; if (n >= 1e6) return (n/1e6).toFixed(1).replace(/\.0$/,'')+'M'; if (n >= 1e3) return (n/1e3).toFixed(1).replace(/\.0$/,'')+'K'; return n.toString(); }
-function formatDate(ts) { if (!ts) return 'â€”'; return new Date(ts).toLocaleDateString('en-US', { day:'numeric', month:'short', year:'numeric' }); }
+function formatDate(ts) { if (!ts) return '—'; return new Date(ts).toLocaleDateString('en-US', { day:'numeric', month:'short', year:'numeric' }); }
 function timeAgo(ts) {
-  if (!ts) return 'â€”';
+  if (!ts) return '—';
   const s = Math.floor((Date.now()-ts)/1000);
   if (s < 60) return 'just now';
   const m = Math.floor(s/60); if (m < 60) return m+' min ago';
@@ -116,7 +116,7 @@ function timeAgo(ts) {
   return Math.floor(mo/12)+' yr ago';
 }
 function getFavicon(url) { try { const u = new URL(url); return `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=64`; } catch { return null; } }
-function shortenDisplay(url, max = 50) { if (!url) return ''; return url.length > max ? url.substring(0, max-1)+'â€¦' : url; }
+function shortenDisplay(url, max = 50) { if (!url) return ''; return url.length > max ? url.substring(0, max-1)+'…' : url; }
 function avatarColor(name) {
   const colors = ['#147090','#2FA8CF','#00CEB4','#FF6B6B','#FFB347','#4ECDC4','#A78BFA','#F472B6'];
   let h = 0; const s = name || 'user';
@@ -125,7 +125,7 @@ function avatarColor(name) {
 }
 
 // ============ AVATAR ============
-const AVATAR_EMOJIS = ['ðŸ˜€','ðŸ˜Ž','ðŸ¤–','ðŸ¦Š','ðŸ±','ðŸ¼','ðŸ¦','ðŸ¯','ðŸ¸','ðŸ¦„','ðŸ™','ðŸ¦‰','ðŸ¦‹','ðŸ³','ðŸš€','âš¡','ðŸ”¥','ðŸŒŸ','ðŸŽ¯','ðŸŽ®','ðŸŽ§','ðŸ’Ž','ðŸ‘‘','ðŸ§¿'];
+const AVATAR_EMOJIS = ['😀','😎','🤖','🦊','🐱','🐼','🦁','🐯','🐸','🦄','🐙','🦉','🦋','🐳','🚀','⚡','🔥','🌟','🎯','🎮','🎧','💎','👑','🧿'];
 const AVATAR_COLORS = ['#18CBF0','#00E5C7','#FF5E8A','#FFB347','#A78BFA','#F472B6','#4ECDC4','#147090','#FF6B6B','#34D399'];
 
 function renderAvatar(el, userData, name = '') {
@@ -215,7 +215,7 @@ const FAQS = [
   },
   {
     q: 'How does the referral program work?',
-    a: 'Share your unique referral link from the Referrals page. When someone signs up through your link, you earn 20% commission on their lifetime earnings â€” forever. Your referrals are tracked in real time.'
+    a: 'Share your unique referral link from the Referrals page. When someone signs up through your link, you earn 20% commission on their lifetime earnings — forever. Your referrals are tracked in real time.'
   },
   {
     q: 'Is my data safe?',
