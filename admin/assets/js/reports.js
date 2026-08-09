@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur Admin - Reports Page (user report management)
+// LINK BABA Admin - Reports Page (user report management)
 // ============================================================
 
 import { auth, db, ref, onValue, update, onAuthStateChanged, signOut, ensureAdmins, isAdminUser } from "../../firebase/firebase-config.js";
