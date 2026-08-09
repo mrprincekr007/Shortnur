@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Settings â€” LINK BABA Admin</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>ðŸ”—</text></svg>">
+  <title>Settings Ã¢â‚¬â€ LINK BABA Admin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>Ã°Å¸â€â€”</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -81,7 +81,7 @@
         <div class="card-header">
           <h3><span data-icon="zap"></span> Ad System</h3>
         </div>
-        <p class="text-muted mb-2">Visitors pass through countdown ad pages before reaching the destination. Har ad ka apna box hai — niche samjha hai kaunsa ad kya karta hai.</p>
+        <p class="text-muted mb-2">Visitors pass through countdown ad pages before reaching the destination. Har ad ka apna box hai â€” niche samjha hai kaunsa ad kya karta hai.</p>
         <form id="adsForm">
           <label class="option-toggle mb-2">
             <span class="switch">
@@ -100,6 +100,11 @@
                 <small class="text-muted">Visitor ad pe kitne second tak rahega. Jitna zyada, utna ad dikhna (earning badhne ka mauka).</small>
               </div>
               <div class="form-group">
+                <label>Fake Timer (extra hidden seconds)</label>
+                <input type="number" id="adsFakeTimer" class="form-control form-control-plain" value="0" min="0" max="120">
+                <small class="text-muted">User ko sirf Countdown Timer (upar wala) dikhega, par Continue button itne extra second baad active hoga. Example: Timer 15 + Fake 10 = user 15s dekhta hai, asli wait 25s.</small>
+              </div>
+              <div class="form-group">
                 <label>Ad Pages Per Link</label>
                 <input type="number" id="adsPages" class="form-control form-control-plain" value="4" min="1" max="8">
                 <small class="text-muted">Har link khulte hi kitni ad pages dikhein (har page pe timer + ad). Jitni zyada pages, utni zyada earning.</small>
@@ -113,7 +118,7 @@
           </div>
 
           <div class="ad-box">
-            <div class="ad-box-title"><span data-icon="tag"></span> 1. Main Ad — Multitag / Banner</div>
+            <div class="ad-box-title"><span data-icon="tag"></span> 1. Main Ad â€” Multitag / Banner</div>
             <p class="text-muted">Ye ad countdown page ke <b>upar bade box</b> me dikhta hai. Adsterra Multitag ya kisi bhi network ka banner code yahan paste karo. (Multitag me Vignette / In-Page Push / Banner sab isi code se aate hain.)</p>
             <div class="form-group">
               <label>Ad Code (HTML)</label>
@@ -127,7 +132,7 @@
           </div>
 
           <div class="ad-box">
-            <div class="ad-box-title"><span data-icon="tag"></span> 1b. Second Ad — Bottom Box (optional)</div>
+            <div class="ad-box-title"><span data-icon="tag"></span> 1b. Second Ad â€” Bottom Box (optional)</div>
             <p class="text-muted">Ye ad timer ke <b>neeche second bade box</b> me dikhta hai. Iske liye Adsterra me alag <b>Display Banner zone</b> banao (duplicate zone na ho toh better). Agar chhodo toh second box nahi dikhega.</p>
             <div class="form-group">
               <label>Ad Code (HTML)</label>
@@ -156,7 +161,7 @@
 
           <div class="ad-box">
             <div class="ad-box-title"><span data-icon="bell"></span> 3. Push Notifications</div>
-            <p class="text-muted">Browser push notification ad (mobile + desktop). Adsterra <b>Push Notifications</b> zone ka code yahan daalo. Ise <code>sw.js</code> service worker bhi chahiye — ad page pe automatically load hoga.</p>
+            <p class="text-muted">Browser push notification ad (mobile + desktop). Adsterra <b>Push Notifications</b> zone ka code yahan daalo. Ise <code>sw.js</code> service worker bhi chahiye â€” ad page pe automatically load hoga.</p>
             <div class="form-group">
               <label>Push Code (HTML)</label>
               <textarea id="adsPushCode" class="form-control form-control-plain ad-code-box" rows="3" placeholder="<script src=&quot;https://.../service.min.js&quot; data-zone=&quot;YOUR_ZONE&quot; async></script>"></textarea>
@@ -183,7 +188,7 @@
 
           <div class="ad-box">
             <div class="ad-box-title"><span data-icon="link"></span> 6. Direct Links (Multi)</div>
-            <p class="text-muted">Adsterra <b>Direct link</b> ads — <b>har line pe ek URL</b>. Jitne lines utne sponsored boxes page pe dikhenge (10-15 tak). Zaroori: <b>har line alag Adsterra zone ID</b> ho, warna same zone duplicate count nahi hota (ek hi impression milega).</p>
+            <p class="text-muted">Adsterra <b>Direct link</b> ads â€” <b>har line pe ek URL</b>. Jitne lines utne sponsored boxes page pe dikhenge (10-15 tak). Zaroori: <b>har line alag Adsterra zone ID</b> ho, warna same zone duplicate count nahi hota (ek hi impression milega).</p>
             <div class="form-group">
               <label>Direct Link URLs (1 per line)</label>
               <textarea id="adsDirectList" class="form-control form-control-plain" rows="6" placeholder="https://omg10.com/4/11530119&#10;https://omg10.com/4/ANOTHER_ZONE&#10;https://another-network-ad"></textarea>
@@ -192,7 +197,7 @@
 
           <div class="ad-box">
             <div class="ad-box-title"><span data-icon="tag"></span> 7. Banner Below Continue (optional)</div>
-            <p class="text-muted">Ye ad <b>Continue button ke niche</b> dikhta hai. Chhote banner (300x250 / 728x90) ke liye best — box ab apne aap size adjust karta hai.</p>
+            <p class="text-muted">Ye ad <b>Continue button ke niche</b> dikhta hai. Chhote banner (300x250 / 728x90) ke liye best â€” box ab apne aap size adjust karta hai.</p>
             <div class="form-group">
               <label>Banner code (HTML/JS)</label>
               <textarea id="adsBanner3Html" class="form-control form-control-plain ad-code-box" rows="4" placeholder="<script src=&quot;https://your-zone.com/tag.min.js?z=12345&quot; async data-cfasync=&quot;false&quot;></script>"></textarea>
@@ -247,7 +252,7 @@
             <div class="form-group">
               <label>Image URL (optional)</label>
               <input type="url" id="promoImageUrl" class="form-control form-control-plain" placeholder="https://your-image-url">
-              <small class="text-muted">Khali rakhne par gift emoji 🎁 dikhega.</small>
+              <small class="text-muted">Khali rakhne par gift emoji ðŸŽ dikhega.</small>
             </div>
           </div>
 
