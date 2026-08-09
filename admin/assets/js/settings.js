@@ -50,11 +50,84 @@ function showToast(message, type = 'info', duration = 3000) {
   setTimeout(() => { toast.classList.add('leaving'); setTimeout(() => toast.remove(), 300); }, duration);
 }
 
+// ============ AD PREVIEW (kahan dikhega) ============
+function buildMock(hl) {
+  const row = (inner, cls = '') => `<div class="mock-row ${cls}">${inner}</div>`;
+  const ad = (text, cls = '', hlKey = '') => `<div class="mock-ad ${cls} ${hl === hlKey ? 'mock-glow' : ''}">${text}</div>`;
+  const parts = [];
+  parts.push(`<div class="mock-top"><span class="mock-logo">LINK<b>BABA</b></span><span class="mock-dots"><i class="on"></i><i></i><i></i><i></i></span></div>`);
+  parts.push(row(ad('ADVERTISEMENT — main box', 'mock-main', 'main')));
+  parts.push(row(`<div class="mock-timer">&#9202; 15s</div>`));
+  parts.push(row(ad('ADVERTISEMENT — second box', 'mock-second', 'second')));
+  if (hl === 'direct') parts.push(row(ad('SPONSORED 1', 'mock-second', 'direct') + ad('SPONSORED 2', 'mock-second', 'direct'), 'mock-two'));
+  parts.push(row(`<div class="mock-btn">Continue &#8594;</div>`));
+  parts.push(row(ad('ADVERTISEMENT — below continue', 'mock-second', 'below')));
+  if (hl === 'pop') parts.push(`<div class="mock-layer mock-pop">&#128279; Popunder — naye TAB me khulega</div>`);
+  if (hl === 'push') parts.push(`<div class="mock-notif">&#128276; Push Notification</div>`);
+  if (hl === 'inpage') parts.push(`<div class="mock-widget">In-Page Push widget</div>`);
+  if (hl === 'vig') parts.push(`<div class="mock-layer mock-vig">Fullscreen Vignette Ad</div>`);
+  return parts.join('');
+}
+
+function refreshPreview(key) {
+  const cont = document.getElementById('prev-' + key);
+  if (!cont) return;
+  const inputs = document.querySelectorAll('[data-prev="' + key + '"]');
+  let valueEl = null;
+  inputs.forEach(inp => { if (inp.value && inp.value.trim() && (inp.tagName === 'TEXTAREA' || !valueEl)) valueEl = inp; });
+  const value = valueEl ? valueEl.value.trim() : '';
+  const frame = cont.querySelector('.ad-preview-frame iframe');
+  const empty = cont.querySelector('.ad-preview-empty');
+  const note = cont.querySelector('.ad-preview-note');
+  if (!value) {
+    frame.style.display = 'none';
+    empty.style.display = 'block';
+    if (note) note.textContent = '';
+    return;
+  }
+  frame.style.display = 'block';
+  empty.style.display = 'none';
+  if (valueEl.tagName === 'INPUT') {
+    frame.removeAttribute('srcdoc');
+    frame.src = value;
+    if (note) note.textContent = 'Agar yahan khali dikhe toh us network ne iframe me dikhane se rok diya hai (normal baat). Asli page pe ye <iframe> me hi dikhta hai.';
+  } else {
+    frame.removeAttribute('src');
+    frame.srcdoc = value;
+    if (note) note.textContent = 'Ye aapka asli code render hua hai. Popunder/push-type ads bina click ya permission ke yahan nahi khulte — woh visitor ke click/browser allow karne par aate hain.';
+  }
+}
+
+function initAdPreviews() {
+  document.querySelectorAll('.ad-preview-mock').forEach(el => {
+    el.innerHTML = buildMock(el.dataset.mock || 'main');
+  });
+  document.querySelectorAll('.ad-preview-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.preview;
+      const cont = document.getElementById('prev-' + key);
+      if (!cont) return;
+      const willOpen = cont.hidden;
+      cont.hidden = !willOpen;
+      btn.classList.toggle('active', willOpen);
+      if (willOpen) refreshPreview(key);
+    });
+  });
+  document.querySelectorAll('[data-prev]').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const key = inp.dataset.preview;
+      const cont = document.getElementById('prev-' + key);
+      if (cont && !cont.hidden) refreshPreview(key);
+    });
+  });
+}
+
 // ============ STATE ============
 let confirmAction = null;
 
 // ============ INIT ============
 initIcons();
+initAdPreviews();
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) { window.location.href = 'index.html'; return; }
