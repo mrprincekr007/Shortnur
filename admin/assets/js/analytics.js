@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur Admin - Analytics Page (traffic focused)
+// LINK BABA Admin - Analytics Page (traffic focused)
 // ============================================================
 
 import { auth, onAuthStateChanged, signOut, ensureAdmins, isAdminUser } from "../../firebase/firebase-config.js";
@@ -341,7 +341,7 @@ function exportDailyCSV() {
     ]);
   }
 
-  downloadCSV('shortnur-analytics-' + rangeDays + 'd.csv', rows);
+  downloadCSV('linkbaba-analytics-' + rangeDays + 'd.csv', rows);
   showToast('Analytics exported.', 'success');
 }
 
@@ -364,6 +364,6 @@ function exportLinksCSV() {
       l.disabled ? 'Disabled' : 'Active',
     ]);
   });
-  downloadCSV('shortnur-links-analytics.csv', rows);
+  downloadCSV('linkbaba-links-analytics.csv', rows);
   showToast('Links analytics exported.', 'success');
 }
