@@ -580,7 +580,10 @@ function adPage(o) {
     </div>
     SECONDAD
     DIRECTBOX
-    <a class="continue-btn" id="continueBtn" href="HREF">Continue <span>&#8594;</span></a>
+    <form method="POST" action="HREF" class="continue-form" id="continueForm">
+      <input type="hidden" name="p" value="PROOF">
+      <button type="submit" class="continue-btn" id="continueBtn" style="font-family:inherit;appearance:none;-webkit-appearance:none">Continue <span>&#8594;</span></button>
+    </form>
     <div class="hint" id="bottomHint" style="display:none"><span>&#8595;</span> Scroll down to continue</div>
     THIRDAD
     <div class="note">LINK BABA helps creators earn from every click</div>
@@ -648,6 +651,10 @@ function adPage(o) {
         if (prog) prog.style.width = Math.round((doneSec / total) * 100) + '%';
       }
       startBtn.addEventListener('click', start);
+      var continueForm = document.getElementById('continueForm');
+      if (continueForm) continueForm.addEventListener('submit', function (e) {
+        if (!btn.classList.contains('ready')) e.preventDefault();
+      });
     })();
   </script>
 </body>
@@ -658,6 +665,7 @@ function adPage(o) {
     .replace(/TIMER/g, () => timer)
     .replace(/TOTALWAIT/g, () => totalWait)
     .replace(/HREF/g, () => href)
+    .replace(/PROOF/g, () => o.proof || "")
     .replace(/ADSLOT/g, () => adSlot)
     .replace(/SECONDAD/g, () => secondAd)
     .replace(/THIRDAD/g, () => thirdAd)
@@ -774,7 +782,10 @@ function promoPage(o) {
       </div>
       <div class="progress-track" id="progTrack" style="display:none"><div class="progress-fill" id="prog"></div></div>
     </div>
-    <a class="continue-btn" id="continueBtn" href="HREF">Continue <span>&#8594;</span></a>
+    <form method="POST" action="HREF" class="continue-form" id="continueForm">
+      <input type="hidden" name="p" value="PROOF">
+      <button type="submit" class="continue-btn" id="continueBtn" style="font-family:inherit;appearance:none;-webkit-appearance:none">Continue <span>&#8594;</span></button>
+    </form>
     <div class="note">LINK BABA helps creators earn from every click</div>
   </div>
   <script>
@@ -821,12 +832,17 @@ function promoPage(o) {
         if (prog) prog.style.width = Math.round((done / total) * 100) + '%';
       }
       startBtn.addEventListener('click', start);
+      var continueForm = document.getElementById('continueForm');
+      if (continueForm) continueForm.addEventListener('submit', function (e) {
+        if (!btn.classList.contains('ready')) e.preventDefault();
+      });
     })();
   </script>
 </body>
 </html>`
     .replace(/TIMER/g, () => timer)
     .replace(/HREF/g, () => href)
+    .replace(/PROOF/g, () => o.proof || "")
     .replace(/IMAGE/g, () => image)
     .replace(/TITLE/g, () => escapeAttr(o.title || "Special Offer"))
     .replace(/DESC/g, () => escapeAttr(o.description || ""))
@@ -835,7 +851,7 @@ function promoPage(o) {
 
 // ============ STEP PAGE RENDERER ============
 
-function renderStepPage(step, adPages, totalPages, ads, promo, token) {
+function renderStepPage(step, adPages, totalPages, ads, promo, token, proof) {
   if (step > adPages) {
     return promoPage({
       step,
@@ -849,6 +865,7 @@ function renderStepPage(step, adPages, totalPages, ads, promo, token) {
       imageUrl: promo.imageUrl,
       emoji: promo.emoji,
       token,
+      proof,
     });
   }
   return adPage({
@@ -871,6 +888,7 @@ function renderStepPage(step, adPages, totalPages, ads, promo, token) {
     directLinkUrl: ads.directLinkUrl,
     directList: ads.directList,
     token,
+    proof,
   });
 }
 
@@ -989,6 +1007,31 @@ async function handleGo(request, url, ctx) {
   const totalPages = Math.max(1, parseInt(session.totalPages) || 1);
   const promoEnabled = session.promoEnabled !== false;
   const promo = ads.promo || {};
+  const method = request.method;
+
+  const renderCurrent = () =>
+    html(renderStepPage(session.step, adPages, totalPages, ads, promo, token, session.proof), 200, { csp: false, noStore: true });
+
+  if (method !== "POST") {
+    if (session.step >= totalPages) {
+      await dbDelete(`adsessions/${token}`).catch(() => {});
+      trackConversion(session.code, link, request, ads, totalPages, ctx);
+      return redirect(longUrl);
+    }
+    await dbUpdate(`adsessions/${token}`, { pageAt: Date.now() }).catch(() => {});
+    return renderCurrent();
+  }
+
+  let proof = url.searchParams.get("p") || "";
+  if (!proof) {
+    try {
+      const form = await request.formData();
+      proof = form.get("p") || "";
+    } catch (e) {}
+  }
+  if (!proof || proof !== (session.proof || "")) {
+    return redirect(url.origin + "/" + session.code);
+  }
 
   if (session.step >= totalPages) {
     await dbDelete(`adsessions/${token}`).catch(() => {});
@@ -996,10 +1039,19 @@ async function handleGo(request, url, ctx) {
     return redirect(longUrl);
   }
 
+  const gateSeconds = session.step > adPages ? promo.timerSeconds : ads.timerSeconds;
+  const minWaitMs = Math.max(0, parseInt(gateSeconds) || 0) * 1000;
+  const sinceRender = Date.now() - (session.pageAt || 0);
+  if (minWaitMs > 0 && sinceRender < minWaitMs) {
+    await dbUpdate(`adsessions/${token}`, { pageAt: Date.now() }).catch(() => {});
+    return renderCurrent();
+  }
+
   const nextStep = session.step + 1;
-  await dbUpdate(`adsessions/${token}`, { step: nextStep }).catch(() => {});
+  const newProof = randomToken(16);
+  await dbUpdate(`adsessions/${token}`, { step: nextStep, proof: newProof, pageAt: Date.now() }).catch(() => {});
   if (nextStep <= adPages) trackAdView(session.code, request, nextStep, ctx);
-  return html(renderStepPage(nextStep, adPages, totalPages, ads, promo, token), 200, { csp: false, noStore: true });
+  return html(renderStepPage(nextStep, adPages, totalPages, ads, promo, token, newProof), 200, { csp: false, noStore: true });
 }
 
 // ============ ROUTER ============
@@ -1179,17 +1231,20 @@ export default {
 
     if (adsEnabled || promoEnabled) {
       const token = randomToken();
+      const proof = randomToken(16);
       await dbUpdate(`adsessions/${token}`, {
         code,
         step: 1,
         adPages,
         totalPages,
         promoEnabled,
+        proof,
+        pageAt: Date.now(),
         createdAt: Date.now(),
         expiresAt: Date.now() + SESSION_TTL,
       }).catch(() => {});
       if (adsEnabled) trackAdView(code, request, 1, ctx);
-      return html(renderStepPage(1, adPages, totalPages, ads, promo, token), 200, { csp: false, noStore: true });
+      return html(renderStepPage(1, adPages, totalPages, ads, promo, token, proof), 200, { csp: false, noStore: true });
     }
 
     // ---- Direct redirect (no ads, no promo) ----
