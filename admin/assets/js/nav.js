@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur Admin - Sidebar dropdown toggle
+// LINK BABA Admin - Sidebar dropdown toggle
 // ============================================================
 (function () {
   document.querySelectorAll('.sidebar-nav .nav-group').forEach(function (group) {
