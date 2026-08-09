@@ -36,3 +36,8 @@
 .page-btn.active { background: var(--gradient); color: #050A18; border-color: transparent; font-weight: 700; }
 .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .page-btn svg { width: 1em; height: 1em; }
+
+/* Remove tap focus glow on phones */
+:focus, :focus-visible { outline: none !important; }
+* { -webkit-tap-highlight-color: transparent; }
+
