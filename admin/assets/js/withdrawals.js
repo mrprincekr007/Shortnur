@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur Admin - Withdrawals Page
+// LINK BABA Admin - Withdrawals Page
 // ============================================================
 
 import { auth, db, ref, get, update, onAuthStateChanged, signOut, ensureAdmins, isAdminUser } from "../../firebase/firebase-config.js";
@@ -390,6 +390,6 @@ function exportCSV() {
       formatDate(w.processedAt || w.rejectedAt),
     ]);
   });
-  downloadCSV('shortnur-withdrawals.csv', rows);
+  downloadCSV('linkbaba-withdrawals.csv', rows);
   showToast('Withdrawals exported.', 'success');
 }
