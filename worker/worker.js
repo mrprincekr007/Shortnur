@@ -464,7 +464,7 @@ function adPage(o) {
     }
   }
   const directBoxes = directUrls
-    .map(u => `<div class="ad-card"><div class="ad-tag">Sponsored</div><div class="ad-slot ad-slot-second"><iframe class="ad-frame" src="${escapeAttr(u)}" loading="lazy" scrolling="no" frameborder="0" title="Advertisement"></iframe></div></div>`)
+    .map(u => `<div class="ad-card"><div class="ad-tag">Sponsored</div><a class="sponsored-link" href="${escapeAttr(u)}" target="_blank" rel="nofollow noopener sponsored" data-prev="direct">Open Sponsored Offer <span>&#8599;</span></a></div>`)
     .join("\n");
   const dotCount = Math.max(1, parseInt(o.dotPages) || parseInt(o.totalPages) || 1);
   const stepDots = Array.from({ length: dotCount }, (_, i) =>
@@ -540,6 +540,9 @@ function adPage(o) {
     .hint { display: flex; align-items: center; justify-content: center; gap: 6px; text-align: center; color: #5a6b8c; font-size: .8rem; margin-top: 14px; }
     .note { text-align: center; color: #5a6b8c; font-size: .73rem; margin-top: 20px; }
     .ad-card-after-continue { margin-top: 12px; }
+    .sponsored-link { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 54px; padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,.05); border: 1px dashed rgba(255,255,255,.18); color: #18CBF0; font-weight: 700; font-size: .9rem; text-decoration: none; transition: .2s; }
+    .sponsored-link:hover { background: rgba(24,203,240,.1); border-color: rgba(24,203,240,.45); color: #7ee0ff; }
+    .sponsored-link span { font-size: 1.1rem; }
     @media (max-width: 480px) {
       .page { padding: 0 10px 24px; }
       .top { padding: 14px 2px 10px; }
