@@ -1,5 +1,5 @@
 /* ============================================
-   Shortnur - Professional URL Shortener
+   LINK BABA - Professional URL Shortener
    Design System
    ============================================ */
 
@@ -1142,4 +1142,15 @@ input, select, textarea { font-family: var(--font); }
 .page-icon.c-violet,
 .page-icon.c-blue {
   background: linear-gradient(135deg, #18CBF0, #0d92b5) !important;
+}
+
+
+/* Logo image */
+.logo-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  object-fit: cover;
+  display: inline-block;
+  flex-shrink: 0;
 }
