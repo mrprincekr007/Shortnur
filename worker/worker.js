@@ -1013,13 +1013,12 @@ async function handleGo(request, url, ctx) {
     html(renderStepPage(session.step, adPages, totalPages, ads, promo, token, session.proof), 200, { csp: false, noStore: true });
 
   if (method !== "POST") {
-    if (session.step >= totalPages) {
-      await dbDelete(`adsessions/${token}`).catch(() => {});
-      trackConversion(session.code, link, request, ads, totalPages, ctx);
-      return redirect(longUrl);
-    }
-    await dbUpdate(`adsessions/${token}`, { pageAt: Date.now() }).catch(() => {});
-    return renderCurrent();
+    // A direct visit to any step page (including the final page) must always
+    // restart from page 1, so nobody can skip the ad pages by sharing a
+    // direct URL. The destination is only reached via the POST flow below.
+    const newProof = randomToken(16);
+    await dbUpdate(`adsessions/${token}`, { step: 1, proof: newProof, pageAt: Date.now() }).catch(() => {});
+    return html(renderStepPage(1, adPages, totalPages, ads, promo, token, newProof), 200, { csp: false, noStore: true });
   }
 
   let proof = url.searchParams.get("p") || "";
@@ -1221,50 +1220,29 @@ export default {
     }
 
     // ---- Advanced ad system + final promo page ----
+    // Every short link ALWAYS goes through the ad pages (page 1 -> ... -> final)
+    // before reaching the destination. No direct redirects, ever.
     const ads = await getAdsConfig();
     const promo = ads.promo || {};
     const promoEnabled = !!(promo && promo.enabled !== false && promo.url);
-    const adsEnabled = ads.enabled !== false && link.adsEnabled !== false;
-    const baseAdPages = Math.max(1, parseInt(link.adPages || ads.adPages) || 1);
-    const adPages = adsEnabled ? baseAdPages : 0;
+    const adPages = Math.max(1, parseInt(link.adPages || ads.adPages) || 1);
     const totalPages = adPages + (promoEnabled ? 1 : 0);
 
-    if (adsEnabled || promoEnabled) {
-      const token = randomToken();
-      const proof = randomToken(16);
-      await dbUpdate(`adsessions/${token}`, {
-        code,
-        step: 1,
-        adPages,
-        totalPages,
-        promoEnabled,
-        proof,
-        pageAt: Date.now(),
-        createdAt: Date.now(),
-        expiresAt: Date.now() + SESSION_TTL,
-      }).catch(() => {});
-      if (adsEnabled) trackAdView(code, request, 1, ctx);
-      return html(renderStepPage(1, adPages, totalPages, ads, promo, token, proof), 200, { csp: false, noStore: true });
-    }
-
-    // ---- Direct redirect (no ads, no promo) ----
-    const clickData = {
-      linkCode: code,
-      timestamp: Date.now(),
-      ip: clientIp(request),
-      country: getCountry(request),
-      device: getDevice(request),
-      referrer: getReferrer(request),
-      type: "direct",
-    };
-
-    const currentClicks = link.clicks || 0;
-    ctx.waitUntil(Promise.all([
-      dbUpdate(`links/${code}`, { clicks: currentClicks + 1 }),
-      dbPush(`clicks/${code}`, clickData),
-    ]).catch(() => {}));
-
-    return redirect(longUrl);
+    const token = randomToken();
+    const proof = randomToken(16);
+    await dbUpdate(`adsessions/${token}`, {
+      code,
+      step: 1,
+      adPages,
+      totalPages,
+      promoEnabled,
+      proof,
+      pageAt: Date.now(),
+      createdAt: Date.now(),
+      expiresAt: Date.now() + SESSION_TTL,
+    }).catch(() => {});
+    trackAdView(code, request, 1, ctx);
+    return html(renderStepPage(1, adPages, totalPages, ads, promo, token, proof), 200, { csp: false, noStore: true });
   },
   scheduled,
 };
