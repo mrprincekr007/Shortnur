@@ -21,6 +21,7 @@ const ICONS = {
   wallet: `<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/>`,
   money: `<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>`,
   gift: `<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>`,
+  eye: `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`,
 };
 
 function icon(name) {
@@ -104,7 +105,7 @@ function initAdPreviews() {
   });
   document.querySelectorAll('.ad-preview-toggle').forEach(btn => {
     btn.addEventListener('click', () => {
-      const key = btn.dataset.preview;
+      const key = btn.dataset.prev;
       const cont = document.getElementById('prev-' + key);
       if (!cont) return;
       const willOpen = cont.hidden;
@@ -115,7 +116,7 @@ function initAdPreviews() {
   });
   document.querySelectorAll('[data-prev]').forEach(inp => {
     inp.addEventListener('input', () => {
-      const key = inp.dataset.preview;
+      const key = inp.dataset.prev;
       const cont = document.getElementById('prev-' + key);
       if (cont && !cont.hidden) refreshPreview(key);
     });
