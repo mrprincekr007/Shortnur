@@ -260,6 +260,15 @@ function setupEventHandlers() {
     document.getElementById('sidebar').classList.toggle('open');
   });
 
+  document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.getElementById('menuToggle');
+    if (!sidebar.classList.contains('open')) return;
+    if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+      sidebar.classList.remove('open');
+    }
+  });
+
   document.getElementById('createLinkBtn').addEventListener('click', () => window.location.href = 'mylinks.html');
   const welcomeCreate = document.getElementById('welcomeCreateBtn');
   if (welcomeCreate) welcomeCreate.addEventListener('click', () => window.location.href = 'mylinks.html');
