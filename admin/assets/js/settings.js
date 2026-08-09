@@ -106,6 +106,7 @@ function buildRealPage(key) {
   const g = id => { const el = document.getElementById(id); return el ? el.value : ''; };
   const timer = Math.max(3, parseInt(g('adsTimer')) || 8);
   const fake = Math.max(0, parseInt(g('adsFakeTimer')) || 0);
+  const continueWait = Math.max(0, parseInt(g('adsContinueWait')) || 0);
   const totalWait = timer + fake;
   const dotPages = Math.max(1, parseInt(g('adsPages')) || 4);
   const step = 1;
@@ -206,6 +207,8 @@ function buildRealPage(key) {
     .ring-inner { width: 74px; height: 74px; border-radius: 50%; background: #0b1222; display: grid; place-items: center; font-size: 1.7rem; font-weight: 800; }
     .ring.done { background: conic-gradient(#00E5C7 360deg, #16233f 0deg); box-shadow: 0 0 44px rgba(0,229,199,.4); }
     .ring.done .ring-inner { color: #00E5C7; }
+    @keyframes breathe { 0%,100% { transform: scale(1); box-shadow: 0 0 44px rgba(0,229,199,.4); } 50% { transform: scale(1.07); box-shadow: 0 0 66px rgba(0,229,199,.7); } }
+    .ring.done.wait { animation: breathe 1.1s ease-in-out infinite; }
     .timer-label { color: #8892A4; font-size: .85rem; margin-top: 14px; }
     .progress-track { height: 5px; background: rgba(255,255,255,.08); border-radius: 99px; overflow: hidden; margin-top: 18px; }
     .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#18CBF0,#00E5C7); border-radius: 99px; transition: width 1s linear; }
@@ -272,6 +275,7 @@ function buildRealPage(key) {
     (function () {
       var total = ${timer};
       var waitMs = ${totalWait} * 1000;
+      var continueMs = ${continueWait} * 1000;
       var count = document.getElementById('count');
       var ring = document.getElementById('ring');
       var prog = document.getElementById('prog');
@@ -302,14 +306,23 @@ function buildRealPage(key) {
         if (left > 0) {
           render(left, elapsed);
         } else if (!done) {
-          done = true;
-          clearInterval(iv);
-          render(0, total);
-          count.textContent = '\\u2713';
-          ring.classList.add('done');
-          timerLabel.textContent = 'Scroll down and tap Continue';
-          bottomHint.style.display = 'flex';
-          btn.classList.add('ready');
+          var waited = Date.now() - (t0 + waitMs);
+          if (waited < continueMs) {
+            render(0, total);
+            count.textContent = '\\u2713';
+            ring.classList.add('done', 'wait');
+            timerLabel.textContent = 'Please wait\\u2026';
+          } else {
+            done = true;
+            clearInterval(iv);
+            render(0, total);
+            count.textContent = '\\u2713';
+            ring.classList.add('done');
+            ring.classList.remove('wait');
+            timerLabel.textContent = 'Scroll down and tap Continue';
+            bottomHint.style.display = 'flex';
+            btn.classList.add('ready');
+          }
         }
       }
       function render(left, doneSec) {
@@ -412,6 +425,7 @@ async function loadSettings() {
       document.getElementById('adsEnabled').checked = ads.enabled !== false;
       document.getElementById('adsTimer').value = ads.timerSeconds || 8;
       document.getElementById('adsFakeTimer').value = ads.fakeTimerSeconds || 0;
+      document.getElementById('adsContinueWait').value = ads.continueWaitSeconds || 0;
       document.getElementById('adsPages').value = ads.adPages || 2;
       document.getElementById('adsRate').value = ads.ratePer1000 ?? 0.50;
       document.getElementById('adsBannerUrl').value = ads.bannerUrl || '';
@@ -488,6 +502,7 @@ document.getElementById('adsForm').addEventListener('submit', async (e) => {
         enabled: document.getElementById('adsEnabled').checked,
         timerSeconds: parseInt(document.getElementById('adsTimer').value) || 8,
         fakeTimerSeconds: parseInt(document.getElementById('adsFakeTimer').value) || 0,
+        continueWaitSeconds: parseInt(document.getElementById('adsContinueWait').value) || 0,
         adPages: parseInt(document.getElementById('adsPages').value) || 2,
         ratePer1000: parseFloat(document.getElementById('adsRate').value) || 0,
         bannerUrl: document.getElementById('adsBannerUrl').value.trim(),
