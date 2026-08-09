@@ -586,7 +586,7 @@ function adPage(o) {
     DIRECTBOX
     <form method="POST" action="HREF" class="continue-form" id="continueForm">
       <input type="hidden" name="p" value="PROOF">
-      <button type="submit" class="continue-btn" id="continueBtn" style="font-family:inherit;appearance:none;-webkit-appearance:none">Continue <span>&#8594;</span></button>
+      <button type="submit" class="continue-btn" id="continueBtn" style="font-family:inherit;appearance:none;-webkit-appearance:none"><span id="btnLabel">Continue</span> <span>&#8594;</span></button>
     </form>
     <div class="hint" id="bottomHint" style="display:none"><span>&#8595;</span> Scroll down to continue</div>
     THIRDAD
@@ -603,6 +603,7 @@ function adPage(o) {
       var prog = document.getElementById('prog');
       var progTrack = document.getElementById('progTrack');
       var btn = document.getElementById('continueBtn');
+      var btnLabel = document.getElementById('btnLabel');
       var startBtn = document.getElementById('startBtn');
       var timerLabel = document.getElementById('timerLabel');
       var bottomHint = document.getElementById('bottomHint');
@@ -646,6 +647,7 @@ function adPage(o) {
             count.textContent = '\u2713';
             ring.classList.add('done', 'wait');
             timerLabel.textContent = 'Please wait\u2026';
+            if (btnLabel) btnLabel.textContent = 'Please wait\u2026';
           } else {
             done = true;
             clearInterval(iv);
@@ -654,6 +656,7 @@ function adPage(o) {
             ring.classList.add('done');
             ring.classList.remove('wait');
             timerLabel.textContent = 'Scroll down and tap Continue';
+            if (btnLabel) btnLabel.textContent = 'Continue';
             bottomHint.style.display = 'flex';
             btn.classList.add('ready');
           }
