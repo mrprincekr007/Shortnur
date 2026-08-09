@@ -51,58 +51,275 @@ function showToast(message, type = 'info', duration = 3000) {
   setTimeout(() => { toast.classList.add('leaving'); setTimeout(() => toast.remove(), 300); }, duration);
 }
 
-// ============ AD PREVIEW (kahan dikhega) ============
-function buildMock(hl) {
-  const row = (inner, cls = '') => `<div class="mock-row ${cls}">${inner}</div>`;
-  const ad = (text, cls = '', hlKey = '') => `<div class="mock-ad ${cls} ${hl === hlKey ? 'mock-glow' : ''}">${text}</div>`;
-  const parts = [];
-  parts.push(`<div class="mock-top"><span class="mock-logo">LINK<b>BABA</b></span><span class="mock-dots"><i class="on"></i><i></i><i></i><i></i></span></div>`);
-  parts.push(row(ad('ADVERTISEMENT — main box', 'mock-main', 'main')));
-  parts.push(row(`<div class="mock-timer">&#9202; 15s</div>`));
-  parts.push(row(ad('ADVERTISEMENT — second box', 'mock-second', 'second')));
-  if (hl === 'direct') parts.push(row(ad('SPONSORED 1', 'mock-second', 'direct') + ad('SPONSORED 2', 'mock-second', 'direct'), 'mock-two'));
-  parts.push(row(`<div class="mock-btn">Continue &#8594;</div>`));
-  parts.push(row(ad('ADVERTISEMENT — below continue', 'mock-second', 'below')));
-  if (hl === 'pop') parts.push(`<div class="mock-layer mock-pop">&#128279; Popunder — naye TAB me khulega</div>`);
-  if (hl === 'push') parts.push(`<div class="mock-notif">&#128276; Push Notification</div>`);
-  if (hl === 'inpage') parts.push(`<div class="mock-widget">In-Page Push widget</div>`);
-  if (hl === 'vig') parts.push(`<div class="mock-layer mock-vig">Fullscreen Vignette Ad</div>`);
-  return parts.join('');
+// ============ AD PREVIEW — bilkul worker page jaisa ============
+const PREV_SLOT_INFO = {
+  banner1:  { label: 'YE AD — Main Box (sabse upar)' },
+  banner2:  { label: 'YE AD — Second Box (timer ke neeche)' },
+  banner3:  { label: 'YE AD — Continue ke Neeche' },
+  direct:   { label: 'YE AD — Sponsored Boxes' },
+  popunder: { label: 'YE CODE — Popunder (click par naya tab)' },
+  push:     { label: 'YE CODE — Push Notification' },
+  inpage:   { label: 'YE CODE — In-Page Push widget' },
+  vignette: { label: 'YE CODE — Vignette / Fullscreen' },
+};
+
+function previewBadge(text) {
+  return `<div class="preview-badge">&#128205; ${text}</div>`;
+}
+
+function slotContent(html, url) {
+  const h = (html || '').trim();
+  const u = (url || '').trim();
+  if (h) return h;
+  if (u) return `<iframe class="ad-frame" src="${u}" loading="lazy" scrolling="no" frameborder="0" title="Advertisement"></iframe>`;
+  return '';
+}
+
+function buildRealPage(key) {
+  const g = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+  const timer = Math.max(3, parseInt(g('adsTimer')) || 8);
+  const fake = Math.max(0, parseInt(g('adsFakeTimer')) || 0);
+  const totalWait = timer + fake;
+  const dotPages = Math.max(1, parseInt(g('adsPages')) || 4);
+  const step = 1;
+  const stepDots = Array.from({ length: dotPages }, (_, i) =>
+    `<span class="step-dot${i + 1 === step ? ' active' : ''}"></span>`).join('');
+
+  const isTarget = s => key === s;
+  const mainContent = slotContent(g('adsBannerHtml'), g('adsBannerUrl'));
+  const secContent = slotContent(g('adsBanner2Html'), g('adsBanner2Url'));
+  const thirdContent = slotContent(g('adsBanner3Html'), g('adsBanner3Url'));
+
+  let mainCard = `<div class="ad-card${isTarget('banner1') ? ' preview-glow' : ''}">
+      ${isTarget('banner1') ? previewBadge(PREV_SLOT_INFO.banner1.label) : ''}
+      <div class="ad-tag"><i></i> Advertisement</div>
+      <div class="ad-slot ad-slot-main">${mainContent || (isTarget('banner1') ? '<div class="ad-placeholder"><span>Ye box — is code ka ad yahan aayega</span><small>Upar Ad Code paste karo</small></div>' : '<div class="ad-placeholder"><span>Advertisement</span><small>Yahan ad aayega</small></div>')}</div>
+      <div class="earn-note"><span class="pulse"></span> You earn only if you stay until the timer finishes</div>
+    </div>`;
+
+  const secondCard = secContent || isTarget('banner2')
+    ? `<div class="ad-card${isTarget('banner2') ? ' preview-glow' : ''}">
+      ${isTarget('banner2') ? previewBadge(PREV_SLOT_INFO.banner2.label) : ''}
+      <div class="ad-tag"><i></i> Advertisement</div>
+      <div class="ad-slot ad-slot-second">${secContent || '<div class="ad-placeholder"><span>Ye box — second ad yahan aayega</span><small>Banner 2 me code paste karo</small></div>'}</div>
+    </div>`
+    : '';
+
+  const directBoxes = (g('adsDirectList').split('\n').map(s => s.trim()).filter(Boolean)).map(u =>
+    `<div class="ad-card${isTarget('direct') ? ' preview-glow' : ''}"><div class="ad-tag">Sponsored</div><div class="ad-slot ad-slot-second"><iframe class="ad-frame" src="${u}" loading="lazy" scrolling="no" frameborder="0" title="Sponsored"></iframe></div></div>`).join('');
+  const directBlock = isTarget('direct')
+    ? previewBadge(PREV_SLOT_INFO.direct.label) + (directBoxes || '<div class="ad-card preview-glow"><div class="ad-tag">Sponsored</div><div class="ad-slot ad-slot-second"><div class="ad-placeholder"><span>Direct links yahan aayenge</span><small>Direct Links box me har line pe ek URL daalo</small></div></div></div>')
+    : directBoxes;
+
+  const thirdCard = thirdContent || isTarget('banner3')
+    ? `<div class="ad-card${isTarget('banner3') ? ' preview-glow' : ''}">
+      ${isTarget('banner3') ? previewBadge(PREV_SLOT_INFO.banner3.label) : ''}
+      <div class="ad-tag"><i></i> Advertisement</div>
+      <div class="ad-slot ad-slot-second">${thirdContent || '<div class="ad-placeholder"><span>Ye box — Continue ke neeche ad yahan aayega</span><small>Banner 3 me code paste karo</small></div>'}</div>
+    </div>`
+    : '';
+
+  const extraScripts = [g('adsPopunderCode'), g('adsPushCode'), g('adsInPagePushCode'), g('adsVignetteCode')].filter(Boolean).join('\n');
+  const popUrl = JSON.stringify(g('adsPopunderUrl') || '').replace(/</g, '\\u003c');
+  const popBadge = isTarget('popunder') ? previewBadge(PREV_SLOT_INFO.popunder.label) : '';
+  const pushBadge = isTarget('push') ? previewBadge(PREV_SLOT_INFO.push.label) : '';
+  const inpageBadge = isTarget('inpage') ? previewBadge(PREV_SLOT_INFO.inpage.label) : '';
+  const vigBadge = isTarget('vignette') ? previewBadge(PREV_SLOT_INFO.vignette.label) : '';
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Preview &#8212; LINK BABA</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :focus, :focus-visible { outline: none !important; }
+    * { -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #070B16; color: #fff; overflow-x: hidden; }
+    .glow { position: fixed; border-radius: 50%; filter: blur(110px); z-index: 0; pointer-events: none; }
+    .g1 { width: 320px; height: 320px; top: -70px; left: -60px; background: #18CBF0; opacity: .16; animation: drift 9s ease-in-out infinite; }
+    .g2 { width: 380px; height: 380px; bottom: -90px; right: -70px; background: #00E5C7; opacity: .14; animation: drift 11s ease-in-out infinite reverse; }
+    .g3 { width: 300px; height: 300px; top: 45%; left: 50%; margin-left: -150px; margin-top: -150px; background: #3B82F6; opacity: .09; }
+    @keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20px, 16px); } }
+    .page { position: relative; z-index: 1; width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px 36px; }
+    .top { display: flex; align-items: center; justify-content: space-between; padding: 20px 4px 14px; }
+    .logo { font-weight: 900; font-size: 1.2rem; letter-spacing: -.3px; }
+    .logo span { background: linear-gradient(135deg,#18CBF0,#00E5C7); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .steps { display: flex; align-items: center; gap: 8px; font-size: .78rem; color: #9fb0d1; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); padding: 6px 12px; border-radius: 999px; }
+    .steps-dots { display: flex; align-items: center; gap: 5px; }
+    .step-dot { width: 6px; height: 6px; border-radius: 99px; background: rgba(255,255,255,.16); transition: .3s; }
+    .step-dot.active { width: 18px; background: linear-gradient(135deg,#18CBF0,#00E5C7); box-shadow: 0 0 10px rgba(24,203,240,.5); }
+    .ad-card { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.09); border-radius: 20px; padding: 10px; margin-bottom: 16px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 10px 40px rgba(0,0,0,.35); }
+    .ad-tag { display: flex; align-items: center; gap: 7px; color: #8b9bb8; font-size: .68rem; text-transform: uppercase; letter-spacing: .14em; margin: 6px 0 10px 8px; }
+    .ad-tag i { width: 6px; height: 6px; border-radius: 50%; background: #00E5C7; box-shadow: 0 0 8px #00E5C7; }
+    .ad-slot { width: 100%; min-height: 0; background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.12); border-radius: 14px; overflow: hidden; text-align: center; }
+    .ad-slot iframe { margin: 0 auto; display: block; max-width: 100%; }
+    .ad-slot-main { min-height: 380px; }
+    .ad-slot-second { min-height: 210px; }
+    .ad-frame { width: 100%; min-height: 210px; border: 0; display: block; }
+    .ad-placeholder { text-align: center; color: #8892A4; padding: 36px 20px; }
+    .ad-placeholder span { display: block; font-size: 1rem; color: #fff; font-weight: 700; margin-top: 10px; }
+    .ad-placeholder small { font-size: .8rem; }
+    .earn-note { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 12px 0 6px; color: #9fb0d1; font-size: .8rem; text-align: center; }
+    .earn-note .pulse { width: 8px; height: 8px; border-radius: 50%; background: #00E5C7; animation: pulse 1.2s infinite; box-shadow: 0 0 8px #00E5C7; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+    .timer-card { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.09); border-radius: 20px; padding: 22px; margin-bottom: 16px; text-align: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 10px 40px rgba(0,0,0,.35); }
+    .timer-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .ring { width: 92px; height: 92px; border-radius: 50%; background: conic-gradient(#18CBF0 0deg, #16233f 0deg); display: grid; place-items: center; position: relative; transition: background .12s linear; box-shadow: 0 0 34px rgba(24,203,240,.18); }
+    .ring-inner { width: 74px; height: 74px; border-radius: 50%; background: #0b1222; display: grid; place-items: center; font-size: 1.7rem; font-weight: 800; }
+    .ring.done { background: conic-gradient(#00E5C7 360deg, #16233f 0deg); box-shadow: 0 0 44px rgba(0,229,199,.4); }
+    .ring.done .ring-inner { color: #00E5C7; }
+    .timer-label { color: #8892A4; font-size: .85rem; margin-top: 14px; }
+    .progress-track { height: 5px; background: rgba(255,255,255,.08); border-radius: 99px; overflow: hidden; margin-top: 18px; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#18CBF0,#00E5C7); border-radius: 99px; transition: width 1s linear; }
+    .continue-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 16px; border: none; border-radius: 14px; background: linear-gradient(135deg,#18CBF0,#00E5C7); color: #050A18; font-weight: 800; font-size: 1.05rem; cursor: pointer; text-decoration: none; opacity: .4; pointer-events: none; transition: .25s; box-shadow: 0 10px 30px rgba(24,203,240,.25); }
+    .continue-btn.ready { opacity: 1; pointer-events: auto; box-shadow: 0 12px 38px rgba(0,229,199,.4); }
+    .continue-btn.ready:hover { transform: translateY(-2px); }
+    .continue-btn.ready:active { transform: scale(.98); }
+    .hint { display: flex; align-items: center; justify-content: center; gap: 6px; text-align: center; color: #5a6b8c; font-size: .8rem; margin-top: 14px; }
+    .note { text-align: center; color: #5a6b8c; font-size: .73rem; margin-top: 20px; }
+    .start-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; padding: 15px 44px; border: none; border-radius: 14px; background: linear-gradient(135deg,#18CBF0,#00E5C7); color: #050A18; font-weight: 800; font-size: 1.1rem; cursor: pointer; box-shadow: 0 10px 40px rgba(24,203,240,.4); transition: .2s; }
+    .start-btn:hover { transform: translateY(-2px); }
+    .start-btn:active { transform: scale(.96); }
+    .start-btn.hidden { display: none; }
+    .preview-badge { text-align: center; margin: 6px auto 10px; background: linear-gradient(135deg,#18CBF0,#00E5C7); color: #050A18; font-weight: 800; font-size: .72rem; padding: 6px 12px; border-radius: 999px; width: fit-content; }
+    .preview-glow { box-shadow: 0 0 0 2px #18CBF0, 0 0 26px rgba(24,203,240,.5) !important; }
+    @media (max-width: 480px) {
+      .page { padding: 0 10px 24px; }
+      .top { padding: 14px 2px 10px; }
+      .logo { font-size: 1.05rem; }
+      .steps { font-size: .7rem; padding: 5px 9px; }
+      .ad-card { padding: 7px; border-radius: 16px; margin-bottom: 12px; }
+      .ad-tag { font-size: .62rem; margin: 4px 0 8px 6px; }
+      .ad-slot-main { min-height: 300px; }
+      .ad-slot-second { min-height: 170px; }
+      .ad-frame { min-height: 170px; }
+      .timer-card { padding: 16px; border-radius: 16px; }
+      .ring { width: 76px; height: 76px; }
+      .ring-inner { width: 60px; height: 60px; font-size: 1.4rem; }
+      .continue-btn { padding: 14px; font-size: 1rem; }
+      .start-btn { padding: 13px 34px; font-size: 1rem; }
+    }
+</style>
+</head>
+<body>
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+  <div class="glow g3"></div>
+  <div class="page">
+    <div class="top">
+      <div class="logo">LINK<span>BABA</span></div>
+      <div class="steps"><span class="steps-dots">${stepDots}</span> ${step} / ${dotPages}</div>
+    </div>
+    ${popBadge}
+    ${pushBadge}
+    ${inpageBadge}
+    ${vigBadge}
+    ${mainCard}
+    <div class="timer-card">
+      <div class="timer-wrap">
+        <div class="ring" id="ring" style="display:none"><div class="ring-inner" id="count">${timer}</div></div>
+        <button class="start-btn" id="startBtn">Click to Continue <span>&#9654;</span></button>
+        <div class="timer-label" id="timerLabel">Start the timer to unlock your link</div>
+      </div>
+      <div class="progress-track" id="progTrack" style="display:none"><div class="progress-fill" id="prog"></div></div>
+    </div>
+    ${secondCard}
+    ${directBlock}
+    <a class="continue-btn" id="continueBtn" href="javascript:void(0)">Continue <span>&#8594;</span></a>
+    <div class="hint" id="bottomHint" style="display:none"><span>&#8595;</span> Scroll down to continue</div>
+    ${thirdCard}
+    <div class="note">LINK BABA helps creators earn from every click</div>
+  </div>
+  ${extraScripts}
+  <script>
+    (function () {
+      var total = ${timer};
+      var waitMs = ${totalWait} * 1000;
+      var count = document.getElementById('count');
+      var ring = document.getElementById('ring');
+      var prog = document.getElementById('prog');
+      var progTrack = document.getElementById('progTrack');
+      var btn = document.getElementById('continueBtn');
+      var startBtn = document.getElementById('startBtn');
+      var timerLabel = document.getElementById('timerLabel');
+      var bottomHint = document.getElementById('bottomHint');
+      var started = false;
+      var done = false;
+      var t0 = null;
+      var iv = null;
+      function start() {
+        if (started) return;
+        started = true;
+        startBtn.classList.add('hidden');
+        ring.style.display = 'grid';
+        progTrack.style.display = 'block';
+        timerLabel.textContent = 'Please wait for the countdown to finish';
+        if (${popUrl}) {
+          try {
+            var w = window.open(${popUrl}, '_blank');
+            if (w) w.blur();
+          } catch (e) {}
+          window.focus();
+        }
+        t0 = Date.now();
+        tick();
+        iv = setInterval(tick, 250);
+      }
+      function tick() {
+        var elapsed = Math.floor((Date.now() - t0) / 1000);
+        var left = total - elapsed;
+        if (left > 0) {
+          render(left, Math.min(elapsed, total));
+        } else if (!done && Date.now() - t0 < waitMs) {
+          render(0, total);
+          count.textContent = '\\u2713';
+          ring.classList.add('done');
+          timerLabel.textContent = 'Almost there, please wait\\u2026';
+        } else if (!done) {
+          done = true;
+          clearInterval(iv);
+          render(0, total);
+          count.textContent = '\\u2713';
+          ring.classList.add('done');
+          timerLabel.textContent = 'Scroll down and tap Continue';
+          bottomHint.style.display = 'flex';
+          btn.classList.add('ready');
+        }
+      }
+      function render(left, doneSec) {
+        count.textContent = left;
+        var deg = Math.round((doneSec / total) * 360);
+        ring.style.background = 'conic-gradient(#18CBF0 ' + deg + 'deg, #16233f 0deg)';
+        if (prog) prog.style.width = Math.round((doneSec / total) * 100) + '%';
+      }
+      startBtn.addEventListener('click', start);
+    })();
+  </script>
+</body>
+</html>`;
 }
 
 function refreshPreview(key) {
   const cont = document.getElementById('prev-' + key);
   if (!cont) return;
-  const inputs = document.querySelectorAll('[data-prev="' + key + '"]');
-  let valueEl = null;
-  inputs.forEach(inp => { if (inp.value && inp.value.trim() && (inp.tagName === 'TEXTAREA' || !valueEl)) valueEl = inp; });
-  const value = valueEl ? valueEl.value.trim() : '';
   const frame = cont.querySelector('.ad-preview-frame iframe');
   const empty = cont.querySelector('.ad-preview-empty');
   const note = cont.querySelector('.ad-preview-note');
-  if (!value) {
-    frame.style.display = 'none';
-    empty.style.display = 'block';
-    if (note) note.textContent = '';
-    return;
-  }
   frame.style.display = 'block';
   empty.style.display = 'none';
-  if (valueEl.tagName === 'INPUT') {
-    frame.removeAttribute('srcdoc');
-    frame.src = value;
-    if (note) note.textContent = 'Agar yahan khali dikhe toh us network ne iframe me dikhane se rok diya hai (normal baat). Asli page pe ye <iframe> me hi dikhta hai.';
-  } else {
-    frame.removeAttribute('src');
-    frame.srcdoc = value;
-    if (note) note.textContent = 'Ye aapka asli code render hua hai. Popunder/push-type ads bina click ya permission ke yahan nahi khulte — woh visitor ke click/browser allow karne par aate hain.';
+  frame.srcdoc = buildRealPage(key);
+  if (note) {
+    if (key === 'popunder') note.textContent = 'Start button click karo — popunder naya tab kholne ka try karega (bilkul worker jaisa). Sandbox ki wajah se kuch browsers ise rok sakte hain, par asli site pe kholta hai.';
+    else if (key === 'push' || key === 'inpage' || key === 'vignette') note.textContent = 'Ye code is page me load ho chuka hai. Push notification ke liye browser permission chahiye hoti hai (preview me allow nahi hoti), par code chala raha hai.';
+    else note.textContent = 'Ye aapka asli ad is box me load hua hai — bilkul worker page jaisa. Aadhe second me ad aata hai.';
   }
 }
 
+const _prevTimers = {};
 function initAdPreviews() {
-  document.querySelectorAll('.ad-preview-mock').forEach(el => {
-    el.innerHTML = buildMock(el.dataset.mock || 'main');
-  });
   document.querySelectorAll('.ad-preview-toggle').forEach(btn => {
     btn.addEventListener('click', () => {
       const key = btn.dataset.prev;
@@ -118,7 +335,9 @@ function initAdPreviews() {
     inp.addEventListener('input', () => {
       const key = inp.dataset.prev;
       const cont = document.getElementById('prev-' + key);
-      if (cont && !cont.hidden) refreshPreview(key);
+      if (!cont || cont.hidden) return;
+      clearTimeout(_prevTimers[key]);
+      _prevTimers[key] = setTimeout(() => refreshPreview(key), 350);
     });
   });
 }
