@@ -1013,12 +1013,11 @@ async function handleGo(request, url, ctx) {
     html(renderStepPage(session.step, adPages, totalPages, ads, promo, token, session.proof), 200, { csp: false, noStore: true });
 
   if (method !== "POST") {
-    // A direct visit to any step page (including the final page) must always
-    // restart from page 1, so nobody can skip the ad pages by sharing a
-    // direct URL. The destination is only reached via the POST flow below.
-    const newProof = randomToken(16);
-    await dbUpdate(`adsessions/${token}`, { step: 1, proof: newProof, pageAt: Date.now() }).catch(() => {});
-    return html(renderStepPage(1, adPages, totalPages, ads, promo, token, newProof), 200, { csp: false, noStore: true });
+    // A direct visit to any step page (including the final page) can never
+    // bypass the flow: delete the session and send the visitor back to the
+    // short link itself, which always starts a fresh session from page 1.
+    await dbDelete(`adsessions/${token}`).catch(() => {});
+    return redirect(url.origin + "/" + session.code);
   }
 
   let proof = url.searchParams.get("p") || "";
