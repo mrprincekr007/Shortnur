@@ -194,6 +194,17 @@ const SESSION_TTL = 10 * 60 * 1000;
 
 // ============ AD CONFIG ============
 
+const DEFAULT_PROMO = {
+  enabled: false,
+  title: "Special Offer",
+  description: "Check out this exclusive offer before you continue.",
+  buttonText: "Visit Now",
+  url: "",
+  imageUrl: "",
+  emoji: "🎁",
+  timerSeconds: 5,
+};
+
 const DEFAULT_ADS = {
   enabled: true,
   timerSeconds: 8,
@@ -212,11 +223,14 @@ const DEFAULT_ADS = {
   directLinkUrl: "",
   directList: [],
   ratePer1000: 10,
+  promo: DEFAULT_PROMO,
 };
 
 async function getAdsConfig() {
   const s = await dbGet("settings/ads");
-  return { ...DEFAULT_ADS, ...(s || {}) };
+  const merged = { ...DEFAULT_ADS, ...(s || {}) };
+  merged.promo = { ...DEFAULT_PROMO, ...(merged.promo || {}) };
+  return merged;
 }
 
 // ============ PAGES ============
@@ -532,6 +546,200 @@ function adPage(o) {
     .replace(/POPURL/g, () => popUrl);
 }
 
+// ============ PROMO PAGE (final step) ============
+
+function promoPage(o) {
+  const timer = Math.max(3, parseInt(o.timerSeconds) || 5);
+  const image = o.imageUrl
+    ? `<div class="promo-img"><img src="${escapeAttr(o.imageUrl)}" alt="" onerror="this.parentNode.style.display='none'"></div>`
+    : `<div class="promo-icon">${o.emoji || "🎁"}</div>`;
+  const visitBtn = o.url
+    ? `<a class="visit-btn" href="${escapeAttr(o.url)}" target="_blank" rel="nofollow noopener">${escapeAttr(o.buttonText || "Visit Now")} <span>&#8599;</span></a>`
+    : "";
+  const stepDots = Array.from({ length: Math.max(1, parseInt(o.totalPages) || 1) }, (_, i) =>
+    `<span class="step-dot${i + 1 === parseInt(o.step) ? " active" : ""}"></span>`
+  ).join("");
+  const href = `/go?t=${o.token}`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Almost There &#8212; LINK BABA</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :focus, :focus-visible { outline: none !important; }
+    * { -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #070B16; color: #fff; overflow-x: hidden; }
+    body.locked { overflow: hidden; }
+    .glow { position: fixed; border-radius: 50%; filter: blur(110px); z-index: 0; pointer-events: none; }
+    .g1 { width: 320px; height: 320px; top: -70px; left: -60px; background: #18CBF0; opacity: .16; animation: drift 9s ease-in-out infinite; }
+    .g2 { width: 380px; height: 380px; bottom: -90px; right: -70px; background: #00E5C7; opacity: .14; animation: drift 11s ease-in-out infinite reverse; }
+    .g3 { width: 300px; height: 300px; top: 45%; left: 50%; margin-left: -150px; margin-top: -150px; background: #A78BFA; opacity: .10; }
+    @keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20px, 16px); } }
+    .page { position: relative; z-index: 1; width: 100%; max-width: 560px; margin: 0 auto; padding: 0 16px 36px; }
+    .top { display: flex; align-items: center; justify-content: space-between; padding: 20px 4px 14px; }
+    .logo { font-weight: 900; font-size: 1.2rem; letter-spacing: -.3px; }
+    .logo span { background: linear-gradient(135deg,#18CBF0,#00E5C7); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .steps { display: flex; align-items: center; gap: 8px; font-size: .78rem; color: #9fb0d1; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); padding: 6px 12px; border-radius: 999px; }
+    .steps-dots { display: flex; align-items: center; gap: 5px; }
+    .step-dot { width: 6px; height: 6px; border-radius: 99px; background: rgba(255,255,255,.16); transition: .3s; }
+    .step-dot.active { width: 18px; background: linear-gradient(135deg,#18CBF0,#00E5C7); box-shadow: 0 0 10px rgba(24,203,240,.5); }
+    .promo-card { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.09); border-radius: 20px; padding: 28px 20px; margin-bottom: 16px; text-align: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 10px 40px rgba(0,0,0,.35); }
+    .promo-img { max-width: 100%; max-height: 220px; overflow: hidden; border-radius: 14px; margin-bottom: 18px; }
+    .promo-img img { width: 100%; display: block; }
+    .promo-icon { width: 76px; height: 76px; margin: 0 auto 16px; border-radius: 20px; background: rgba(24,203,240,.12); border: 1px solid rgba(24,203,240,.25); display: grid; place-items: center; font-size: 2.4rem; }
+    .promo-card h2 { font-size: 1.35rem; margin-bottom: 10px; letter-spacing: -.3px; }
+    .promo-card p { color: #9fb0d1; font-size: .95rem; line-height: 1.6; margin-bottom: 20px; }
+    .visit-btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 30px; border-radius: 13px; background: linear-gradient(135deg,#A78BFA,#F472B6); color: #050A18; font-weight: 800; font-size: .98rem; text-decoration: none; box-shadow: 0 10px 34px rgba(167,139,250,.35); transition: transform .2s; }
+    .visit-btn:hover { transform: translateY(-2px); }
+    .visit-btn:active { transform: scale(.96); }
+    .timer-card { background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.09); border-radius: 20px; padding: 22px; margin-bottom: 16px; text-align: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 10px 40px rgba(0,0,0,.35); }
+    .timer-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .ring { width: 92px; height: 92px; border-radius: 50%; background: conic-gradient(#18CBF0 0deg, #16233f 0deg); display: grid; place-items: center; position: relative; transition: background .12s linear; box-shadow: 0 0 34px rgba(24,203,240,.18); }
+    .ring-inner { width: 74px; height: 74px; border-radius: 50%; background: #0b1222; display: grid; place-items: center; font-size: 1.7rem; font-weight: 800; }
+    .ring.done { background: conic-gradient(#00E5C7 360deg, #16233f 0deg); box-shadow: 0 0 44px rgba(0,229,199,.4); }
+    .ring.done .ring-inner { color: #00E5C7; }
+    .timer-label { color: #8892A4; font-size: .85rem; margin-top: 14px; }
+    .progress-track { height: 5px; background: rgba(255,255,255,.08); border-radius: 99px; overflow: hidden; margin-top: 18px; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#18CBF0,#00E5C7); border-radius: 99px; transition: width 1s linear; }
+    .start-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-top: 4px; padding: 15px 44px; border: none; border-radius: 14px; background: linear-gradient(135deg,#18CBF0,#00E5C7); color: #050A18; font-weight: 800; font-size: 1.1rem; cursor: pointer; box-shadow: 0 10px 40px rgba(24,203,240,.4); transition: .2s; }
+    .start-btn:hover { transform: translateY(-2px); }
+    .start-btn:active { transform: scale(.96); }
+    .start-btn.hidden { display: none; }
+    .continue-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 16px; border: none; border-radius: 14px; background: linear-gradient(135deg,#18CBF0,#00E5C7); color: #050A18; font-weight: 800; font-size: 1.05rem; cursor: pointer; text-decoration: none; opacity: .4; pointer-events: none; transition: .25s; box-shadow: 0 10px 30px rgba(24,203,240,.25); }
+    .continue-btn.ready { opacity: 1; pointer-events: auto; box-shadow: 0 12px 38px rgba(0,229,199,.4); }
+    .continue-btn.ready:hover { transform: translateY(-2px); }
+    .continue-btn.ready:active { transform: scale(.98); }
+    .note { text-align: center; color: #5a6b8c; font-size: .73rem; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+  <div class="glow g3"></div>
+  <div class="page">
+    <div class="top">
+      <div class="logo">LINK<span>BABA</span></div>
+      <div class="steps"><span class="steps-dots">STEPDOTS</span> STEPNUM / TOTALPAGES</div>
+    </div>
+    <div class="promo-card">
+      IMAGE
+      <h2>TITLE</h2>
+      <p>DESC</p>
+      VISITBTN
+    </div>
+    <div class="timer-card">
+      <div class="timer-wrap">
+        <div class="ring" id="ring" style="display:none"><div class="ring-inner" id="count">TIMER</div></div>
+        <button class="start-btn" id="startBtn">Click to Continue <span>&#9654;</span></button>
+        <div class="timer-label" id="timerLabel">Start the timer to unlock your link</div>
+      </div>
+      <div class="progress-track" id="progTrack" style="display:none"><div class="progress-fill" id="prog"></div></div>
+    </div>
+    <a class="continue-btn" id="continueBtn" href="HREF">Continue <span>&#8594;</span></a>
+    <div class="note">LINK BABA helps creators earn from every click</div>
+  </div>
+  <script>
+    (function () {
+      var total = TIMER;
+      var left = total;
+      var count = document.getElementById('count');
+      var ring = document.getElementById('ring');
+      var prog = document.getElementById('prog');
+      var progTrack = document.getElementById('progTrack');
+      var btn = document.getElementById('continueBtn');
+      var startBtn = document.getElementById('startBtn');
+      var timerLabel = document.getElementById('timerLabel');
+      var started = false;
+      var iv = null;
+      function start() {
+        if (started) return;
+        started = true;
+        startBtn.classList.add('hidden');
+        ring.style.display = 'grid';
+        progTrack.style.display = 'block';
+        timerLabel.textContent = 'Please wait for the countdown to finish';
+        render();
+        iv = setInterval(tick, 1000);
+      }
+      function tick() {
+        left--;
+        if (left <= 0) {
+          clearInterval(iv);
+          count.textContent = '\u2713';
+          ring.classList.add('done');
+          if (prog) prog.style.width = '100%';
+          timerLabel.textContent = 'Tap Continue to visit your destination';
+          btn.classList.add('ready');
+        } else {
+          render();
+        }
+      }
+      function render() {
+        count.textContent = left;
+        var done = total - left;
+        var deg = Math.round((done / total) * 360);
+        ring.style.background = 'conic-gradient(#18CBF0 ' + deg + 'deg, #16233f 0deg)';
+        if (prog) prog.style.width = Math.round((done / total) * 100) + '%';
+      }
+      startBtn.addEventListener('click', start);
+    })();
+  </script>
+</body>
+</html>`
+    .replace(/STEPNUM/g, () => o.step)
+    .replace(/TOTALPAGES/g, () => o.totalPages)
+    .replace(/STEPDOTS/g, () => stepDots)
+    .replace(/TIMER/g, () => timer)
+    .replace(/HREF/g, () => href)
+    .replace(/IMAGE/g, () => image)
+    .replace(/TITLE/g, () => escapeAttr(o.title || "Special Offer"))
+    .replace(/DESC/g, () => escapeAttr(o.description || ""))
+    .replace(/VISITBTN/g, () => visitBtn);
+}
+
+// ============ STEP PAGE RENDERER ============
+
+function renderStepPage(step, adPages, totalPages, ads, promo, token) {
+  if (step > adPages) {
+    return promoPage({
+      step,
+      totalPages,
+      timerSeconds: promo.timerSeconds,
+      title: promo.title,
+      description: promo.description,
+      buttonText: promo.buttonText,
+      url: promo.url,
+      imageUrl: promo.imageUrl,
+      emoji: promo.emoji,
+      token,
+    });
+  }
+  return adPage({
+    step,
+    totalPages,
+    timerSeconds: ads.timerSeconds,
+    bannerUrl: ads.bannerUrl,
+    bannerHtml: ads.bannerHtml,
+    banner2Url: ads.banner2Url,
+    banner2Html: ads.banner2Html,
+    banner3Url: ads.banner3Url,
+    banner3Html: ads.banner3Html,
+    popunderUrl: ads.popunderUrl,
+    popunderCode: ads.popunderCode,
+    pushCode: ads.pushCode,
+    inPagePushCode: ads.inPagePushCode,
+    vignetteCode: ads.vignetteCode,
+    directLinkUrl: ads.directLinkUrl,
+    directList: ads.directList,
+    token,
+  });
+}
+
 // ============ TRACKING ============
 
 function trackAdView(code, request, step, ctx) {
@@ -633,7 +841,10 @@ async function handleGo(request, url, ctx) {
   }
 
   const ads = await getAdsConfig();
+  const adPages = Math.max(0, parseInt(session.adPages) || 0);
   const totalPages = Math.max(1, parseInt(session.totalPages) || 1);
+  const promoEnabled = session.promoEnabled !== false;
+  const promo = ads.promo || {};
 
   if (session.step >= totalPages) {
     await dbDelete(`adsessions/${token}`).catch(() => {});
@@ -643,8 +854,8 @@ async function handleGo(request, url, ctx) {
 
   const nextStep = session.step + 1;
   await dbUpdate(`adsessions/${token}`, { step: nextStep }).catch(() => {});
-  trackAdView(session.code, request, nextStep, ctx);
-  return html(adPage({ step: nextStep, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, banner3Url: ads.banner3Url, banner3Html: ads.banner3Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, pushCode: ads.pushCode, inPagePushCode: ads.inPagePushCode, vignetteCode: ads.vignetteCode, directLinkUrl: ads.directLinkUrl, directList: ads.directList, token }));
+  if (nextStep <= adPages) trackAdView(session.code, request, nextStep, ctx);
+  return html(renderStepPage(nextStep, adPages, totalPages, ads, promo, token));
 }
 
 // ============ ROUTER ============
@@ -773,22 +984,28 @@ export default {
       }
     }
 
-    // ---- Advanced ad system ----
+    // ---- Advanced ad system + final promo page ----
     const ads = await getAdsConfig();
+    const promo = ads.promo || {};
+    const promoEnabled = !!(promo && promo.enabled !== false && promo.url);
     const adsEnabled = ads.enabled !== false && link.adsEnabled !== false;
-    const totalPages = Math.max(1, parseInt(link.adPages || ads.adPages) || 1);
+    const baseAdPages = Math.max(1, parseInt(link.adPages || ads.adPages) || 1);
+    const adPages = adsEnabled ? baseAdPages : 0;
+    const totalPages = adPages + (promoEnabled ? 1 : 0);
 
-    if (adsEnabled) {
+    if (adsEnabled || promoEnabled) {
       const token = randomToken();
       await dbUpdate(`adsessions/${token}`, {
         code,
         step: 1,
+        adPages,
         totalPages,
+        promoEnabled,
         createdAt: Date.now(),
         expiresAt: Date.now() + SESSION_TTL,
       }).catch(() => {});
-      trackAdView(code, request, 1, ctx);
-      return html(adPage({ step: 1, totalPages, timerSeconds: ads.timerSeconds, bannerUrl: ads.bannerUrl, bannerHtml: ads.bannerHtml, banner2Url: ads.banner2Url, banner2Html: ads.banner2Html, banner3Url: ads.banner3Url, banner3Html: ads.banner3Html, popunderUrl: ads.popunderUrl, popunderCode: ads.popunderCode, pushCode: ads.pushCode, inPagePushCode: ads.inPagePushCode, vignetteCode: ads.vignetteCode, directLinkUrl: ads.directLinkUrl, directList: ads.directList, token }));
+      if (adsEnabled) trackAdView(code, request, 1, ctx);
+      return html(renderStepPage(1, adPages, totalPages, ads, promo, token));
     }
 
     // ---- Direct redirect (no ads) ----
