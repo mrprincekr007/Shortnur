@@ -377,6 +377,8 @@ function adPage(o) {
   <title>Redirecting... &#8212; Shortnur</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    :focus, :focus-visible { outline: none !important; }
+    * { -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #070B16; color: #fff; overflow-x: hidden; }
     body.locked { overflow: hidden; }
