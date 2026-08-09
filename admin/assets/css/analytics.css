@@ -22,3 +22,8 @@
   .report-actions { width: 100%; }
   .report-actions .range-select { flex: 1; }
 }
+
+/* Remove tap focus glow on phones */
+:focus, :focus-visible { outline: none !important; }
+* { -webkit-tap-highlight-color: transparent; }
+
