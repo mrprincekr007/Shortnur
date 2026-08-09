@@ -9,7 +9,7 @@
   --primary-dark: #0d92b5;
   --primary-light: #5ce2ff;
   --secondary: #00E5C7;
-  --accent: #FF5E8A;
+  --accent: #3B82F6;
   --gradient: linear-gradient(135deg, #18CBF0 0%, #00E5C7 100%);
   --glow: 0 0 20px rgba(24, 203, 240, 0.55);
   --glow-strong: 0 0 40px rgba(24, 203, 240, 0.75);
@@ -21,8 +21,8 @@
   --text-main: #FFFFFF;
   --text-muted: #8FA3C8;
   --success: #00E5C7;
-  --danger: #FF5E8A;
-  --warning: #FFB347;
+  --danger: #EF4444;
+  --warning: #F59E0B;
   --radius: 14px;
   --radius-sm: 10px;
   --shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
@@ -447,7 +447,7 @@ input, select, textarea { font-family: var(--font); }
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #18CBF0, #00E5C7, #A78BFA);
+  background: linear-gradient(90deg, #18CBF0, #00E5C7);
   box-shadow: var(--glow);
 }
 
@@ -1044,7 +1044,7 @@ input, select, textarea { font-family: var(--font); }
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #18CBF0, #00E5C7, #A78BFA);
+  background: linear-gradient(90deg, #18CBF0, #00E5C7);
   box-shadow: var(--glow);
 }
 
@@ -1809,3 +1809,36 @@ input, select, textarea { font-family: var(--font); }
 :focus, :focus-visible { outline: none !important; }
 * { -webkit-tap-highlight-color: transparent; }
 
+
+/* ---- Unified brand palette: single hue family (cyan/blue) ---- */
+.aurora {
+  background-color: #030816;
+  background-image:
+    radial-gradient(900px circle at 15% -5%, rgba(24, 203, 240, 0.26), transparent 55%),
+    radial-gradient(800px circle at 95% 5%, rgba(0, 206, 180, 0.16), transparent 55%),
+    radial-gradient(700px circle at 80% 100%, rgba(24, 203, 240, 0.12), transparent 55%);
+}
+.orb-1 { background: rgba(24, 203, 240, 0.45); }
+.orb-2 { background: rgba(0, 206, 180, 0.38); }
+.orb-3 { background: rgba(24, 203, 240, 0.25); }
+.stat-card .stat-icon,
+.stat-card:nth-child(n) .stat-icon {
+  background: linear-gradient(135deg, #18CBF0, #0d92b5) !important;
+  box-shadow: 0 0 18px rgba(24, 203, 240, 0.35) !important;
+}
+.page-icon.c-cyan,
+.page-icon.c-green,
+.page-icon.c-pink,
+.page-icon.c-amber {
+  background: linear-gradient(135deg, #18CBF0, #0d92b5) !important;
+}
+
+/* ---- Unified brand palette: feature icons + page icons ---- */
+.feature-card:nth-child(n) .feature-icon {
+  background: linear-gradient(135deg, #18CBF0, #0d92b5) !important;
+  box-shadow: 0 0 18px rgba(24, 203, 240, 0.32) !important;
+}
+.page-icon.c-violet,
+.page-icon.c-blue {
+  background: linear-gradient(135deg, #18CBF0, #0d92b5) !important;
+}
