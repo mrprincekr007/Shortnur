@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur Admin - CPM Rates Page (global + per-user custom CPM)
+// LINK BABA Admin - CPM Rates Page (global + per-user custom CPM)
 // ============================================================
 
 import { auth, db, ref, get, set, update, onAuthStateChanged, signOut, ensureAdmins, isAdminUser } from "../../firebase/firebase-config.js";
