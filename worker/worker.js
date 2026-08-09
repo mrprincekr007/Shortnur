@@ -546,41 +546,44 @@ function trackAdView(code, request, step, ctx) {
   }).catch(() => {}));
 }
 
-async function trackConversion(code, link, request, ads, totalPages, ctx) {
-  let user = null;
-  let ratePer1000 = parseFloat(ads.ratePer1000) || 0;
+function trackConversion(code, link, request, ads, totalPages, ctx) {
+  const task = (async () => {
+    let user = null;
+    let ratePer1000 = parseFloat(ads.ratePer1000) || 0;
 
-  if (link.uid) {
-    user = await dbGet(`users/${link.uid}`).catch(() => null);
-    const custom = user && user.customCpm;
-    if (custom != null && custom !== "" && !isNaN(parseFloat(custom))) {
-      ratePer1000 = parseFloat(custom);
+    if (link.uid) {
+      user = await dbGet(`users/${link.uid}`).catch(() => null);
+      const custom = user && user.customCpm;
+      if (custom != null && custom !== "" && !isNaN(parseFloat(custom))) {
+        ratePer1000 = parseFloat(custom);
+      }
     }
-  }
 
-  const earned = ratePer1000 / 1000;
-  const clickData = {
-    linkCode: code,
-    timestamp: Date.now(),
-    ip: request.headers.get("CF-Connecting-IP") || "Unknown",
-    country: getCountry(request),
-    device: getDevice(request),
-    referrer: getReferrer(request),
-    type: "conversion",
-    cpm: ratePer1000,
-    earned,
-  };
-  const currentClicks = link.clicks || 0;
-  const currentEarnings = link.earnings || 0;
-  ctx.waitUntil(Promise.all([
-    dbUpdate(`links/${code}`, {
-      clicks: currentClicks + 1,
-      earnings: currentEarnings + earned,
-      adViews: (link.adViews || 0) + (parseInt(totalPages) || 1),
-    }),
-    dbPush(`clicks/${code}`, clickData),
-    updateUserEarnings(link.uid, earned, user),
-  ]).catch(() => {}));
+    const earned = ratePer1000 / 1000;
+    const clickData = {
+      linkCode: code,
+      timestamp: Date.now(),
+      ip: request.headers.get("CF-Connecting-IP") || "Unknown",
+      country: getCountry(request),
+      device: getDevice(request),
+      referrer: getReferrer(request),
+      type: "conversion",
+      cpm: ratePer1000,
+      earned,
+    };
+    const currentClicks = link.clicks || 0;
+    const currentEarnings = link.earnings || 0;
+    await Promise.all([
+      dbUpdate(`links/${code}`, {
+        clicks: currentClicks + 1,
+        earnings: currentEarnings + earned,
+        adViews: (link.adViews || 0) + (parseInt(totalPages) || 1),
+      }),
+      dbPush(`clicks/${code}`, clickData),
+      updateUserEarnings(link.uid, earned, user),
+    ]);
+  })();
+  ctx.waitUntil(task.catch(() => {}));
 }
 
 async function updateUserEarnings(uid, earned, cachedUser) {
