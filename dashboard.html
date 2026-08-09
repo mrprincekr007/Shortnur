@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard — Shortnur</title>
+  <title>Dashboard — LINK BABA</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🔗</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,8 +21,8 @@
     <!-- ======= SIDEBAR ======= -->
     <aside class="sidebar" id="sidebar">
       <a href="index.html" class="logo">
-        <div class="logo-icon">🔗</div>
-        <span>Short<b>nur</b></span>
+        <img src="assets/img/logo.png" class="logo-img" alt="LINK BABA">
+        <span>LINK <b>BABA</b></span>
       </a>
 
       <nav class="sidebar-nav">
@@ -52,18 +52,30 @@
       <div class="dash-topbar">
         <div class="flex">
           <button class="menu-toggle" id="menuToggle"><span data-icon="menu"></span></button>
-          <span class="page-icon c-cyan" data-icon="dashboard"></span>
-          <div>
-            <h1 id="pageTitle">Overview</h1>
-            <div class="sub" id="pageSub">Welcome back!</div>
-          </div>
         </div>
         <div class="flex">
-          <div class="search-bar">
-            <span data-icon="search"></span>
-            <input type="text" id="globalSearch" placeholder="Search links...">
+          <div class="balance-chip" title="Balance"><span data-icon="money"></span><b id="topBalanceVal">$0.00</b></div>
+          <div class="notif-wrap">
+            <button class="icon-btn" id="notifBtn" title="Notifications"><span data-icon="bell"></span><i class="notif-dot hidden" id="notifDot"></i></button>
+            <div class="notif-panel hidden" id="notifPanel">
+              <div class="np-head">Notifications</div>
+              <div class="np-empty"><span data-icon="bell"></span><p>No notifications yet</p></div>
+            </div>
           </div>
-          <button class="btn btn-primary" id="createLinkBtn">+ New Link</button>
+          <div class="profile-menu">
+            <button class="profile-btn" id="profileBtn"><span class="avatar avatar-sm" id="topAvatar">?</span><span class="p-chev" data-icon="chevron-down"></span></button>
+            <div class="profile-dropdown hidden" id="profileDropdown">
+              <div class="pd-user">
+                <span class="avatar avatar-sm" id="pdAvatar">?</span>
+                <div class="pd-meta">
+                  <b id="pdName">User</b>
+                  <span id="pdEmail">user@email.com</span>
+                </div>
+              </div>
+              <a href="settings.html" class="pd-item"><span data-icon="user"></span> Profile</a>
+              <button class="pd-item pd-logout" id="pdLogoutBtn"><span data-icon="log-out"></span> Logout</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -144,9 +156,66 @@
         </div>
       </section>
 
+      <!-- CREATE LINK MODAL -->
+      <div class="modal-overlay" id="createModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3>Create New Link</h3>
+            <button class="modal-close" data-close="createModal"><span data-icon="close"></span></button>
+          </div>
+          <div class="alert alert-error" id="createError"></div>
+          <form id="createLinkForm">
+            <div class="form-group">
+              <label for="cLongUrl">Destination URL *</label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="link"></span></span>
+                <input type="url" id="cLongUrl" class="form-control" placeholder="https://your-long-link.com/..." required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="cTitle">Title <span class="text-muted">(optional)</span></label>
+              <div class="input-wrap">
+                <span class="input-icon"><span data-icon="tag"></span></span>
+                <input type="text" id="cTitle" class="form-control" placeholder="My awesome link" maxlength="60">
+              </div>
+            </div>
+            <label class="option-toggle mb-2">
+              <span class="switch">
+                <input type="checkbox" id="cCustomToggle">
+                <span class="slider"></span>
+              </span>
+              Use custom alias
+            </label>
+            <div class="form-group hidden" id="cAliasGroup">
+              <label for="cAlias">Custom alias</label>
+              <div class="flex">
+                <span id="cAliasPrefix" class="text-muted" style="white-space:nowrap;font-weight:600;">linkbaba.online/</span>
+                <input type="text" id="cAlias" class="form-control form-control-plain" placeholder="my-custom-name" maxlength="30" pattern="[A-Za-z0-9_-]+">
+              </div>
+            </div>
+            <label class="option-toggle mb-2">
+              <span class="switch">
+                <input type="checkbox" id="cAdsToggle" checked>
+                <span class="slider"></span>
+              </span>
+              Show ads before destination
+            </label>
+            <div class="form-group" id="cAdsGroup">
+              <label for="cAdPages">Ad pages <span class="text-muted">(default from settings)</span></label>
+              <input type="number" id="cAdPages" class="form-control form-control-plain" value="2" min="1" max="5">
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn btn-ghost" data-close="createModal">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="createSubmitBtn"><span id="createSubmitText">Create Link</span></button>
+            </div>
+          </form>
+        </div>
+      </div>
+
     </main>
   </div>
 
   <script type="module" src="assets/js/dashboard.js"></script>
+  <script type="module" src="assets/js/topbar.js"></script>
 </body>
 </html>
