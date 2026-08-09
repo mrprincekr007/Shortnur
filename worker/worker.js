@@ -800,10 +800,10 @@ export default {
     };
 
     const currentClicks = link.clicks || 0;
-    Promise.all([
+    ctx.waitUntil(Promise.all([
       dbUpdate(`links/${code}`, { clicks: currentClicks + 1 }),
       dbPush(`clicks/${code}`, clickData),
-    ]).catch(() => {});
+    ]).catch(() => {}));
 
     return redirect(longUrl);
   },
