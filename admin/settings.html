@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Settings Ã¢â‚¬â€ LINK BABA Admin</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>Ã°Å¸â€â€”</text></svg>">
+  <title>Settings â€” LINK BABA Admin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>ðŸ”—</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -81,7 +81,7 @@
         <div class="card-header">
           <h3><span data-icon="zap"></span> Ad System</h3>
         </div>
-        <p class="text-muted mb-2">Visitors pass through countdown ad pages before reaching the destination. Har ad ka apna box hai â€” niche samjha hai kaunsa ad kya karta hai.</p>
+        <p class="text-muted mb-2">Visitors pass through countdown ad pages before reaching the destination. Har box ke aage <b>AdTrader unit name</b> likha hai — wahi code us box me daalo, aur <b>Preview</b> se dekh sakte ho kahan dikhega.</p>
         <form id="adsForm">
           <label class="option-toggle mb-2">
             <span class="switch">
@@ -118,93 +118,189 @@
           </div>
 
           <div class="ad-box">
-            <div class="ad-box-title"><span data-icon="tag"></span> 1. Main Ad â€” Multitag / Banner</div>
+            <div class="ad-box-title"><span data-icon="tag"></span> 1. Main Ad — Multitag / Banner</div>
             <p class="text-muted">Ye ad countdown page ke <b>upar bade box</b> me dikhta hai. Adsterra Multitag ya kisi bhi network ka banner code yahan paste karo. (Multitag me Vignette / In-Page Push / Banner sab isi code se aate hain.)</p>
+            <div class="ad-zone-hint"><span>🎯</span><b>AdTrader kaunsa:</b> <b>Smartlink</b> (30664040) ka code yahan daalo — best hai, sab size me fill hota hai. Baaki <b>300x250</b> (30664046) ya <b>Native Banner</b> (30664041) bhi yahan chale.</div>
             <div class="form-group">
               <label>Ad Code (HTML)</label>
-              <textarea id="adsBannerHtml" class="form-control form-control-plain ad-code-box" rows="4" placeholder="<script src=&quot;https://quge5.com/88/tag.min.js&quot; data-zone=&quot;267946&quot; async data-cfasync=&quot;false&quot;></script>"></textarea>
+              <textarea id="adsBannerHtml" class="form-control form-control-plain ad-code-box" rows="4" data-prev="banner1" placeholder="<script src=&quot;https://quge5.com/88/tag.min.js&quot; data-zone=&quot;267946&quot; async data-cfasync=&quot;false&quot;></script>"></textarea>
             </div>
             <div class="form-group">
               <label>Ya Banner URL (iframe, optional)</label>
-              <input type="url" id="adsBannerUrl" class="form-control form-control-plain" placeholder="https://your-ad-banner-url">
+              <input type="url" id="adsBannerUrl" class="form-control form-control-plain" data-prev="banner1" placeholder="https://your-ad-banner-url">
               <small class="text-muted">Agar upar HTML code hai toh ye khaali chhodo. Sirf tab use karo jab iframe URL ho.</small>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm ad-preview-toggle" data-prev="banner1"><span data-icon="eye"></span> Preview — kahan dikhega</button>
+            <div class="ad-preview" id="prev-banner1" hidden>
+              <div class="ad-preview-where">📍 Page ke <b>SABSE UPAR</b> bade box me — har ad page pe.</div>
+              <div class="ad-preview-mock" data-mock="main"></div>
+              <div class="ad-preview-live">
+                <div class="ad-preview-label">Live render (aapka code)</div>
+                <div class="ad-preview-frame"><iframe sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms" title="Banner 1 preview"></iframe></div>
+                <div class="ad-preview-empty"><b>Code abhi khali hai.</b><br>AdTrader Smartlink ka code upar <code>Ad Code (HTML)</code> me paste karo, phir yahan live dikhega.</div>
+                <small class="text-muted ad-preview-note"></small>
+              </div>
             </div>
           </div>
 
           <div class="ad-box">
-            <div class="ad-box-title"><span data-icon="tag"></span> 1b. Second Ad â€” Bottom Box (optional)</div>
+            <div class="ad-box-title"><span data-icon="tag"></span> 1b. Second Ad — Bottom Box (optional)</div>
             <p class="text-muted">Ye ad timer ke <b>neeche second bade box</b> me dikhta hai. Iske liye Adsterra me alag <b>Display Banner zone</b> banao (duplicate zone na ho toh better). Agar chhodo toh second box nahi dikhega.</p>
+            <div class="ad-zone-hint"><span>🎯</span><b>AdTrader kaunsa:</b> <b>Native Banner</b> (30664041) ka code yahan daalo. <b>300x250</b> (30664046) ya <b>468x60</b> (30664043) bhi yahan chale.</div>
             <div class="form-group">
               <label>Ad Code (HTML)</label>
-              <textarea id="adsBanner2Html" class="form-control form-control-plain ad-code-box" rows="4" placeholder="<script type=&quot;text/javascript&quot;> atOptions = { 'key': 'YOUR_KEY', 'format': 'iframe', 'height': 250, 'width': 300, 'params': {} }; </script>"></textarea>
+              <textarea id="adsBanner2Html" class="form-control form-control-plain ad-code-box" rows="4" data-prev="banner2" placeholder="<script type=&quot;text/javascript&quot;> atOptions = { 'key': 'YOUR_KEY', 'format': 'iframe', 'height': 250, 'width': 300, 'params': {} }; </script>"></textarea>
             </div>
             <div class="form-group">
               <label>Ya Banner URL (iframe, optional)</label>
-              <input type="url" id="adsBanner2Url" class="form-control form-control-plain" placeholder="https://your-second-ad-banner-url">
+              <input type="url" id="adsBanner2Url" class="form-control form-control-plain" data-prev="banner2" placeholder="https://your-second-ad-banner-url">
               <small class="text-muted">Agar upar HTML code hai toh ye khaali chhodo.</small>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm ad-preview-toggle" data-prev="banner2"><span data-icon="eye"></span> Preview — kahan dikhega</button>
+            <div class="ad-preview" id="prev-banner2" hidden>
+              <div class="ad-preview-where">📍 Timer circle ke <b>NEECHE</b> — har ad page pe.</div>
+              <div class="ad-preview-mock" data-mock="second"></div>
+              <div class="ad-preview-live">
+                <div class="ad-preview-label">Live render (aapka code)</div>
+                <div class="ad-preview-frame"><iframe sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms" title="Banner 2 preview"></iframe></div>
+                <div class="ad-preview-empty"><b>Code abhi khali hai.</b><br>AdTrader Native Banner ka code upar <code>Ad Code (HTML)</code> me paste karo.</div>
+                <small class="text-muted ad-preview-note"></small>
+              </div>
             </div>
           </div>
 
           <div class="ad-box">
             <div class="ad-box-title"><span data-icon="eye"></span> 2. OnClick Popunder</div>
             <p class="text-muted">Visitor pehli baar <b>click</b> kare toh popunder naye tab me khulega (aur page scroll unlock hoga). Adsterra dashboard me <b>OnClick (Popunder)</b> zone bana ke uska code yahan daalo.</p>
+            <div class="ad-zone-hint"><span>🎯</span><b>AdTrader kaunsa:</b> <b>Popunder</b> (30664039) ka code yahan daalo — click par naya tab khulega.</div>
             <div class="form-group">
               <label>Popunder Code (HTML)</label>
-              <textarea id="adsPopunderCode" class="form-control form-control-plain ad-code-box" rows="3" placeholder="<script src=&quot;https://.../click.min.js&quot; data-zone=&quot;YOUR_ZONE&quot; async></script>"></textarea>
+              <textarea id="adsPopunderCode" class="form-control form-control-plain ad-code-box" rows="3" data-prev="popunder" placeholder="<script src=&quot;https://.../click.min.js&quot; data-zone=&quot;YOUR_ZONE&quot; async></script>"></textarea>
             </div>
             <div class="form-group">
               <label>Ya Popunder URL (optional)</label>
-              <input type="url" id="adsPopunderUrl" class="form-control form-control-plain" placeholder="https://popunder-ad-url">
+              <input type="url" id="adsPopunderUrl" class="form-control form-control-plain" data-prev="popunder" placeholder="https://popunder-ad-url">
               <small class="text-muted">Agar code hai toh ye khaali chhodo. URL only tab use karo jab code na ho.</small>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm ad-preview-toggle" data-prev="popunder"><span data-icon="eye"></span> Preview — kahan dikhega</button>
+            <div class="ad-preview" id="prev-popunder" hidden>
+              <div class="ad-preview-where">📍 Visitor page pe <b>pehli baar click</b> kare toh ye naye <b>TAB</b> me khulega (popunder).</div>
+              <div class="ad-preview-mock" data-mock="pop"></div>
+              <div class="ad-preview-live">
+                <div class="ad-preview-label">Live render (aapka code)</div>
+                <div class="ad-preview-frame"><iframe sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms" title="Popunder preview"></iframe></div>
+                <div class="ad-preview-empty"><b>Code abhi khali hai.</b><br>AdTrader Popunder ka code upar <code>Popunder Code</code> me paste karo.</div>
+                <small class="text-muted ad-preview-note"></small>
+              </div>
             </div>
           </div>
 
           <div class="ad-box">
             <div class="ad-box-title"><span data-icon="bell"></span> 3. Push Notifications</div>
-            <p class="text-muted">Browser push notification ad (mobile + desktop). Adsterra <b>Push Notifications</b> zone ka code yahan daalo. Ise <code>sw.js</code> service worker bhi chahiye â€” ad page pe automatically load hoga.</p>
+            <p class="text-muted">Browser push notification ad (mobile + desktop). Adsterra <b>Push Notifications</b> zone ka code yahan daalo. Ise <code>sw.js</code> service worker bhi chahiye — ad page pe automatically load hoga.</p>
+            <div class="ad-zone-hint"><span>🎯</span><b>AdTrader:</b> AdTrader me <b>Push unit nahi hai</b> — ye box <b>khali chhodo</b>. (Adsterra/PushGround ke liye hai.)</div>
             <div class="form-group">
               <label>Push Code (HTML)</label>
-              <textarea id="adsPushCode" class="form-control form-control-plain ad-code-box" rows="3" placeholder="<script src=&quot;https://.../service.min.js&quot; data-zone=&quot;YOUR_ZONE&quot; async></script>"></textarea>
+              <textarea id="adsPushCode" class="form-control form-control-plain ad-code-box" rows="3" data-prev="push" placeholder="<script src=&quot;https://.../service.min.js&quot; data-zone=&quot;YOUR_ZONE&quot; async></script>"></textarea>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm ad-preview-toggle" data-prev="push"><span data-icon="eye"></span> Preview — kahan dikhega</button>
+            <div class="ad-preview" id="prev-push" hidden>
+              <div class="ad-preview-where">📍 <b>Browser notification</b> — phone/desktop me screen ke upar aayega (visitor permission de to).</div>
+              <div class="ad-preview-mock" data-mock="push"></div>
+              <div class="ad-preview-live">
+                <div class="ad-preview-label">Live render (aapka code)</div>
+                <div class="ad-preview-frame"><iframe sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms" title="Push preview"></iframe></div>
+                <div class="ad-preview-empty"><b>Code abhi khali hai.</b><br>AdTrader me push nahi hai — ye box chhoda ja sakta hai.</div>
+                <small class="text-muted ad-preview-note"></small>
+              </div>
             </div>
           </div>
 
           <div class="ad-box">
             <div class="ad-box-title"><span data-icon="chat"></span> 4. In-Page Push</div>
             <p class="text-muted">Page ke andar push-notification jaisa ad widget dikhta hai. Adsterra <b>In-Page Push</b> zone ka code yahan daalo.</p>
+            <div class="ad-zone-hint"><span>🎯</span><b>AdTrader:</b> AdTrader me alag <b>In-Page Push unit nahi hai</b> — ye box <b>khali chhodo</b>. Smartlink ka code banner 1 me dalo.</div>
             <div class="form-group">
               <label>In-Page Push Code (HTML)</label>
-              <textarea id="adsInPagePushCode" class="form-control form-control-plain ad-code-box" rows="3" placeholder="<script src=&quot;https://.../smart.min.js&quot; data-zone=&quot;YOUR_ZONE&quot; async></script>"></textarea>
+              <textarea id="adsInPagePushCode" class="form-control form-control-plain ad-code-box" rows="3" data-prev="inpage" placeholder="<script src=&quot;https://.../smart.min.js&quot; data-zone=&quot;YOUR_ZONE&quot; async></script>"></textarea>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm ad-preview-toggle" data-prev="inpage"><span data-icon="eye"></span> Preview — kahan dikhega</button>
+            <div class="ad-preview" id="prev-inpage" hidden>
+              <div class="ad-preview-where">📍 Page ke <b>ANDAR</b> ek notification jaisa widget (side me).</div>
+              <div class="ad-preview-mock" data-mock="inpage"></div>
+              <div class="ad-preview-live">
+                <div class="ad-preview-label">Live render (aapka code)</div>
+                <div class="ad-preview-frame"><iframe sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms" title="In-page push preview"></iframe></div>
+                <div class="ad-preview-empty"><b>Code abhi khali hai.</b><br>AdTrader me ye unit nahi hai — box chhoda ja sakta hai.</div>
+                <small class="text-muted ad-preview-note"></small>
+              </div>
             </div>
           </div>
 
           <div class="ad-box">
             <div class="ad-box-title"><span data-icon="fullscreen"></span> 5. Vignette / Interstitial</div>
             <p class="text-muted">Poora screen cover karne wala fullscreen ad. Adsterra <b>Vignette (Interstitial)</b> zone ka code yahan daalo.</p>
+            <div class="ad-zone-hint"><span>🎯</span><b>AdTrader:</b> AdTrader me <b>Vignette unit nahi hai</b> — ye box <b>khali chhodo</b>.</div>
             <div class="form-group">
               <label>Vignette Code (HTML)</label>
-              <textarea id="adsVignetteCode" class="form-control form-control-plain ad-code-box" rows="3" placeholder="<script src=&quot;https://.../interstitial.min.js&quot; data-zone=&quot;YOUR_ZONE&quot; async></script>"></textarea>
+              <textarea id="adsVignetteCode" class="form-control form-control-plain ad-code-box" rows="3" data-prev="vignette" placeholder="<script src=&quot;https://.../interstitial.min.js&quot; data-zone=&quot;YOUR_ZONE&quot; async></script>"></textarea>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm ad-preview-toggle" data-prev="vignette"><span data-icon="eye"></span> Preview — kahan dikhega</button>
+            <div class="ad-preview" id="prev-vignette" hidden>
+              <div class="ad-preview-where">📍 <b>POORI SCREEN</b> cover karega (fullscreen overlay).</div>
+              <div class="ad-preview-mock" data-mock="vig"></div>
+              <div class="ad-preview-live">
+                <div class="ad-preview-label">Live render (aapka code)</div>
+                <div class="ad-preview-frame"><iframe sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms" title="Vignette preview"></iframe></div>
+                <div class="ad-preview-empty"><b>Code abhi khali hai.</b><br>AdTrader me ye unit nahi hai — box chhoda ja sakta hai.</div>
+                <small class="text-muted ad-preview-note"></small>
+              </div>
             </div>
           </div>
 
           <div class="ad-box">
             <div class="ad-box-title"><span data-icon="link"></span> 6. Direct Links (Multi)</div>
-            <p class="text-muted">Adsterra <b>Direct link</b> ads â€” <b>har line pe ek URL</b>. Jitne lines utne sponsored boxes page pe dikhenge (10-15 tak). Zaroori: <b>har line alag Adsterra zone ID</b> ho, warna same zone duplicate count nahi hota (ek hi impression milega).</p>
+            <p class="text-muted">Adsterra <b>Direct link</b> ads — <b>har line pe ek URL</b>. Jitne lines utne sponsored boxes page pe dikhenge (10-15 tak). Zaroori: <b>har line alag Adsterra zone ID</b> ho, warna same zone duplicate count nahi hota (ek hi impression milega).</p>
+            <div class="ad-zone-hint"><span>🎯</span><b>AdTrader:</b> AdTrader me direct-link URL nahi milta — <b>Smartlink code hi best hai</b>. Ye box chhodo ya kisi aur network ka direct link daalo.</div>
             <div class="form-group">
               <label>Direct Link URLs (1 per line)</label>
-              <textarea id="adsDirectList" class="form-control form-control-plain" rows="6" placeholder="https://omg10.com/4/11530119&#10;https://omg10.com/4/ANOTHER_ZONE&#10;https://another-network-ad"></textarea>
+              <textarea id="adsDirectList" class="form-control form-control-plain" rows="6" data-prev="direct" placeholder="https://omg10.com/4/11530119&#10;https://omg10.com/4/ANOTHER_ZONE&#10;https://another-network-ad"></textarea>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm ad-preview-toggle" data-prev="direct"><span data-icon="eye"></span> Preview — kahan dikhega</button>
+            <div class="ad-preview" id="prev-direct" hidden>
+              <div class="ad-preview-where">📍 Har line ka ek <b>SPONSORED box</b> — timer ke neeche.</div>
+              <div class="ad-preview-mock" data-mock="direct"></div>
+              <div class="ad-preview-live">
+                <div class="ad-preview-label">Live render (URLs)</div>
+                <div class="ad-preview-frame"><iframe sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms" title="Direct links preview"></iframe></div>
+                <div class="ad-preview-empty"><b>URLs abhi khali hain.</b><br>Har line pe ek ad URL daalo.</div>
+                <small class="text-muted ad-preview-note"></small>
+              </div>
             </div>
           </div>
 
           <div class="ad-box">
             <div class="ad-box-title"><span data-icon="tag"></span> 7. Banner Below Continue (optional)</div>
-            <p class="text-muted">Ye ad <b>Continue button ke niche</b> dikhta hai. Chhote banner (300x250 / 728x90) ke liye best â€” box ab apne aap size adjust karta hai.</p>
+            <p class="text-muted">Ye ad <b>Continue button ke niche</b> dikhta hai. Chhote banner (300x250 / 728x90) ke liye best — box ab apne aap size adjust karta hai.</p>
+            <div class="ad-zone-hint"><span>🎯</span><b>AdTrader kaunsa:</b> <b>320x50</b> (30664045) ya <b>728x90</b> (30664048) ka code yahan daalo. Mobile traffic zyada hai toh <b>320x50</b> best.</div>
             <div class="form-group">
               <label>Banner code (HTML/JS)</label>
-              <textarea id="adsBanner3Html" class="form-control form-control-plain ad-code-box" rows="4" placeholder="<script src=&quot;https://your-zone.com/tag.min.js?z=12345&quot; async data-cfasync=&quot;false&quot;></script>"></textarea>
+              <textarea id="adsBanner3Html" class="form-control form-control-plain ad-code-box" rows="4" data-prev="banner3" placeholder="<script src=&quot;https://your-zone.com/tag.min.js?z=12345&quot; async data-cfasync=&quot;false&quot;></script>"></textarea>
             </div>
             <div class="form-group">
               <label>Ya Banner URL (iframe, optional)</label>
-              <input type="url" id="adsBanner3Url" class="form-control form-control-plain" placeholder="https://your-ad-banner-url">
+              <input type="url" id="adsBanner3Url" class="form-control form-control-plain" data-prev="banner3" placeholder="https://your-ad-banner-url">
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm ad-preview-toggle" data-prev="banner3"><span data-icon="eye"></span> Preview — kahan dikhega</button>
+            <div class="ad-preview" id="prev-banner3" hidden>
+              <div class="ad-preview-where">📍 <b>Continue button ke NEECHE</b> — har ad page pe.</div>
+              <div class="ad-preview-mock" data-mock="below"></div>
+              <div class="ad-preview-live">
+                <div class="ad-preview-label">Live render (aapka code)</div>
+                <div class="ad-preview-frame"><iframe sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms" title="Banner 3 preview"></iframe></div>
+                <div class="ad-preview-empty"><b>Code abhi khali hai.</b><br>AdTrader 320x50 / 728x90 ka code upar <code>Banner code</code> me paste karo.</div>
+                <small class="text-muted ad-preview-note"></small>
+              </div>
             </div>
           </div>
 
@@ -252,7 +348,7 @@
             <div class="form-group">
               <label>Image URL (optional)</label>
               <input type="url" id="promoImageUrl" class="form-control form-control-plain" placeholder="https://your-image-url">
-              <small class="text-muted">Khali rakhne par gift emoji ðŸŽ dikhega.</small>
+              <small class="text-muted">Khali rakhne par gift emoji 🎁 dikhega.</small>
             </div>
           </div>
 
