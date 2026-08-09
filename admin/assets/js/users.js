@@ -1,5 +1,5 @@
 // ============================================================
-// Shortnur Admin - Users Page
+// LINK BABA Admin - Users Page
 // Features: search, plan/status filters, ban/unban, detail view,
 // bulk delete, pagination
 // ============================================================
