@@ -560,7 +560,7 @@ body { font-family: var(--font); }
 .ad-preview-live { border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 10px; }
 .ad-preview-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
 .ad-preview-frame { background: #fff; border-radius: 8px; overflow: hidden; min-height: 40px; }
-.ad-preview-frame iframe { width: 100%; height: 190px; border: 0; display: block; background: #fff; }
+.ad-preview-frame iframe { width: 100%; height: 760px; border: 0; display: block; background: #070B16; }
 .ad-preview-empty { display: none; background: rgba(255, 255, 255, 0.04); border: 1px dashed rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 16px; text-align: center; color: #8892A4; font-size: 0.85rem; line-height: 1.6; }
 .ad-preview-empty code { color: #18CBF0; }
 .ad-preview-note { margin-top: 8px; }
