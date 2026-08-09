@@ -496,3 +496,8 @@ body { font-family: var(--font); }
   font-size: 0.85rem;
   line-height: 1.5;
 }
+
+/* Remove tap focus glow on phones */
+:focus, :focus-visible { outline: none !important; }
+* { -webkit-tap-highlight-color: transparent; }
+
